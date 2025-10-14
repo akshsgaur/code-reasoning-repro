@@ -49,6 +49,6 @@ if __name__ == "__main__":
     combos = [(1,4),(1,5),(2,4),(2,5)]
     for arity, depth in combos:
         dataset += sample_programs(n=100, depth=depth, arity=arity, seed=arity*100+depth)
-    with open("./data/dsl_list.jsonl","w") as f:
+    with open("../data/dsl_list.jsonl","w") as f:
         for row in dataset:
             f.write(json.dumps(row) + "\n")
