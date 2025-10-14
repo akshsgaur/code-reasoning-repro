@@ -70,6 +70,7 @@ code-reasoning-repro/
   url     = {https://arxiv.org/abs/2504.05518}
 }
 ```
+[2504.05518v1.pdf](https://github.com/user-attachments/files/22913347/2504.05518v1.pdf)
 
 ---
 
