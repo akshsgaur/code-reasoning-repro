@@ -1,0 +1,17 @@
+{
+  "split": "test",
+  "num_rows": 511,
+  "features": {
+    "question_title": "Value(dtype='string', id=None)",
+    "question_content": "Value(dtype='string', id=None)",
+    "platform": "Value(dtype='string', id=None)",
+    "question_id": "Value(dtype='string', id=None)",
+    "contest_id": "Value(dtype='string', id=None)",
+    "contest_date": "Value(dtype='string', id=None)",
+    "starter_code": "Value(dtype='string', id=None)",
+    "difficulty": "Value(dtype='string', id=None)",
+    "public_test_cases": "Value(dtype='string', id=None)",
+    "private_test_cases": "Value(dtype='string', id=None)",
+    "metadata": "Value(dtype='string', id=None)"
+  }
+}
