@@ -1,3 +1,5 @@
 venv/
 .env
 src/datasets/leetcode/lcb_codegen_overview/
+scripts/__pycache__/
+__pycache__/
