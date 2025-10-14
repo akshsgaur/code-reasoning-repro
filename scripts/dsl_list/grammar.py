@@ -1,20 +1,23 @@
 # grammar.py
+# added contraints from additional contraints part to this file
+
 import random
-from make_dsl import *
+from dsl import *
 
 WEIGHTS = {
     'if'    : 1.0,
-    'map'   : 5.0,     # heavier
-    'extend': 0.05,    # much rarer
+    'map'   : 5.0,
+    'extend': 0.05,    
     'append': 1.0, 'init':1.0, 'tail':1.0,
     'length':1.0, 'index':1.0,
     'eq':1.0,'lt':1.0,'gt':1.0,'and':1.0,'or':1.0,'not':1.0,
     'empty':1.0, 'intlit':1.0, 'var':1.0
 }
 
-INT_RANGE   = range(-1, 6)  # [-1,5]
+INT_RANGE   = range(0, 6)  # [0,5]
 LIST_RANGE  = range(3, 6)   # list lengths 3..5 (for input gen)
 
+# picking one item from weights proportionally
 def weighted_choice(pairs):
     total = sum(w for _, w in pairs)
     r = random.random() * total
@@ -34,10 +37,10 @@ def sample_expr(ty: Ty, depth:int, vars_in_scope:Tuple[Var,...]) -> Expr:
         if ty == Ty.INT:
             return IntLit(random.choice(list(INT_RANGE)))
         if ty == Ty.BOOL:
-            # pick a relational op over ints 50% or boolean literal
+            # either pick a bool lit or an integer
             if random.random() < 0.5:
                 return BoolLit(random.choice([True, False]))
-            # fallthrough to small relational
+            # else
             a = IntLit(random.choice(list(INT_RANGE)))
             b = IntLit(random.choice(list(INT_RANGE)))
             # avoid (0==0)-like trivialities
@@ -45,7 +48,7 @@ def sample_expr(ty: Ty, depth:int, vars_in_scope:Tuple[Var,...]) -> Expr:
                 b = IntLit(random.choice(list(INT_RANGE)))
             return Eq(a,b)
         if ty == Ty.LIST_INT:
-            # allow empty or one of the list vars
+            # allow empty or one of the list vars as a return value to the function
             choices = []
             if any(isinstance(v, Var) and v.name.startswith('a') for v in vars_in_scope):
                 for v in vars_in_scope:
@@ -55,7 +58,7 @@ def sample_expr(ty: Ty, depth:int, vars_in_scope:Tuple[Var,...]) -> Expr:
             return weighted_choice(choices)
         raise ValueError
 
-    # recursive cases by desired type
+    # recursive cases by desired type of expression
     if ty == Ty.LIST_INT:
         choices = [
             ('append', WEIGHTS['append']),
@@ -79,8 +82,20 @@ def sample_expr(ty: Ty, depth:int, vars_in_scope:Tuple[Var,...]) -> Expr:
             if isinstance(a, Var) and isinstance(b, Var) and a.name == b.name:
                 return sample_expr(ty, depth-1, vars_in_scope)
             return Extend(a,b)
-        if kind == 'init':  return Init(sample_expr(Ty.LIST_INT, depth-1, vars_in_scope))
-        if kind == 'tail':  return Tail(sample_expr(Ty.LIST_INT, depth-1, vars_in_scope))
+        # if kind == 'init':  return Init(sample_expr(Ty.LIST_INT, depth-1, vars_in_scope))
+        # if kind == 'tail':  return Tail(sample_expr(Ty.LIST_INT, depth-1, vars_in_scope))
+        if kind == 'init':
+            lst = sample_expr(Ty.LIST_INT, depth-1, vars_in_scope)
+            while isinstance(lst, Empty):
+                lst = sample_expr(Ty.LIST_INT, depth-1, vars_in_scope)
+            return Init(lst)
+
+        if kind == 'tail':
+            lst = sample_expr(Ty.LIST_INT, depth-1, vars_in_scope)
+            while isinstance(lst, Empty):
+                lst = sample_expr(Ty.LIST_INT, depth-1, vars_in_scope)
+            return Tail(lst)
+
         if kind == 'if':
             c = sample_expr(Ty.BOOL, depth-1, vars_in_scope)
             t = sample_expr(Ty.LIST_INT, depth-1, vars_in_scope)
@@ -106,12 +121,22 @@ def sample_expr(ty: Ty, depth:int, vars_in_scope:Tuple[Var,...]) -> Expr:
         choices = [('length',WEIGHTS['length'] ),('index',WEIGHTS['index']),
                    ('intlit',WEIGHTS['intlit']),('if',WEIGHTS['if'])]
         kind = weighted_choice(choices)
-        if kind == 'length':
-            return Length(sample_expr(Ty.LIST_INT, depth-1, vars_in_scope))
+        # if kind == 'length':
+        #     return Length(sample_expr(Ty.LIST_INT, depth-1, vars_in_scope))
+        # if kind == 'index':
+        #     lst = sample_expr(Ty.LIST_INT, depth-1, vars_in_scope)
+        #     i   = sample_expr(Ty.INT, depth-1, vars_in_scope)
+        #     return Index(i,lst)
         if kind == 'index':
             lst = sample_expr(Ty.LIST_INT, depth-1, vars_in_scope)
-            i   = sample_expr(Ty.INT, depth-1, vars_in_scope)
-            return Index(i,lst)
+            # disallow Empty() as argument
+            while isinstance(lst, Empty):
+                lst = sample_expr(Ty.LIST_INT, depth-1, vars_in_scope)
+
+            # ensure integer literal -1 only used here
+            i = IntLit(-1)
+            return Index(i, lst)
+
         if kind == 'if':
             c = sample_expr(Ty.BOOL, depth-1, vars_in_scope)
             t = sample_expr(Ty.INT, depth-1, vars_in_scope)

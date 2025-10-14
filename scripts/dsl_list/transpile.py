@@ -1,5 +1,5 @@
 # transpile.py
-from make_dsl import *
+from dsl import *
 
 class TranspileCtx:
     def __init__(self, params:int):
