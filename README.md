@@ -61,15 +61,13 @@ code-reasoning-repro/
 
 ## 📖 Target paper
 
-Fill in the exact paper once finalized.
-
 ```
-@inproceedings{paper-key,
-  title   = {...},
-  author  = {...},
-  booktitle = {...},
-  year    = {20XX},
-  url     = {...}
+@article{yang2025evaluating,
+  title   = {Evaluating the Generalization Capabilities of Large Language Models on Code Reasoning},
+  author  = {Yang, Rem and Dai, Julian and Vasilakis, Nikos and Rinard, Martin},
+  journal = {arXiv preprint arXiv:2504.05518},
+  year    = {2025},
+  url     = {https://arxiv.org/abs/2504.05518}
 }
 ```
 
@@ -98,6 +96,24 @@ pip install wandb tensorboard
 
 * Use **vLLM** for open models (e.g., Qwen2.5-Coder-7B, DeepSeek-Coder-6.7B).
 * For closed models, set API keys and use `src/models/closed_access.py`.
+
+### 2.5) Download the LeetCode dataset (local only)
+
+GitHub rejects the raw LeetCode dump because it exceeds the 100 MB file limit, so you must materialize it on your own machine whenever you need it.
+
+```bash
+# activate the repo environment first
+python src/datasets/leetcode/dataset_download.py
+```
+
+What this script does:
+
+- streams `livecodebench/code_generation_lite` from Hugging Face (≈4 GB download); the data stays in the HF cache under `~/.cache/huggingface/` for reuse
+- prints a schema/sample summary for each split
+- writes lightweight metadata + sample rows to `src/datasets/leetcode/lcb_codegen_overview/`
+- creates LeetCode-only JSONL files in `src/datasets/leetcode/lcb_codegen_overview/leetcode_only/`
+
+Those outputs are **ignored by git** (see `.gitignore`), so keep them locally or upload to your own storage if you want to share them.
 
 ### 3) Generate a tiny DSL split (MVP)
 

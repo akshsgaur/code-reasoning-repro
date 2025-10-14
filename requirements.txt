@@ -5,4 +5,4 @@ coverage
 pandas
 tqdm
 rich
-datasets
+datasets==2.19.1
