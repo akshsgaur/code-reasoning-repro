@@ -9,6 +9,6 @@ def sample_inputs(arity:int, trials:int=3):
     for _ in range(trials):
         if arity == 1:
             data.append((one_list(),))
-        else:
+        elif arity == 2:
             data.append((one_list(), one_list()))
     return data

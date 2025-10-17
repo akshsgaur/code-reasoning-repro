@@ -121,8 +121,8 @@ def sample_expr(ty: Ty, depth:int, vars_in_scope:Tuple[Var,...]) -> Expr:
         choices = [('length',WEIGHTS['length'] ),('index',WEIGHTS['index']),
                    ('intlit',WEIGHTS['intlit']),('if',WEIGHTS['if'])]
         kind = weighted_choice(choices)
-        # if kind == 'length':
-        #     return Length(sample_expr(Ty.LIST_INT, depth-1, vars_in_scope))
+        if kind == 'length':
+            return Length(sample_expr(Ty.LIST_INT, depth-1, vars_in_scope))
         # if kind == 'index':
         #     lst = sample_expr(Ty.LIST_INT, depth-1, vars_in_scope)
         #     i   = sample_expr(Ty.INT, depth-1, vars_in_scope)

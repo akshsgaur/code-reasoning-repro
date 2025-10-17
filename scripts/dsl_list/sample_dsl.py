@@ -5,9 +5,10 @@ from grammar import sample_expr
 from transpile import transpile_to_python
 from inputs import sample_inputs
 from validate import is_valid
+import argparse
 
-def sample_programs(n:int, depth:int, arity:int, seed=0, bin_by_loc=False):
-    random.seed(seed)
+def sample_programs(n:int, depth:int, arity:int, seed=0):
+    random.seed()
     out = []
     printed_debug = False  # only print for the first valid program
 
@@ -44,11 +45,13 @@ def sample_programs(n:int, depth:int, arity:int, seed=0, bin_by_loc=False):
     return out
 
 if __name__ == "__main__":
-    dataset = []
-    # replicate paper’s idea: for each (type,depth) combination, sample 1000 valid, then downselect
-    combos = [(1,4),(1,5),(2,4),(2,5)]
-    for arity, depth in combos:
-        dataset += sample_programs(n=100, depth=depth, arity=arity, seed=arity*100+depth)
-    with open("../data/dsl_list.jsonl","w") as f:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--n", type=int, default=100)
+    parser.add_argument("--depth", type=int, default=4)
+    parser.add_argument("--arity", type=int, default=1)
+    args = parser.parse_args()
+
+    dataset = sample_programs(n=args.n, depth=args.depth, arity=args.arity, seed=None)
+    with open(f"../data/dsl_list.jsonl","w") as f:
         for row in dataset:
             f.write(json.dumps(row) + "\n")
