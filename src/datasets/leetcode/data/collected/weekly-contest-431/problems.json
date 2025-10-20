@@ -7,7 +7,6 @@
     "exampleTestcases": "[1,2,1,2,1,1,1]\n[2,3,4,5,6]\n[1,2,3,1,4,5,1]",
     "sampleTestCase": "[1,2,1,2,1,1,1]",
     "title_slug": "maximum-subarray-with-equal-products"
-    
   },
   "3634": {
     "question_id": 3634,

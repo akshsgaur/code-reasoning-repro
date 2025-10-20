@@ -71,8 +71,8 @@ except ImportError:
 BASE_DATA_DIR = Path(__file__).parent / "data" / "collected"
 OUTPUT_DIR = Path(__file__).parent / "data" / "datasets"
 
-# Contest 431 started on approximately 2024-01-07 (weekly contests are on Sundays)
-CONTEST_431_DATE = datetime(2024, 1, 7)
+# Contest 431 started on 2025-01-05 (weekly contests are on Sundays)
+CONTEST_431_DATE = datetime(2025, 1, 5)
 
 
 def get_contest_date(contest_num: int) -> str:
@@ -113,31 +113,131 @@ def extract_function_name(code: str) -> Optional[str]:
     return None
 
 
-def parse_test_input(test_string: str, function_name: str) -> Optional[str]:
+def extract_function_params(code: str) -> List[str]:
+    """
+    Extract function parameter names from Python code
+    Returns list of parameter names (excluding 'self')
+    Example: "def maxKDistinct(self, nums: List[int], k: int)" -> ["nums", "k"]
+    """
+    # Match method inside class Solution
+    match = re.search(r'class\s+Solution:.*?def\s+\w+\s*\((.*?)\)', code, re.DOTALL)
+    if not match:
+        # Fallback: just match def
+        match = re.search(r'def\s+\w+\s*\((.*?)\)', code, re.DOTALL)
+
+    if not match:
+        return []
+
+    params_str = match.group(1)
+
+    # Split by comma and extract parameter names
+    params = []
+    for param in params_str.split(','):
+        param = param.strip()
+        if not param or param == 'self':
+            continue
+
+        # Extract just the parameter name (before : or =)
+        param_name = re.split(r'[:\s=]', param)[0].strip()
+        if param_name:
+            params.append(param_name)
+
+    return params
+
+
+def has_class_variables(code: str) -> bool:
+    """
+    Check if code uses class variables (e.g., self.variable)
+    Returns True if class variables are detected
+    """
+    # Look for self.attribute patterns
+    if re.search(r'self\.\w+\s*=', code):
+        return True
+    return False
+
+
+def extract_method_from_class(code: str) -> Optional[str]:
+    """
+    Extract method code from class Solution wrapper
+    Returns standalone function code or None if extraction fails
+
+    Example:
+    Input:
+        class Solution:
+            def maxLength(self, nums: List[int]) -> int:
+                return max(nums)
+
+    Output:
+        def maxLength(nums: List[int]) -> int:
+            return max(nums)
+    """
+    # Check if code has class variables - if so, we can't extract it
+    if has_class_variables(code):
+        return None
+
+    # Match the class Solution and the method
+    match = re.search(
+        r'class\s+Solution:\s*\n\s*def\s+(\w+)\s*\(self(?:,\s*)?(.*?)\)(.*?):\s*\n(.*)',
+        code,
+        re.DOTALL
+    )
+
+    if not match:
+        # If no class wrapper, return code as-is
+        if code.strip().startswith('def '):
+            return code
+        return None
+
+    function_name = match.group(1)
+    params = match.group(2)  # parameters after 'self'
+    return_annotation = match.group(3)  # return type annotation
+    body = match.group(4)
+
+    # Build standalone function
+    if params.strip():
+        standalone = f"def {function_name}({params}){return_annotation}:\n{body}"
+    else:
+        standalone = f"def {function_name}(){return_annotation}:\n{body}"
+
+    return standalone
+
+
+def parse_test_input(test_string: str, function_name: str, param_names: List[str]) -> Optional[str]:
     """
     Parse test case string into function call format
-    Example: "['7868190130M7522', '5303914400F9211']"
-    -> "countSeniors(a = ['7868190130M7522', '5303914400F9211'])"
+    LeetCode provides multiple test cases in the string, we only use the first one.
+    Example: "[84,93,100,77,90]\n3\n[84,93,100,77,93]\n3" with params ["nums", "k"]
+    -> "maxKDistinct(nums=[84,93,100,77,90], k=3)"
     """
     if not test_string or not function_name:
         return None
 
-    # Test cases from LeetCode are typically newline-separated parameter values
-    # We need to parse them and map to function parameters
-    # For now, we'll use a simplified approach
-
+    # Test cases from LeetCode are newline-separated parameter values
+    # Multiple test cases are concatenated, so we need to extract only the first N lines
+    # where N is the number of parameters
     lines = [line.strip() for line in test_string.strip().split('\n') if line.strip()]
 
     if not lines:
         return None
 
-    # Simple case: single parameter
-    if len(lines) == 1:
+    # If we don't have param names, assume single parameter
+    if not param_names:
         return f"{function_name}({lines[0]})"
 
-    # Multiple parameters: use positional arguments
-    params = ', '.join(lines)
-    return f"{function_name}({params})"
+    # Take only the first len(param_names) lines for the first test case
+    num_params = len(param_names)
+    test_values = lines[:num_params]
+
+    # If we don't have enough values, return None
+    if len(test_values) < num_params:
+        return None
+
+    # Map values to parameter names
+    param_assignments = []
+    for i, value in enumerate(test_values):
+        param_assignments.append(f"{param_names[i]}={value}")
+
+    return f"{function_name}({', '.join(param_assignments)})"
 
 
 def execute_code_safely(code: str, input_call: str, timeout: int = 5) -> Optional[str]:
@@ -145,10 +245,20 @@ def execute_code_safely(code: str, input_call: str, timeout: int = 5) -> Optiona
     Execute code safely and capture output
     Returns repr(output) or None if execution fails
     IMPORTANT: Returns repr() for proper string formatting
+
+    Now uses standalone function code (class wrapper removed)
     """
     try:
-        # Combine imports, code, and input
-        full_code = f"{BASE_IMPORTS}\n{code}\noutput = {input_call}"
+        # Extract function name from input_call (e.g., "maxKDistinct(nums=[1,2,3], k=3)" -> "maxKDistinct")
+        func_match = re.match(r'(\w+)\((.*)\)', input_call)
+        if not func_match:
+            return None
+
+        function_name = func_match.group(1)
+        params = func_match.group(2)
+
+        # Build full code with direct function call (no class instantiation)
+        full_code = f"{BASE_IMPORTS}\n{code}\noutput = {function_name}({params})"
 
         # Execute in isolated namespace
         namespace = {}
@@ -311,17 +421,26 @@ def process_contest(contest_num: int, sample_counter: int) -> tuple[List[Dict], 
 
         # Process each submission (we already have 3 per question from collector)
         for idx, submission in enumerate(submissions):
-            code = submission.get("code")
+            original_code = submission.get("code")
             submission_id = submission.get("submission_id")
 
-            if not code:
+            if not original_code:
                 print(f"      Submission {idx}: No code found")
                 continue
 
-            # Extract function name to build test input call
-            function_name = extract_function_name(code)
+            # Extract function name and parameters BEFORE removing class wrapper
+            function_name = extract_function_name(original_code)
             if not function_name:
                 print(f"      Submission {idx}: Could not extract function name")
+                continue
+
+            param_names = extract_function_params(original_code)
+
+            # Extract method from class Solution wrapper
+            # This also filters out code with class variables
+            code = extract_method_from_class(original_code)
+            if not code:
+                print(f"      Submission {idx}: Uses class variables or failed extraction, skipping")
                 continue
 
             # Parse test cases if available
@@ -330,17 +449,16 @@ def process_contest(contest_num: int, sample_counter: int) -> tuple[List[Dict], 
 
             if test_cases_str:
                 # Try to parse test case and execute code
-                test_input_call = parse_test_input(test_cases_str, function_name)
+                test_input_call = parse_test_input(test_cases_str, function_name, param_names)
 
                 if test_input_call:
-                    # Execute code to get output
+                    # Execute code to get output (using extracted standalone function)
                     test_output = execute_code_safely(code, test_input_call)
 
-            # If we don't have test cases, create a placeholder
+            # If we don't have test cases or execution failed, skip this submission
             if not test_input_call or not test_output:
-                print(f"      Submission {idx}: No valid test case, using placeholder")
-                test_input_call = f"{function_name}()"
-                test_output = "None"
+                print(f"      Submission {idx}: No valid test case or execution failed, skipping")
+                continue
 
             # Build sample entry
             sample_id = f"contest{contest_num}_q{question_id}_s{idx}"
