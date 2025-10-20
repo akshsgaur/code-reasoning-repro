@@ -1,0 +1,23 @@
+[
+  {
+    "submission_id": 1729547666,
+    "code": "class Solution:\n    def reverseSubmatrix(self, g: List[List[int]], a: int, b: int, s: int) -> List[List[int]]:\n        r, c, k = a, b, s\n        tmp = [g[r + i][c:c + k] for i in range(k)]\n        for i, v in enumerate(reversed(tmp)):\n            g[r + i][c:c + k] = v\n        return g\n",
+    "lang": "python3",
+    "question_id": 3973,
+    "contest_submission": 25667866
+  },
+  {
+    "submission_id": 1729527513,
+    "code": "class Solution:\n    def reverseSubmatrix(self, grid: List[List[int]], x: int, y: int, k: int) -> List[List[int]]:\n        for i in range(k//2):\n            for j in range(y,y+k):\n                grid[x+i][j],grid[x+k-1-i][j] = grid[x+k-1-i][j],grid[x+i][j]\n        return grid",
+    "lang": "python3",
+    "question_id": 3973,
+    "contest_submission": 25653559
+  },
+  {
+    "submission_id": 1729527363,
+    "code": "class Solution:\n    def reverseSubmatrix(self, grid: List[List[int]], x: int, y: int, k: int) -> List[List[int]]:\n        for i in range(k // 2):\n            m = x + i\n            n = x + k - 1 - i\n            grid[m][y:y + k], grid[n][y:y + k] = grid[n][y:y + k], grid[m][y:y + k]\n        return grid",
+    "lang": "python3",
+    "question_id": 3973,
+    "contest_submission": 25653493
+  }
+]

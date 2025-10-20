@@ -1,0 +1,23 @@
+[
+  {
+    "submission_id": 1745988923,
+    "code": "class Solution:\n    def gcdOfOddEvenSums(self, n: int) -> int:\n        return n",
+    "lang": "python3",
+    "question_id": 3995,
+    "contest_submission": 25914975
+  },
+  {
+    "submission_id": 1745987230,
+    "code": "class Solution:\n    def gcdOfOddEvenSums(self, n: int) -> int:\n        return n",
+    "lang": "python3",
+    "question_id": 3995,
+    "contest_submission": 25913838
+  },
+  {
+    "submission_id": 1745987423,
+    "code": "class Solution:\n    def gcdOfOddEvenSums(self, n: int) -> int:\n        seven = n*(n+1)\n        sodd = 2*n * (2*n +  1) // 2 - seven\n        return gcd(seven, sodd)",
+    "lang": "python3",
+    "question_id": 3995,
+    "contest_submission": 25913903
+  }
+]

@@ -1,0 +1,23 @@
+[
+  {
+    "submission_id": 1605121925,
+    "code": "class Solution:\n    def smallestPalindrome(self, s: str, k: int) -> str:\n        freq = [0] * 26\n        for ch in s:\n            freq[ord(ch) - ord('a')] += 1\n\n        half_counts = [count // 2 for count in freq]\n        L = sum(half_counts)\n        center = \"\"\n        for i in range(26):\n            if freq[i] % 2 == 1:\n                center = chr(i + ord('a'))\n                break\n        \n        def count_permutations(counts, cap_value):\n            total = sum(counts)\n            result = 1\n            rem = total\n            for m in counts:\n                if m > 0:\n                    result *= comb(rem, m)\n                    if result > cap_value:\n                        return cap_value\n                    rem -= m\n            return result\n\n        total_count = count_permutations(half_counts, k + 1)\n        if total_count < k:\n            return \"\"\n\n        first_half = []\n        for _ in range(L):\n            for letter in range(26):\n                if half_counts[letter] > 0:\n                    half_counts[letter] -= 1\n                    count_here = count_permutations(half_counts, k + 1)\n                    if count_here >= k:\n                        first_half.append(chr(letter + ord('a')))\n                        break\n                    else:\n                        k -= count_here\n                        half_counts[letter] += 1\n            else:\n                return \"\"\n        first_half_str = \"\".join(first_half)\n        return first_half_str + center + first_half_str[::-1]\n",
+    "lang": "python3",
+    "question_id": 3813,
+    "contest_submission": 23652772
+  },
+  {
+    "submission_id": 1605122324,
+    "code": "import math\nfrom collections import Counter\n\nclass Solution:\n    def smallestPalindrome(self, s: str, k: int) -> str:\n        def getCount(countMap, total, limit):\n            ways = 1\n            for ch in sorted(countMap):\n                cnt = countMap[ch]\n                if cnt:\n                    ways *= math.comb(total, cnt)\n                    total -= cnt\n                    if ways > limit:\n                        return ways\n            return ways\n        countMap = Counter(s)\n        oddChar = \"\"\n        halfMap = {}\n        for ch in sorted(countMap.keys()):\n            if countMap[ch] % 2 != 0:\n                oddChar = ch\n            halfMap[ch] = countMap[ch] // 2\n        totalHalf = sum(halfMap.values())\n        totalWays = getCount(halfMap, totalHalf, k)\n        if totalWays < k:\n            return \"\"\n        leftHalf = []\n        for _ in range(totalHalf):\n            for ch in sorted(halfMap.keys()):\n                if halfMap[ch] > 0:\n                    halfMap[ch] -= 1\n                    ways = getCount(halfMap, totalHalf - len(leftHalf) - 1, k)\n                    if ways >= k:\n                        leftHalf.append(ch)\n                        break\n                    else:\n                        k -= ways\n                        halfMap[ch] += 1\n        return \"\".join(leftHalf) + oddChar + \"\".join(leftHalf[::-1])",
+    "lang": "python3",
+    "question_id": 3813,
+    "contest_submission": 23653090
+  },
+  {
+    "submission_id": 1605133535,
+    "code": "class Solution:\n    def smallestPalindrome(self, s: str, k: int) -> str:\n        c = Counter(s)\n        mid = \"\"\n        h = {}\n        for x in sorted(c):\n            if c[x] % 2:\n                mid = x\n            h[x] = c[x] // 2\n\n        n = sum(h.values())\n        et = math.factorial(n)\n        # print(\"et\", et)\n\n        for v in h.values():\n            et //= math.factorial(v)\n        # print(\"et\", et)\n\n        if et < k:\n            ans = \"\"\n            return ans\n\n        arr = []\n        while n:\n            for x in sorted(h):\n                if h[x]:\n                    w = et * h[x] // n\n                    if k > w:\n                        k -= w\n                    else:\n                        arr.append(x)\n                        et = w\n                        h[x] -= 1\n                        n -= 1\n                        break\n        ans = \"\".join(arr) + mid + \"\".join(arr[::-1])\n        # print(\"arr\", arr)\n\n        return ans\n",
+    "lang": "python3",
+    "question_id": 3813,
+    "contest_submission": 23661524
+  }
+]

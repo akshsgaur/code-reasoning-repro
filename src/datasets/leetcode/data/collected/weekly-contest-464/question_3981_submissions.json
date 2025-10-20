@@ -1,0 +1,23 @@
+[
+  {
+    "submission_id": 1746005677,
+    "code": "class Solution:\n    def maxValue(self, a: List[int]) -> List[int]:\n        n=len(a)\n        if n==0: return []\n        if n==1: return [a[0]]\n        p=[0]*n\n        p[0]=a[0]\n        for i in range(1,n):\n            t=p[i-1]\n            p[i]=t if t>=a[i] else a[i]\n        s=[0]*n\n        s[-1]=a[-1]\n        for i in range(n-2,-1,-1):\n            t=s[i+1]\n            s[i]=t if t<=a[i] else a[i]\n        r=[0]*n\n        st=0\n        for i in range(n-1):\n            if p[i]<=s[i+1]:\n                m=p[i]\n                for j in range(st,i+1):\n                    r[j]=m\n                st=i+1\n        m=p[-1]\n        for j in range(st,n):\n            r[j]=m\n        return r",
+    "lang": "python3",
+    "question_id": 3981,
+    "contest_submission": 25928365
+  },
+  {
+    "submission_id": 1746011963,
+    "code": "class Solution:\n    def maxValue(self, nums: List[int]) -> List[int]:\n        n = len(nums)\n        if n == 0:\n            return []\n\n        pref = [0] * n\n        smin = [0] * n\n\n        cur = float(\"-inf\")\n        for i in range(n):\n            cur = max(cur, nums[i])\n            pref[i] = cur\n\n        cur = float(\"inf\")\n        for i in range(n - 1, -1, -1):\n            cur = min(cur, nums[i])\n            smin[i] = cur\n\n        ans = [0] * n\n        start = 0\n        for i in range(n - 1):\n            if pref[i] <= smin[i + 1]:\n                segMax = pref[i]\n                for j in range(start, i + 1):\n                    ans[j] = segMax\n                start = i + 1\n\n        segMax = pref[n - 1]\n        for j in range(start, n):\n            ans[j] = segMax\n\n        return ans",
+    "lang": "python3",
+    "question_id": 3981,
+    "contest_submission": 25933347
+  },
+  {
+    "submission_id": 1745999661,
+    "code": "fmin = lambda x,y: x if x<y else y\nfmax = lambda x,y: x if x>y else y\n\nclass Solution:\n    def maxValue(self, A: List[int]) -> List[int]:\n        N = len(A)\n        S = A[:]\n        m = A[-1]\n        for i in range(N-2,-1,-1):\n            m = fmin(m, A[i])\n            S[i] = m\n\n        anchor = 0\n        ans = [0] * N\n        cur = NINF = float('-inf')\n        for i in range(N - 1):\n            x = A[i]\n            cur = fmax(cur, x)\n            if cur <= S[i+1]:\n                for j in range(anchor, i + 1):\n                    ans[j] = cur\n                anchor = i + 1\n                cur = NINF\n\n        cur = fmax(cur, A[-1])\n        for j in range(anchor, N):\n            ans[j] = cur\n        return ans\n            ",
+    "lang": "python3",
+    "question_id": 3981,
+    "contest_submission": 25923572
+  }
+]

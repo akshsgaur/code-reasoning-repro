@@ -1,0 +1,23 @@
+[
+  {
+    "submission_id": 1590604607,
+    "code": "class Solution:\n    def minCosts(self, a: List[int]) -> List[int]:\n        res = a\n        for i in range(1, len(res)):\n            res[i] = min(res[i], res[i - 1])\n        return res",
+    "lang": "python3",
+    "question_id": 3832,
+    "contest_submission": 23394854
+  },
+  {
+    "submission_id": 1590616291,
+    "code": "class Solution:\n    def minCosts(self, cost: List[int]) -> List[int]:\n        for i in range(1, len(cost)):\n            if cost[i] > cost[i-1]:\n                cost[i] = cost[i-1]\n        return cost",
+    "lang": "python3",
+    "question_id": 3832,
+    "contest_submission": 23403108
+  },
+  {
+    "submission_id": 1590605154,
+    "code": "class Solution:\n    def minCosts(self, cost: List[int]) -> List[int]:\n        prev = float(\"inf\")\n        ans = []\n        for i, c in enumerate(cost):\n            prev = min(prev, c)\n            ans.append(prev)\n        return ans",
+    "lang": "python3",
+    "question_id": 3832,
+    "contest_submission": 23395144
+  }
+]

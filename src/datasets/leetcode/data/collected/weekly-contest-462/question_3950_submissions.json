@@ -1,0 +1,23 @@
+[
+  {
+    "submission_id": 1729548141,
+    "code": "class Solution:\n    def sortPermutation(self, a: List[int]) -> int:\n        n = len(a)\n        inf = sys.maxsize\n        neg_inf = -sys.maxsize\n        srt = all(a[i] == i for i in range(n))\n        if srt:\n            return 0\n        k = (1 << (max(a).bit_length())) - 1\n        f = True\n        for i, v in enumerate(a):\n            if v != i:\n                if f:\n                    k = v\n                    f = False\n                else:\n                    k &= v\n        return k\n",
+    "lang": "python3",
+    "question_id": 3950,
+    "contest_submission": 25668218
+  },
+  {
+    "submission_id": 1729530821,
+    "code": "class Solution:\n    def sortPermutation(self, nums: List[int]) -> int:\n        return max(0,reduce(and_,(n for i,n in enumerate(nums) if i != n),-1))",
+    "lang": "python3",
+    "question_id": 3950,
+    "contest_submission": 25655659
+  },
+  {
+    "submission_id": 1729535476,
+    "code": "class Solution:\n    def sortPermutation(self, nums: List[int]) -> int:\n        n = len(nums)\n        if all(i == v for i, v in enumerate(nums)):\n            return 0\n\n        arr = [0] * n\n        for i, j in enumerate(nums):\n            arr[j] = i\n        # print(arr)\n        ans = (1 << (n - 1).bit_length()) - 1\n        # print(ans)\n\n        for j in range(n):\n            if arr[j] != j:\n                ans &= j\n\n        return ans",
+    "lang": "python3",
+    "question_id": 3950,
+    "contest_submission": 25659018
+  }
+]

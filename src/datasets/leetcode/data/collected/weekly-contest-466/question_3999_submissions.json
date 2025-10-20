@@ -1,0 +1,23 @@
+[
+  {
+    "submission_id": 1762062000,
+    "code": "class Solution:\n    def minOperations(self, s: str) -> int:\n        m=26\n        for c in s:\n            if c!='a':\n                v=ord(c)-97\n                if v<m: m=v\n        return 0 if m==26 else 26-m",
+    "lang": "python3",
+    "question_id": 3999,
+    "contest_submission": 26204188
+  },
+  {
+    "submission_id": 1762061215,
+    "code": "class Solution:\n    def minOperations(self, s: str) -> int:\n        t=s\n\n        min_no=26\n\n        for ch in t:\n            if ch!='a':\n                v=ord(ch)-97\n                if v < min_no:\n                    min_no=v\n        return 0 if min_no ==26 else 26-min_no\n        ",
+    "lang": "python3",
+    "question_id": 3999,
+    "contest_submission": 26203599
+  },
+  {
+    "submission_id": 1762067280,
+    "code": "class Solution:\n    def minOperations(self, s: str) -> int:\n        m = 26\n        for ch in s:\n            if ch != 'a':\n                v = ord(ch) - 97\n                if v < m:\n                    m = v\n        return 0 if m == 26 else 26 - m",
+    "lang": "python3",
+    "question_id": 3999,
+    "contest_submission": 26208209
+  }
+]

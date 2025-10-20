@@ -1,0 +1,23 @@
+[
+  {
+    "submission_id": 1754186379,
+    "code": "class Solution:\n    def maxProduct(self, nums: List[int]) -> int:\n        def bits(x):\n            r=[]\n            while x:\n                l=x& -x\n                r.append(l.bit_length()-1)\n                x-=l\n            return r\n\n        a=sorted(nums,reverse=True)\n        n=len(a)\n        if n<2: return 0\n\n        S=[0]*31\n        B=[None]*n\n        for i,v in enumerate(a):\n            b=bits(v); B[i]=b\n            for t in b: S[t] |= (1<<i)\n\n        am=(1<<n)-1\n        m=0; tt=a[0]\n        for i,v in enumerate(a):\n            if v*tt<=m: break\n            conf=0\n            for t in B[i]: conf |= S[t]\n            allow=am^conf\n            if allow:\n                j=(allow & -allow).bit_length()-1\n                p=v*a[j]\n                if p>m: m=p\n\n        return m",
+    "lang": "python3",
+    "question_id": 3915,
+    "contest_submission": 26127936
+  },
+  {
+    "submission_id": 1754208972,
+    "code": "class Solution:\n    def maxProduct(self, a: List[int]) -> int:\n        n = 1 << (len(bin(max(a))) - 2)\n        y, z = [0] * n, [0] * n\n        for x in a:\n            if x > y[x]: y[x], z[x] = x, y[x]\n            elif x > z[x]: z[x] = x\n        h = 1\n        while h < n:\n            d = h << 1\n            for c in range(0, n, d):\n                r = c + h\n                for m in range(r, r + h):\n                    q = m - h\n                    u, v = y[m], z[m]\n                    t = y[q]\n                    if t > u: u, v = t, u\n                    elif t > v: v = t\n                    t = z[q]\n                    if t > u: u, v = t, u\n                    elif t > v: v = t\n                    y[m], z[m] = u, v\n            h <<= 1\n        return max(x * y[(n - 1) ^ x] for x in a)\n",
+    "lang": "python3",
+    "question_id": 3915,
+    "contest_submission": 26143323
+  },
+  {
+    "submission_id": 1754221876,
+    "code": "class Solution:\n    def maxProduct(self, nums: List[int]) -> int:\n        n=len(nums)\n        mx=max(nums)\n        b=0\n        while(1<<b)<=mx:b+=1\n        if b==0:b=1\n        sz=1<<b\n        fm=sz-1\n        v1=[0]*sz;i1=[-1]*sz\n        v2=[0]*sz;i2=[-1]*sz\n        def ins(m:int,v:int,i:int):\n            if i==-1:return\n            if i1[m]==i:\n                if v>v1[m]:v1[m]=v\n                return\n            if v>v1[m]:\n                v2[m],i2[m]=v1[m],i1[m]\n                v1[m],i1[m]=v,i\n            elif i!=i1[m]and v>v2[m]:\n                v2[m],i2[m]=v,i\n        for i,x in enumerate(nums):ins(x,x,i)\n        for bit in range(b):\n            bm=1<<bit\n            for m in range(sz):\n                if m&bm:\n                    o=m^bm\n                    if i1[o]!=-1:ins(m,v1[o],i1[o])\n                    if i2[o]!=-1:ins(m,v2[o],i2[o])\n        ans=0\n        for i,x in enumerate(nums):\n            cm=fm^x;p=0\n            if i1[cm]!=-1 and i1[cm]!=i:p=v1[cm]\n            elif i2[cm]!=-1 and i2[cm]!=i:p=v2[cm]\n            if p>0:ans=max(ans,x*p)\n        return ans",
+    "lang": "python3",
+    "question_id": 3915,
+    "contest_submission": 26152353
+  }
+]

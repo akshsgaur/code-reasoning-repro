@@ -1,0 +1,23 @@
+[
+  {
+    "submission_id": 1505662274,
+    "code": "\nclass Solution:\n    def maximumAmount(self, coins: List[List[int]]) -> int:\n        R, C = len(coins), len(coins[0])\n\n        @cache\n        def f(i, j, magic):\n            if (i, j) in ((R, C - 1), (R - 1, C)):\n                return 0\n            if i >= R or j >= C:\n                return -inf\n\n            value = coins[i][j] + max(f(i + 1, j, magic), f(i, j + 1, magic))\n            if magic > 0:\n                value = max(value, max(coins[i][j], 0) + max(f(i, j + 1, magic - 1), f(i + 1, j, magic - 1)))\n            return value\n\n        ans = f(0, 0, 2)\n        return ans\n\n",
+    "lang": "python3",
+    "question_id": 3677,
+    "contest_submission": 21962182
+  },
+  {
+    "submission_id": 1505663966,
+    "code": "class Solution:\n    def maximumAmount(self, coins: List[List[int]]) -> int:\n\n        m, n = len(coins), len(coins[0])\n        \n        dp0 = [[float('-inf')] * n for _ in range(m)]\n        dp1 = [[float('-inf')] * n for _ in range(m)]\n        dp2 = [[float('-inf')] * n for _ in range(m)]\n\n        dp0[0][0] = coins[0][0]\n        if coins[0][0] < 0:\n            dp1[0][0] = 0\n\n        for i, r in enumerate(coins):\n            for j, num in enumerate(r):\n                if i > 0:\n                    dp0[i][j] = max(dp0[i][j], dp0[i-1][j] + coins[i][j])\n                    dp1[i][j] = max(dp1[i][j], dp1[i-1][j] + coins[i][j])\n                    dp2[i][j] = max(dp2[i][j], dp2[i-1][j] + coins[i][j])\n                    if coins[i][j] < 0:\n                        dp1[i][j] = max(dp1[i][j], dp0[i-1][j])\n                        dp2[i][j] = max(dp2[i][j], dp1[i-1][j])\n\n                if j > 0:\n                    dp0[i][j] = max(dp0[i][j], dp0[i][j-1] + coins[i][j])\n                    dp1[i][j] = max(dp1[i][j], dp1[i][j-1] + coins[i][j])\n                    dp2[i][j] = max(dp2[i][j], dp2[i][j-1] + coins[i][j])\n                    if coins[i][j] < 0:\n                        dp1[i][j] = max(dp1[i][j], dp0[i][j-1])\n                        dp2[i][j] = max(dp2[i][j], dp1[i][j-1])\n                        \n        return max(dp0[-1][-1], dp1[-1][-1], dp2[-1][-1])",
+    "lang": "python3",
+    "question_id": 3677,
+    "contest_submission": 21963305
+  },
+  {
+    "submission_id": 1505655943,
+    "code": "inf = 10 ** 9\nclass Solution:\n    def maximumAmount(self, g: List[List[int]]) -> int:\n        n = len(g)\n        m = len(g[0])\n        f = [[[-inf] * 3 for j in range(m)] for i in range(n)]\n        f[0][0][0] = g[0][0]\n        f[0][0][1] = f[0][0][2] = max(g[0][0], 0)\n        for i in range(n):\n            for j in range(m):\n                if i == 0 and j == 0:\n                    continue\n                x = g[i][j]\n                for k in range(3):\n                    if i > 0 and f[i - 1][j][k] + x > f[i][j][k]:\n                        f[i][j][k] = f[i - 1][j][k] + x\n                    if j > 0 and f[i][j - 1][k] + x > f[i][j][k]:\n                        f[i][j][k] = f[i][j - 1][k] + x\n                    if k and i > 0 and f[i - 1][j][k - 1] > f[i][j][k]:\n                        f[i][j][k] = f[i - 1][j][k - 1]\n                    if k and j > 0 and f[i][j - 1][k - 1] > f[i][j][k]:\n                        f[i][j][k] = f[i][j - 1][k - 1]\n        return max(f[-1][-1])\n        ",
+    "lang": "python3",
+    "question_id": 3677,
+    "contest_submission": 21957952
+  }
+]

@@ -1,0 +1,23 @@
+[
+  {
+    "submission_id": 1612012426,
+    "code": "class Solution:\n    def calculateScore(self, instructions: List[str], values: List[int]) -> int:\n        n = len(instructions)\n        v = set()\n        i = 0\n        s = 0\n\n        while 0 <= i < n:\n            if i in v:\n                break\n            v.add(i)\n            if instructions[i] == \"add\":\n                s += values[i]\n                i += 1\n            else:\n                i += values[i]\n\n        return s\n",
+    "lang": "python3",
+    "question_id": 3732,
+    "contest_submission": 23732279
+  },
+  {
+    "submission_id": 1612022105,
+    "code": "class Solution:\n    def calculateScore(self, instructions: List[str], values: List[int]) -> int:\n        n = len(instructions)\n        visited = [False] * n\n        i = 0\n        score = 0\n        while 0 <= i < n and not visited[i]:\n            visited[i] = True\n            if instructions[i] == \"add\":\n                score += values[i]\n                i += 1\n            else:\n                i += values[i]\n        return score",
+    "lang": "python3",
+    "question_id": 3732,
+    "contest_submission": 23739744
+  },
+  {
+    "submission_id": 1611993158,
+    "code": "class Solution:\n    def calculateScore(self, instructions: List[str], values: List[int]) -> int:\n        n = len(instructions)\n        visited = set()\n        score = 0\n        i = 0\n        \n        while 0 <= i < n:\n            if i in visited:\n                break\n                \n            visited.add(i)\n            if instructions[i] == \"add\":\n                score += values[i]\n                i += 1\n            elif instructions[i] == \"jump\":\n                i = i + values[i]\n                \n        return score",
+    "lang": "python3",
+    "question_id": 3732,
+    "contest_submission": 23717749
+  }
+]

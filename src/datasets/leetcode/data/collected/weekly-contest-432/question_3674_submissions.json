@@ -1,0 +1,23 @@
+[
+  {
+    "submission_id": 1505682945,
+    "code": "import bisect\nfrom typing import *\nfrom sortedcontainers import SortedList, SortedDict\nfrom collections import Counter, defaultdict\nfrom math import inf\nfrom math import gcd\nfrom math import factorial\nimport string\nimport random\nimport itertools\nfrom functools import cache, lru_cache\nfrom fractions import Fraction\nfrom itertools import pairwise\n\nclass Solution:\n    def countNonDecreasingSubarrays(self, nums: List[int], k: int) -> int:\n        nums.reverse()\n        n = len(nums)\n        nums.append(10**20)\n        ans = 0\n        remains = k\n        right = 0\n        stack = Deque()\n        for left in range(n):\n            while remains >= 0 and right <= n:\n                if len(stack) == 0 or nums[right] < stack[-1][0]:\n                    stack.append([nums[right], 1])\n                    right += 1\n                else:\n                    combined = 1\n                    while len(stack) > 0 and nums[right] >= stack[-1][0]:\n                        combined += stack[-1][1]\n                        remains -= (nums[right] - stack[-1][0]) * stack[-1][1]\n                        stack.pop()\n                    stack.append([nums[right], combined])\n                    right += 1\n            ans += right - left - 1\n            remains += stack[0][0] - nums[left]\n            stack[0][1] -= 1\n            while len(stack) > 0 and stack[0][1] == 0:\n                stack.popleft()\n\n        return ans\n\n",
+    "lang": "python3",
+    "question_id": 3674,
+    "contest_submission": 21975563
+  },
+  {
+    "submission_id": 1505713317,
+    "code": "class Solution:\n    def countNonDecreasingSubarrays(self, nums: List[int], k: int) -> int:\n\n        n = len(nums)\n\n        j = n\n        total = 0\n        stack = deque()\n        res = 0\n        for i in range(n-1, -1, -1):\n            num = nums[i]\n            \n            inc = 0\n            while stack and nums[stack[-1]] <= nums[i]:\n                cur = stack.pop()\n                prev = stack[-1] if stack else j\n                inc += (nums[i] - nums[cur]) * (prev - cur)\n            total += inc\n\n            stack.append(i)\n\n            while total > k:\n                total -= nums[stack[0]] - nums[j-1]\n                j -= 1\n\n                if j == stack[0]:\n                    stack.popleft()\n\n            res += j - i\n        return res",
+    "lang": "python3",
+    "question_id": 3674,
+    "contest_submission": 21994539
+  },
+  {
+    "submission_id": 1505705811,
+    "code": "class Solution:\n    def countNonDecreasingSubarrays(self, nums: List[int], k: int) -> int:\n        ans = 0\n        n = len(nums)\n        nextlargestidx = [None] * n # strictly larger\n\n        st = []\n        for i in range(len(nums)):\n            while len(st) != 0 and nums[st[-1]] < nums[i]:\n                nextlargestidx[st[-1]] = i\n                st.pop()\n            st.append(i)\n\n        # print(nextlargestidx)\n        \n        start = 0 # inclusive\n        used = 0\n        waterline = 0\n        for i in range(len(nums)):\n            if waterline > nums[i]:\n                used += waterline - nums[i]\n            else:\n                waterline = nums[i]\n\n            while used > k:\n                # attempt to move start forward one\n                oldnext = nextlargestidx[start]\n                oldwaterline = nums[start]\n                \n                temp = start+1\n                while temp is not None and (oldnext is None or temp < oldnext) and (temp <= i):\n                    if oldnext is None or oldnext > i:\n                        waterline = nums[temp]\n                    basinend = n if nextlargestidx[temp] is None else nextlargestidx[temp]\n                    reducecount = min(i+1,basinend) - temp\n                    used -= reducecount * (oldwaterline - nums[temp])\n                    temp = nextlargestidx[temp]\n                \n                    \n                start += 1\n            # print(start, \"to\", i, \"using\", used, \"waterline\", waterline)\n            ans += (i-start+1)\n\n        return ans",
+    "lang": "python3",
+    "question_id": 3674,
+    "contest_submission": 21990097
+  }
+]

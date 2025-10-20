@@ -1,0 +1,23 @@
+[
+  {
+    "submission_id": 1679835369,
+    "code": "class Solution:\n    def minXor(self, a: List[int], k: int) -> int:\n        n=len(a)\n        p=[0]*(n+1)\n        for i in range(n): p[i+1]=p[i]^a[i]\n        d=[[float('inf')]*(n+1) for _ in range(k+1)]\n        d[0][0]=0\n        for j in range(1,k+1):\n            for i in range(j,n+1):\n                m=float('inf')\n                for t in range(j-1,i):\n                    x=p[i]^p[t]\n                    y=d[j-1][t] if d[j-1][t]>x else x\n                    if y<m: m=y\n                d[j][i]=m\n        return d[k][n]",
+    "lang": "python3",
+    "question_id": 3913,
+    "contest_submission": 24802084
+  },
+  {
+    "submission_id": 1679850323,
+    "code": "class Solution:\n    def minXor(self, arr, parts):\n        pre = [0]\n        for num in arr:\n            pre.append(pre[-1] ^ num)\n        n = len(arr)\n        dp = [[sys.maxsize] * (parts + 1) for _ in range(n + 1)]\n        dp[0][0] = -sys.maxsize\n        for i in range(1, n + 1):\n            for j in range(1, min(i, parts) + 1):\n                dp[i][j] = min(max(dp[t][j - 1], pre[i] ^ pre[t]) for t in range(j - 1, i))\n        return dp[n][parts]\n",
+    "lang": "python3",
+    "question_id": 3913,
+    "contest_submission": 24812539
+  },
+  {
+    "submission_id": 1679840404,
+    "code": "from typing import List\n\nclass Solution:\n    def minXor(self, nums: List[int], k: int) -> int:\n        n = len(nums)\n        prefix = [0] * (n + 1)\n        for i in range(1, n + 1):\n            prefix[i] = prefix[i - 1] ^ nums[i - 1]\n        inf = 10**18\n        dp = [[inf] * (k + 1) for _ in range(n + 1)]\n        dp[0][0] = 0\n        for i in range(1, n + 1):\n            dp[i][1] = prefix[i]\n        for j in range(2, k + 1):\n            for i in range(j, n + 1):\n                best = inf\n                for t in range(j - 1, i):\n                    val = dp[t][j - 1]\n                    curr = prefix[i] ^ prefix[t]\n                    m = curr if curr > val else val\n                    if m < best:\n                        best = m\n                dp[i][j] = best\n        return dp[n][k]",
+    "lang": "python3",
+    "question_id": 3913,
+    "contest_submission": 24805645
+  }
+]

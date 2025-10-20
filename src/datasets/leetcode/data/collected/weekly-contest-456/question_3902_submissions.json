@@ -1,0 +1,23 @@
+[
+  {
+    "submission_id": 1679841662,
+    "code": "class Solution:\n    def maxStability(self,n,e,k):\n        def f(x):\n            if p[x]!=x:         p[x]=f(p[x])\n            return p[x]\n            \n        def u(a,b):\n            ra,rb=f(a),f(b)\n            if ra==rb:          return False\n            if r[ra]<r[rb]:     p[ra]=rb\n            elif r[ra]>r[rb]:   p[rb]=ra\n            else: p[rb]=ra;     r[ra]+=1\n            return True\n\n        def ok(s):\n            for i in range(n):      p[i]=i; r[i]=0\n            for a,b,s0,m0 in e:\n                if m0==1:\n                    if s0< s:       return False\n                    if not u(a,b):  return False\n            for a,b,s0,m0 in e:\n                if m0==0 and s0>=s:     u(a,b)\n            rem=k\n            for a,b,s0,m0 in e:\n                if m0==0 and s0< s and s0*2>=s and rem>0:\n                    if u(a,b):      rem-=1\n            root=f(0)\n            for i in range(1,n):\n                if f(i)!=root:      return False\n            return True\n        \n        p=list(range(n))\n        r=[0]*n\n        lo,hi=1,max((s0*2 if m0==0 else s0) for _,_,s0,m0 in e)\n        res=-1\n        while lo<=hi:\n            mid=(lo+hi)//2\n            if ok(mid):  res=mid; lo=mid+1\n            else:        hi=mid-1\n        return res\n\n        ",
+    "lang": "python3",
+    "question_id": 3902,
+    "contest_submission": 24806512
+  },
+  {
+    "submission_id": 1679836304,
+    "code": "class Solution:\n  def maxStability(self, n: int, e: list[list[int]], k: int) -> int:\n    class D:\n      def __init__(s, z): s.p, s.c = list(range(z)), z\n      def f(s, i): s.p[i] = s.f(s.p[i]) if s.p[i] != i else i; return s.p[i]\n      def u(s, i, j):\n        x, y = s.f(i), s.f(j)\n        if x != y: s.p[y] = x; s.c -= 1; return 1\n        return 0\n\n    d1 = D(n)\n    for u, v, _, m in e:\n      if m and not d1.u(u, v): return -1\n\n    d2 = D(n)\n    for u, v, _, _ in e: d2.u(u, v)\n    if d2.c > 1: return -1\n\n    x = {'n': n, 'e': e, 'k': k}\n\n    def g(t):\n      d, cnt = D(n), 0\n      for u, v, s, m in e:\n        if m:\n          if s < t: return 0\n          d.u(u, v)\n        elif s >= t: d.u(u, v)\n      if d.c > 1:\n        for u, v, s, m in e:\n          if not m and s < t and 2*s >= t and d.u(u, v): cnt += 1\n      return d.c == 1 and cnt <= k\n\n    l, h, ans = 1, 2*10**5+1, 0\n    while l <= h:\n      m = (l + h) // 2\n      if m == 0: l = m + 1; continue\n      if g(m): ans = m; l = m + 1\n      else: h = m - 1\n    return ans\n",
+    "lang": "python3",
+    "question_id": 3902,
+    "contest_submission": 24802759
+  },
+  {
+    "submission_id": 1679851418,
+    "code": "class Solution:\n    def maxStability(self, n, edges, k):\n        def go(mid):\n            par = list(range(n))\n\n            def find(x):\n                while par[x] != x:\n                    par[x] = par[par[x]]\n                    x = par[x]\n                return x\n\n            used = 0\n            for x, y, w, typ in edges:\n                if typ and w < mid:\n                    return None\n                if typ:\n                    rx, ry = find(x), find(y)\n                    if rx == ry:\n                        return None\n                    par[ry] = rx\n\n            for x, y, w, typ in edges:\n                if not typ and w >= mid:\n                    rx, ry = find(x), find(y)\n                    if rx != ry:\n                        par[ry] = rx\n\n            for x, y, w, typ in edges:\n                if not typ and w * 2 >= mid and used < k:\n                    rx, ry = find(x), find(y)\n                    if rx != ry:\n                        par[ry] = rx\n                        used += 1\n\n            return par\n\n        def isConnected(p):\n            if p is None:\n                return False\n\n            def trace(x):\n                return x if p[x] == x else trace(p[x])\n\n            return len({trace(i) for i in range(n)}) == 1\n\n        lo, hi, res = 0, max(e[2] for e in edges) * 2, -1\n        while lo <= hi:\n            mid = (lo + hi) // 2\n            if isConnected(go(mid)):\n                res, lo = mid, mid + 1\n            else:\n                hi = mid - 1\n        return res\n",
+    "lang": "python3",
+    "question_id": 3902,
+    "contest_submission": 24813323
+  }
+]

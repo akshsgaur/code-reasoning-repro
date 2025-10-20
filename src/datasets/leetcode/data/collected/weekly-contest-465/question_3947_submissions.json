@@ -1,0 +1,23 @@
+[
+  {
+    "submission_id": 1754178362,
+    "code": "class Solution:\n    def minDifference(self, n: int, k: int) -> List[int]:\n        def f(m, s, t, c):\n            nonlocal b, a\n            if t == 1:\n                if m >= s:\n                    r = c + [m]\n                    d = max(r) - min(r)\n                    if b is None or d < b:\n                        b = d\n                        a = r[:]\n                return\n            u = int(m**0.5)\n            for d in range(s, u + 1):\n                if m % d == 0:\n                    f(m // d, d, t - 1, c + [d])\n\n        b = a = None\n        f(n, 1, k, [])\n        return sorted(a)",
+    "lang": "python3",
+    "question_id": 3947,
+    "contest_submission": 26122211
+  },
+  {
+    "submission_id": 1754190607,
+    "code": "class Solution(object):\n    def minDifference(self, n, k):\n        def divisors(x):\n            root = int(math.isqrt(x))\n            front, rear = [], []\n            for d1 in range(1, root + 1):\n                if x % d1 == 0:\n                    front.append(d1)\n                    d2 = x // d1\n                    if d1 != d2:\n                        rear.append(d2)\n            return front + rear[::-1]\n\n        \n        best = None\n        limit = None\n\n        def dfs(depth, prev, rem, chosen):\n            nonlocal best, limit\n\n        \n            if limit == 0:\n                return\n\n            if depth == k:\n                if rem == 1:\n                    cmin, cmax = min(chosen), max(chosen)\n                    climit = cmax - cmin\n                    if best is None or climit < limit:\n                        best = chosen.copy()\n                        limit = climit\n                return\n\n            \n            if depth == k - 1:\n                f = rem\n                if f >= prev:\n                    chosen.append(f)\n                    dfs(depth + 1, f, 1, chosen)\n                    chosen.pop()\n                return\n\n            \n            for f in divisors(rem):\n                if f < prev:\n                    continue\n                if rem % f == 0:\n                    chosen.append(f)\n                    dfs(depth + 1, f, rem // f, chosen)\n                    chosen.pop()\n\n        dfs(0, 1, n, [])\n        return best\n",
+    "lang": "python3",
+    "question_id": 3947,
+    "contest_submission": 26130742
+  },
+  {
+    "submission_id": 1754190490,
+    "code": "class Solution:\n    def minDifference(self, n: int, k: int) -> List[int]:\n        def factors(x: int) -> List[int]:\n            s = set(reduce(list.__add__, ([i, x // i] for i in range(1, int(x ** 0.5) + 1) if x % i == 0)))\n            return sorted(s)\n\n        f = factors(n)\n\n        @cache\n        def dfs(rr: int, rem_k: int, prev: int):\n            if rem_k == 1:\n                if rr >= prev:\n                    return 0, (rr,)\n                return None\n            best = None\n            for d in f:\n                if d < prev or rr % d:\n                    continue\n                nxt = dfs(rr // d, rem_k - 1, d)\n                if not nxt:\n                    continue\n                s, tup = nxt\n                cand = (d,) + tup\n                sc = max(cand) - min(cand)\n                if not best or sc < best[0]:\n                    best = (sc, cand)\n                    if sc == 0:\n                        break\n            return best\n        _, ans = dfs(n, k, 1)\n        return list(ans)\n",
+    "lang": "python3",
+    "question_id": 3947,
+    "contest_submission": 26130669
+  }
+]

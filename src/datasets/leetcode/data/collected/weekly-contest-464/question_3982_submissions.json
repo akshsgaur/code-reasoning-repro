@@ -1,0 +1,23 @@
+[
+  {
+    "submission_id": 1746019664,
+    "code": "class Solution:\n    def maxWalls(self, r: List[int], d: List[int], w: List[int]) -> int:\n        def c(L,R):\n            if L>R:\n                return 0\n            return bisect_right(w,R)-bisect_left(w,L)\n\n        if not w: return 0\n        z=sorted(zip(r,d))\n        r=[p for p,_ in z]\n        d=[q for _,q in z]\n\n        w=sorted(w)\n        n=len(r)\n        cl,cr=[0]*n,[0]*n\n        Ls,Rs=[(0, -1)]*n,[(0, -1)]*n\n        Ls[0]=(r[0]-d[0], r[0])\n        cl[0]=c(Ls[0][0],Ls[0][1])\n        for i in range(1,n):\n            L=max(r[i]-d[i], r[i-1]+1)\n            U=r[i]\n            Ls[i]=(L,U)\n            cl[i]=c(L,U)\n\n        for i in range(n-1):\n            L=r[i]\n            U=min(r[i]+d[i], r[i+1]-1)\n            Rs[i]=(L,U)\n            cr[i]=c(L,U)\n\n        Rs[n-1]=(r[n-1], r[n-1]+d[n-1])\n        cr[n-1]=c(Rs[n-1][0],Rs[n-1][1])\n        cu=[0]*(n-1)\n        for i in range(n-1):\n            aL,aU=Rs[i]\n            bL,bU=Ls[i+1]\n            if aL>aU and bL>bU: cu[i]=0\n            elif aL>aU: cu[i]=cl[i+1]\n            elif bL>bU: cu[i]=cr[i]\n            else:\n                s=aL if aL>bL else bL\n                t=aU if aU<bU else bU\n                ov=c(s,t) if s<=t else 0\n                cu[i]=cr[i]+cl[i+1]-ov\n\n        dl,dr=cl[0],0\n        for i in range(n-1):\n            nl=dr+cu[i] if dr+cu[i]>dl+cl[i+1] else dl+cl[i+1]\n            nr=dr+cr[i] if dr+cr[i]>dl else dl\n            dl,nr=nl,nr\n            dr=nr\n\n        res=dr+cr[n-1] if dr+cr[n-1]>dl else dl\n        return res",
+    "lang": "python3",
+    "question_id": 3982,
+    "contest_submission": 25939326
+  },
+  {
+    "submission_id": 1746026591,
+    "code": "import bisect\n\nclass Solution:\n    def maxWalls(self, robots: List[int], distance: List[int], walls: List[int]) -> int:\n        n = len(robots)\n        if n == 0:\n            return 0\n\n        rd = sorted(zip(robots, distance))\n\n        walls.sort()\n        wallset = set(walls)\n        base = 0\n\n        for p, _ in rd:\n            if p in wallset:\n                base += 1\n                wallset.remove(p)\n\n        rem = sorted(list(wallset))\n\n        def count(a, b):\n            if a > b:\n                return 0\n\n            l = bisect.bisect_left(rem, a)\n            r = bisect.bisect_right(rem, b)\n            return r - l\n\n        L = [0] * n\n        R = [0] * n\n        O = [0] * (n - 1)\n\n        for i in range(n):\n            p, d = rd[i]\n            prev = rd[i - 1][0] if i > 0 else float(\"-inf\")\n            L[i] = count(max(p - d, prev + 1), p - 1)\n            nxt = rd[i + 1][0] if  i < n - 1 else float(\"inf\")\n            R[i] = count(p + 1, min(p + d, nxt - 1))\n\n        for i in range(n - 1):\n            pi, di = rd[i]\n            pj, dj = rd[i + 1]\n            a = pi + 1\n            b = min(pi + di, pj - 1)\n            c = max(pj - dj, pi + 1)\n            d = pj - 1\n            O[i] = count(max(a, c), min(b, d))\n\n        dp = [[0, 0] for _ in range(n)]\n        dp[0][0] = L[0]\n\n        for i in range(1, n):\n            dp[i][0] = max(dp[i - 1][0] + L[i], dp[i - 1][1] + R[i-1] + L[i] - O[i-1])\n            dp[i][1] = max(dp[i - 1][0], dp[i - 1][1] + R[i - 1])\n        return base + max(dp[n - 1][0], dp[n - 1][1] + R[n - 1])",
+    "lang": "python3",
+    "question_id": 3982,
+    "contest_submission": 25944656
+  },
+  {
+    "submission_id": 1746028614,
+    "code": "class Solution:\n    def maxWalls(self, robots: List[int], distance: List[int], walls: List[int]) -> int:\n        info = sorted(zip(robots, distance))\n        N = len(info)\n        locs = [x for x,d in info]\n        \n        walls.sort()\n\n        def count(L, R):\n            if L > R: return 0\n            return bisect_right(walls, R) - bisect_left(walls, L)\n\n\n        ans = 0\n        for k in set(locs):\n            ans += count(k, k)\n\n        avail = 0\n        used = count(locs[0] - info[0][1], locs[0] - 1)\n        for i in range(N - 1):\n            l,dl = info[i]\n            r,dr = info[i + 1]\n\n            l1, r1 = l+1, min(l+dl, r-1)\n            l2, r2 = max(r-dr, l+1), r-1\n            c1 = count(l1, r1)\n            c2 = count(l2, r2)\n            c3 = count(max(l1, l2), min(r1, r2))\n            avail, used = max(avail, avail+c1, used), max(avail+c2, avail+c1+c2-c3, used+c2)\n\n        l,dl = info[-1]\n        used = max(used, avail + count(l+1, l+dl))\n        ans += used\n        return ans",
+    "lang": "python3",
+    "question_id": 3982,
+    "contest_submission": 25946192
+  }
+]

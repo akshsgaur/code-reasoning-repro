@@ -1,0 +1,23 @@
+[
+  {
+    "submission_id": 1687865580,
+    "code": "from functools import lru_cache\n\nINF = 10 ** 18\n\n\nclass Solution:\n    def minMoves(self, sx: int, sy: int, tx: int, ty: int) -> int:\n        _sx, _sy = sx, sy\n\n        @lru_cache(None)\n        def solve(x, y):\n            if x == _sx and y == _sy:\n                return 0\n            if x < _sx or y < _sy:\n                return INF\n\n            arr = []\n            if x > y:\n                if x % 2 == 0 and x >= 2 * y:\n                    arr.append((x // 2, y))\n                elif x < 2 * y:\n                    arr.append((x - y, y))\n                # print(f\"x > y: {x} > {y}, arr: {arr}\")\n            elif y > x:\n                if y % 2 == 0 and y >= 2 * x:\n                    arr.append((x, y // 2))\n                elif y < 2 * x:\n                    arr.append((x, y - x))\n                # print(f\"y > x: {y} > {x}, arr: {arr}\")\n            else:\n                if x > 0:\n                    arr.append((0, x))\n                    # arr.append((0, x - 1))\n\n                    arr.append((x, 0))\n                    # arr.append((x + 1, 0))\n\n            ret = INF\n            for x, y in arr:\n                ret = min(ret, solve(x, y) + 1)\n                # print(solve\"solve({x}, {y}) = {solve(x, y)}\")\n                # print(solve\"solve({a}, {b}) -> solve({x}, {y}) + 1 = {solve(x, y) + 1}\")\n            return ret\n\n        ans = solve(tx, ty)\n        # print(f\"s({tx}, {ty}) = {ans}\")\n\n        return ans if ans < INF else -1\n",
+    "lang": "python3",
+    "question_id": 3922,
+    "contest_submission": 24960907
+  },
+  {
+    "submission_id": 1687863473,
+    "code": "class Solution:\n    def minMoves(self,sx,sy,tx,ty):\n        if sx==tx and sy==ty: return 0\n        if sx>tx or sy>ty: return -1\n        t=0\n        while True:\n            if tx==sx and ty==sy: return t\n            if tx<sx or ty<sy:    return -1\n            if tx>ty:\n                if ty==0 or tx>=2*ty:\n                    if tx%2: return -1\n                    tx//=2\n                    t+=1\n                else:       tx-=ty; t+=1\n            elif ty>tx:\n                if tx==0 or ty>=2*tx:\n                    if ty%2: return -1\n                    ty//=2\n                    t+=1\n                else:       ty-=tx; t+=1\n            else:\n                if tx>sx and tx-ty>=sx:   tx-=ty; t+=1\n                elif ty>sy and ty-tx>=sy: ty-=tx; t+=1\n                else:                     return -1",
+    "lang": "python3",
+    "question_id": 3922,
+    "contest_submission": 24959419
+  },
+  {
+    "submission_id": 1687870593,
+    "code": "from collections import deque\n\nclass Solution:\n    def minMoves(self, sx: int, sy: int, tx: int, ty: int) -> int:\n        if sx == tx and sy == ty:\n            return 0\n        if sx == 0 and sy == 0:\n            return -1\n        q = deque([(tx, ty, 0)])\n        seen = {(tx, ty)}\n        while q:\n            x, y, d = q.popleft()\n            if x == sx and y == sy:\n                return d\n            if x < sx or y < sy:\n                continue\n            if x == y:\n                for nx, ny in ((x, 0), (0, y)):\n                    if (nx, ny) not in seen:\n                        seen.add((nx, ny))\n                        q.append((nx, ny, d + 1))\n            elif x > y:\n                diff = x - y\n                if diff <= y and (diff, y) not in seen:\n                    seen.add((diff, y))\n                    q.append((diff, y, d + 1))\n                if x % 2 == 0:\n                    half = x // 2\n                    if half >= y and (half, y) not in seen:\n                        seen.add((half, y))\n                        q.append((half, y, d + 1))\n            else:\n                diff = y - x\n                if diff <= x and (x, diff) not in seen:\n                    seen.add((x, diff))\n                    q.append((x, diff, d + 1))\n                if y % 2 == 0:\n                    half = y // 2\n                    if half >= x and (x, half) not in seen:\n                        seen.add((x, half))\n                        q.append((x, half, d + 1))\n        return -1\n",
+    "lang": "python3",
+    "question_id": 3922,
+    "contest_submission": 24964458
+  }
+]

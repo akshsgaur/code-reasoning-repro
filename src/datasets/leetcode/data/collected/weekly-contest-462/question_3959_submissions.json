@@ -1,0 +1,23 @@
+[
+  {
+    "submission_id": 1729549267,
+    "code": "class Solution:\n    def maxTotal(self, val: List[int], lim: List[int]) -> int:\n        g, c, t, q = defaultdict(list), 0, 0, deque()\n        for v, l in zip(val, lim):\n            heapq.heappush(g[l], -v)\n        for l in sorted(g):\n            tk, h = 0, g[l]\n            while h and c < l:\n                if q and q[0][0] == c:\n                    c -= q[0][1]\n                    q.popleft()\n                c += 1\n                tk += 1\n                t += -heapq.heappop(h)\n            if c == l:\n                c = 0\n            elif tk > 0:\n                q.append((l, tk))\n        return t\n",
+    "lang": "python3",
+    "question_id": 3959,
+    "contest_submission": 25669028
+  },
+  {
+    "submission_id": 1729555230,
+    "code": "class Solution:\n    def maxTotal(self, value: List[int], limit: List[int]) -> int:\n        d = defaultdict(list)\n        for v,l in zip(value,limit):\n            heappush(d[l],v)\n            if len(d[l]) > l:\n                heappop(d[l])\n        return sum(map(sum,d.values()))",
+    "lang": "python3",
+    "question_id": 3959,
+    "contest_submission": 25673366
+  },
+  {
+    "submission_id": 1729582070,
+    "code": "class Solution:\n    def maxTotal(self, value: List[int], limit: List[int]) -> int:\n        n = len(value)\n\n        b = [[] for _ in range(n + 2)]\n        for v, d in zip(value, limit):\n            heapq.heappush(b[d], -v)\n\n        z = t = r = c = 0\n\n        g = []\n        for d in range(1, n + 1):\n            if b[d]:\n                heapq.heappush(g, (d, b[d][0]))\n\n        _count = [0] * (n + 2)\n\n        ans = 0\n        while True:\n            d = c + 1\n            if z < d <= n and b[d]:\n                v = -heapq.heappop(b[d])\n                ans += v\n                t += 1\n                _count[d] += 1\n                # print(f\" adding value {v} fr limit {d}, total {ans}, t={t}, r={r}, c={c}\")\n                if b[d]:\n                    heapq.heappush(g, (d, b[d][0]))\n            else:\n                while g and (\n                    g[0][0] <= z or not b[g[0][0]] or g[0][1] != b[g[0][0]][0]\n                ):\n                    heapq.heappop(g)\n\n                if not g:\n                    break\n\n                q, p = heapq.heappop(g)\n                v = -heapq.heappop(b[q])\n                # print(f\"pop val {v} for limit {q},  total {ans}, t={t}, r={r}, c={c}\")\n\n                ans += v\n                t += 1\n                _count[q] += 1\n                # print(f\"pop value {v} for limit {q}, total {ans}, t={t},  r={r} , c={c}\")\n                if b[q]:\n                    heapq.heappush(g, (q, b[q][0]))\n\n            x = c + 1\n            if x > z:\n                for _r in range(z + 1, x + 1):\n                    r += _count[_r]\n                z = x\n                # print(f\"z={z}, r={r}, t={t}, c={c}, ans={ans}\")\n            c = t - r\n\n        return ans\n",
+    "lang": "python3",
+    "question_id": 3959,
+    "contest_submission": 25692638
+  }
+]

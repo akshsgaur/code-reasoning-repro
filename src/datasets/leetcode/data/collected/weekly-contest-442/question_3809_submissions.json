@@ -1,0 +1,23 @@
+[
+  {
+    "submission_id": 1582812387,
+    "code": "class Solution:\n    def numberOfComponents(self, props, k):\n        n = len(props)\n        uf = list(range(n))\n        \n        def find(u):\n            if uf[u] != u:\n                uf[u] = find(uf[u])\n            return uf[u]\n        \n        def uni(u, v):\n            pu, pv = find(u), find(v)\n            m = pu if pu < pv else pv\n            uf[pu] = m\n            uf[pv] = m\n            \n        def inter(a, b, k):\n            if len(a) < k or len(b) < k:\n                return False\n            r = 0\n            i = j = 0\n            while i < len(a) and j < len(b) and r < k:\n                if a[i] == b[j]:\n                    r += 1\n                    i += 1\n                    j += 1\n                elif a[i] < b[j]:\n                    i += 1\n                else:\n                    j += 1\n            return r >= k\n        \n        for i in range(n):\n            props[i] = sorted(set(props[i]))\n        \n        for i in range(n):\n            for j in range(i + 1, n):\n                if inter(props[i], props[j], k):\n                    uni(i, j)\n                    \n        res = sum(1 for i in range(n) if find(i) == i)\n        return res",
+    "lang": "python3",
+    "question_id": 3809,
+    "contest_submission": 23263167
+  },
+  {
+    "submission_id": 1582811996,
+    "code": "class Solution:\n    def numberOfComponents(self, properties: List[List[int]], k: int) -> int:\n        n = len(properties)\n        sets = [set(prop) for prop in properties]\n\n        graph = {i: [] for i in range(n)}\n        for i in range(n):\n            for j in range(i + 1, n):\n                if len(sets[i].intersection(sets[j])) >= k:\n                    graph[i].append(j)\n                    graph[j].append(i)\n\n        visited = set()\n\n        def dfs(node):\n            stack = [node]\n            while stack:\n                curr = stack.pop()\n                if curr not in visited:\n                    visited.add(curr)\n                    for neighbor in graph[curr]:\n                        if neighbor not in visited:\n                            stack.append(neighbor)\n\n        components = 0\n        for i in range(n):\n            if i not in visited:\n                dfs(i)\n                components += 1\n\n        return components",
+    "lang": "python3",
+    "question_id": 3809,
+    "contest_submission": 23262860
+  },
+  {
+    "submission_id": 1582816211,
+    "code": "class Solution:\n    def numberOfComponents(self, properties: List[List[int]], k: int) -> int:\n        n = len(properties)\n        s = list(map(set, properties))\n        g = [[] for _ in range(n)]\n\n        for i in range(n):\n            for j in range(i + 1, n):\n                if len(s[i] & s[j]) < k:\n                    continue\n                g[i].append(j)\n                g[j].append(i)\n\n        seen = [False] * n\n\n        def dfs(i):\n            seen[i] = True\n            for j in g[i]:\n                if not seen[j]:\n                    dfs(j)\n\n        ans = 0\n        for i in range(n):\n            if seen[i]:\n                continue\n            dfs(i)\n            ans += 1\n\n        return ans\n",
+    "lang": "python3",
+    "question_id": 3809,
+    "contest_submission": 23266224
+  }
+]

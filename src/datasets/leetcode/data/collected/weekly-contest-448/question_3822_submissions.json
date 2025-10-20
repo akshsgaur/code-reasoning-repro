@@ -1,0 +1,23 @@
+[
+  {
+    "submission_id": 1624861294,
+    "code": "class Solution:\n    def specialGrid(self, N: int) -> List[List[int]]:\n        grid = [[0]]\n        for _ in range(N):\n            m = len(grid)\n            M = m * m\n            size = m * 2\n            new = [[0] * size for _ in range(size)]\n            for i in range(m):\n                for j in range(m):\n                    v = grid[i][j]\n                    new[i][j + m]     = v + 0 * M\n                    new[i + m][j + m] = v + 1 * M\n                    new[i + m][j]     = v + 2 * M\n                    new[i][j]         = v + 3 * M\n            grid = new\n        return grid",
+    "lang": "python3",
+    "question_id": 3822,
+    "contest_submission": 23920230
+  },
+  {
+    "submission_id": 1624858454,
+    "code": "class Solution:\n\n    @lru_cache(None)\n    def specialGrid(self, N: int) -> List[List[int]]:\n        if N == 0:\n            return [[0]]\n        M = 1 << (N - 1)\n        G = self.specialGrid(N - 1)\n        A = M * M\n        ans = [[0] * (M * 2) for _ in range(M * 2)]\n        for i in range(M):\n            for j in range(M):\n                r = G[i][j]\n                ans[i][j + M] = r\n                ans[i + M][j + M] = r + A\n                ans[i + M][j] = r + 2 * A\n                # print(f\"i={i}, j={j}, r={r}, A={A}, M={M}\")\n                ans[i][j] = r + 3 * A\n                # print(f\"i={i}, j={j}, r={r}, A={A}, M={M}\")\n        # print(f\"ans={ans}\")\n        return ans\n",
+    "lang": "python3",
+    "question_id": 3822,
+    "contest_submission": 23918209
+  },
+  {
+    "submission_id": 1624857145,
+    "code": "class Solution:\n    def specialGrid(self, n: int) -> List[List[int]]:\n        if n==0: return [[0]]\n        p=self.specialGrid(n-1)\n        d=len(p)\n        b=d*d\n        m=[[0]*(d*2) for _ in range(d*2)]\n        o=[0,b,2*b,3*b]\n        for i in range(d):\n            for j in range(d):\n                v=p[i][j]\n                m[i][j+d]=o[0]+v\n                m[i+d][j+d]=o[1]+v\n                m[i+d][j]=o[2]+v\n                m[i][j]=o[3]+v\n        return m\n",
+    "lang": "python3",
+    "question_id": 3822,
+    "contest_submission": 23917261
+  }
+]
