@@ -19,5 +19,92 @@
     "lang": "python3",
     "question_id": 4012,
     "contest_submission": 26417916
+<<<<<<< HEAD
+=======
+  },
+  {
+    "submission_id": 1769945127,
+    "code": "class Solution:\n    def earliestTime(self, tasks: List[List[int]]) -> int:\n        ans = 1000000\n        for s, t in tasks:\n            ans = min(ans, s + t)\n        return ans",
+    "lang": "python3",
+    "question_id": 4012,
+    "contest_submission": 26417644
+  },
+  {
+    "submission_id": 1769947096,
+    "code": "class Solution:\n    def earliestTime(self, tasks: List[List[int]]) -> int:\n        return min(s+t for s,t in tasks)",
+    "lang": "python3",
+    "question_id": 4012,
+    "contest_submission": 26419252
+  },
+  {
+    "submission_id": 1769944915,
+    "code": "class Solution:\n    def earliestTime(self, a: List[List[int]]) -> int:\n        return min([x[0] + x[1] for x in a])",
+    "lang": "python3",
+    "question_id": 4012,
+    "contest_submission": 26417562
+  },
+  {
+    "submission_id": 1769950026,
+    "code": "class Solution:\n    def earliestTime(self, tasks: List[List[int]]) -> int:\n        return min(s + t for s, t in tasks)",
+    "lang": "python3",
+    "question_id": 4012,
+    "contest_submission": 26421808
+  },
+  {
+    "submission_id": 1769945730,
+    "code": "class Solution:\n    def earliestTime(self, tasks: List[List[int]]) -> int:\n        min_finish = 400\n        for time_s in tasks:\n            min_finish = min(min_finish, time_s[0] + time_s[1])\n        return min_finish\n        ",
+    "lang": "python3",
+    "question_id": 4012,
+    "contest_submission": 26418097
+  },
+  {
+    "submission_id": 1769945037,
+    "code": "class Solution:\n    def earliestTime(self, tasks: List[List[int]]) -> int:\n        ans = inf\n        for i, j in tasks:\n            ans = min(ans, i + j)\n        return ans",
+    "lang": "python3",
+    "question_id": 4012,
+    "contest_submission": 26417600
+  },
+  {
+    "submission_id": 1769951917,
+    "code": "class Solution:\n    def earliestTime(self, tasks: List[List[int]]) -> int:\n        min_time = float('inf')\n        for task in tasks:\n            completion_time = task[0] + task[1]  # start_time + duration\n            min_time = min(min_time, completion_time)\n        return int(min_time)\n        ",
+    "lang": "python3",
+    "question_id": 4012,
+    "contest_submission": 26423427
+  },
+  {
+    "submission_id": 1769946661,
+    "code": "class Solution:\n    def earliestTime(self, tasks: List[List[int]]) -> int:\n        return min(s+t for s,t in tasks)",
+    "lang": "python3",
+    "question_id": 4012,
+    "contest_submission": 26418885
+  },
+  {
+    "submission_id": 1769948822,
+    "code": "class Solution:\n    def earliestTime(self, tasks: List[List[int]]) -> int:\n        return min(s+t for s,t in tasks)",
+    "lang": "python3",
+    "question_id": 4012,
+    "contest_submission": 26420756
+  },
+  {
+    "submission_id": 1769945120,
+    "code": "class Solution:\n    def earliestTime(self, tasks: List[List[int]]) -> int:\n        mn = inf\n        for s, t, in tasks:\n            mn = min(mn, s + t)\n        return mn",
+    "lang": "python3",
+    "question_id": 4012,
+    "contest_submission": 26417639
+  },
+  {
+    "submission_id": 1769971835,
+    "code": "class Solution:\n    def earliestTime(self, tasks: List[List[int]]) -> int:\n        return min(x+y for x,y in tasks)",
+    "lang": "python3",
+    "question_id": 4012,
+    "contest_submission": 26439471
+  },
+  {
+    "submission_id": 1769945067,
+    "code": "class Solution:\n    def earliestTime(self, tasks: List[List[int]]) -> int:\n        return min(s + d for s, d in tasks)",
+    "lang": "python3",
+    "question_id": 4012,
+    "contest_submission": 26417614
+>>>>>>> 6a370922ab79be1c0293c4a355d7ff170692bc59
   }
 ]
