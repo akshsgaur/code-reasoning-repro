@@ -43,31 +43,43 @@ import sys
 """
 
 
-def execute_code_with_test(code: str, test_input: str, expected_output: str, timeout: int = 5) -> Tuple[bool, Optional[str]]:
+def check_predicted_output(predicted_output: str, expected_output: str) -> Tuple[bool, Optional[str]]:
     """
-    Execute generated code with test input and check correctness
+    Compare predicted output with expected output
+
+    For execution prediction task, the model predicts what the output will be.
+    We simply compare the predicted value with the actual expected value.
 
     Args:
-        code: Generated function code
-        test_input: Test input (e.g., "maxLength(nums=[1,2,3])")
-        expected_output: Expected output as repr string
-        timeout: Execution timeout in seconds
+        predicted_output: Model's predicted output value (extracted from [ANSWER] tags)
+        expected_output: Expected output as repr string from dataset
 
     Returns:
         (is_correct, error_message)
     """
     try:
-        # Build full code
-        full_code = f"{BASE_IMPORTS}\n{code}\nresult = {test_input}"
+        # Normalize both strings for comparison
+        predicted = predicted_output.strip()
+        expected = expected_output.strip()
 
-        # Execute in isolated namespace
-        namespace = {}
-        exec(full_code, namespace)
+        # Direct string comparison
+        if predicted == expected:
+            return (True, None)
 
-        # Get result and compare
-        actual_output = repr(namespace.get('result'))
+        # Try evaluating both as Python literals and compare
+        try:
+            import ast
+            predicted_val = ast.literal_eval(predicted)
+            expected_val = ast.literal_eval(expected)
 
-        return (actual_output == expected_output, None)
+            if predicted_val == expected_val:
+                return (True, None)
+        except (ValueError, SyntaxError):
+            # If we can't parse as literals, fall back to string comparison
+            pass
+
+        # Not equal
+        return (False, f"Predicted: {predicted}, Expected: {expected}")
 
     except Exception as e:
         return (False, str(e))
@@ -162,10 +174,9 @@ def evaluate_model_results(
                 })
                 continue
 
-            # Execute and check correctness
-            is_correct, error = execute_code_with_test(
-                result['generated_code'],
-                test_input,
+            # Check predicted output against expected output
+            is_correct, error = check_predicted_output(
+                result['generated_code'],  # This now contains the predicted output
                 expected_output
             )
 

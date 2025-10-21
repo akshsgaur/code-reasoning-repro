@@ -78,31 +78,35 @@ class ModelInference:
 
     def build_prompt(self, problem_data: Dict[str, Any]) -> str:
         """
-        Build prompt for code generation
-        Uses zero-shot prompting as per paper requirements
+        Build prompt for execution prediction
+        Uses the exact format from the paper (Execution Prediction Prompt - Zero-Shot)
+
+        Format:
+        You are given a Python program and an assertion containing an input to a function.
+        Replace the ?? in the assertion with a literal representing the function's return
+        value for the given input. Provide the full assertion in [ANSWER] and [/ANSWER] tags.
+
+        [PYTHON]
+        {program}
+        assert {function_name}({input}) == ??
+        [/PYTHON]
         """
         function_name = problem_data['function_name']
-        # Extract function signature from the first collected solution if available
-        # For now, we'll use a simple template
+        code = problem_data['code']  # Use the collected solution as the program
+        test_input = problem_data['input']  # e.g., "nums=[1,2,3], k=2"
 
-        prompt = f"""Write a Python function to solve the following problem:
+        # Extract just the input part (remove function name and parentheses if present)
+        if test_input.startswith(f"{function_name}(") and test_input.endswith(")"):
+            input_args = test_input[len(function_name)+1:-1]
+        else:
+            input_args = test_input
 
-Problem: {problem_data.get('title', 'LeetCode Problem')}
+        prompt = f"""You are given a Python program and an assertion containing an input to a function. Replace the ?? in the assertion with a literal (no unsimplified expressions, no function calls) representing the function's return value for the given input. Execute the program exactly as written, even if it is incorrect or incomplete. For your final answer, provide the full assertion in [ANSWER] and [/ANSWER] tags.
 
-{problem_data.get('description', '')}
-
-Function signature:
-def {function_name}(FILL_IN_PARAMETERS):
-    # Your solution here
-    pass
-
-Requirements:
-- Implement ONLY the function, no class wrapper
-- Use efficient algorithms
-- Handle edge cases
-- Return the correct output type
-
-Write the complete function implementation:"""
+[PYTHON]
+{code}
+assert {function_name}({input_args}) == ??
+[/PYTHON]"""
 
         return prompt
 
@@ -126,15 +130,15 @@ Write the complete function implementation:"""
                 )
 
                 latency_ms = (time.time() - start_time) * 1000
-                generated_code = response.choices[0].message.content
+                full_response = response.choices[0].message.content
 
-                # Extract code from markdown if present
-                generated_code = self._extract_code_from_markdown(generated_code)
+                # Extract predicted answer from [ANSWER] tags
+                predicted_output = self._extract_answer_from_response(full_response)
 
                 return InferenceResult(
                     problem_id=problem_id,
                     model_name=self.model_name,
-                    generated_code=generated_code,
+                    generated_code=predicted_output,  # Store predicted value
                     prompt=prompt,
                     success=True,
                     latency_ms=latency_ms
@@ -144,13 +148,13 @@ Write the complete function implementation:"""
                 response = self.client.generate_content(prompt)
                 latency_ms = (time.time() - start_time) * 1000
 
-                generated_code = response.text
-                generated_code = self._extract_code_from_markdown(generated_code)
+                full_response = response.text
+                predicted_output = self._extract_answer_from_response(full_response)
 
                 return InferenceResult(
                     problem_id=problem_id,
                     model_name=self.model_name,
-                    generated_code=generated_code,
+                    generated_code=predicted_output,  # Store predicted value
                     prompt=prompt,
                     success=True,
                     latency_ms=latency_ms
@@ -168,23 +172,38 @@ Write the complete function implementation:"""
                 latency_ms=latency_ms
             )
 
-    def _extract_code_from_markdown(self, text: str) -> str:
-        """Extract code from markdown code blocks"""
+    def _extract_answer_from_response(self, text: str) -> str:
+        """
+        Extract predicted answer from [ANSWER] tags
+
+        Expected format: [ANSWER] assert function_name(input) == output [/ANSWER]
+        We want to extract just the output value
+        """
         import re
 
-        # Look for python code blocks
-        pattern = r'```python\n(.*?)```'
-        matches = re.findall(pattern, text, re.DOTALL)
+        # Look for [ANSWER] tags
+        pattern = r'\[ANSWER\](.*?)\[/ANSWER\]'
+        matches = re.findall(pattern, text, re.DOTALL | re.IGNORECASE)
+        if matches:
+            assertion = matches[0].strip()
+
+            # Parse the assertion to extract the predicted value
+            # Format: "assert function_name(input) == value"
+            match = re.search(r'assert\s+\w+\([^)]*\)\s*==\s*(.+)', assertion)
+            if match:
+                predicted_value = match.group(1).strip()
+                return predicted_value
+
+            # If we can't parse it, return the whole assertion
+            return assertion
+
+        # Fallback: try to find "assert ... == VALUE" pattern anywhere
+        pattern = r'assert\s+\w+\([^)]*\)\s*==\s*(.+?)(?:\n|$)'
+        matches = re.findall(pattern, text, re.MULTILINE)
         if matches:
             return matches[0].strip()
 
-        # Look for generic code blocks
-        pattern = r'```\n(.*?)```'
-        matches = re.findall(pattern, text, re.DOTALL)
-        if matches:
-            return matches[0].strip()
-
-        # Return as-is if no code blocks found
+        # Return as-is if no answer tags found
         return text.strip()
 
 
