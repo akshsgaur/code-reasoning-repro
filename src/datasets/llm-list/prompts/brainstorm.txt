@@ -1,0 +1,14 @@
+Your task is to brainstorm a list of 100 known / common list functions in Python. These could be standard textbook algorithms or simple utility functions. Some examples are length, reverse, unique, compact, flatten, insert, index, union, tail, permutations, order-by, mean, median, range, argmax.
+
+Each function you come up with must satisfy the following conditions:
+- Takes in a list of integers as one of the parameters and returns a list, integer, or boolean after doing some processing on the input.
+- Does NOT contain random operations.
+- Does NOT involve substantial floating-point operations.
+- Does NOT rely on any imports (e.g., numpy or the Python standard library).
+
+Try to have as much variability in the types of operations; for any class or variations of operations, have at most 2-3. Structure your response in the following manner. The name should be a function signature (e.g., length(lst)), and the description should encapsulate the expected behavior of the function.
+    
+1. "[name]": "[description]"
+2. "[name]": "[description]"
+3. "[name]": "[description]"
+...

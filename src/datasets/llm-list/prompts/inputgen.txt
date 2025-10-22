@@ -1,0 +1,5 @@
+You are given a Python function named '{function_name}' below, which {function_description}. Your goal is to generate 3 simple test inputs for this function that comprehensively test all functionality of the ‘{function_name}‘ function and produce no errors when executed. Do NOT include any extra information and put each input on a separate line. If the input contains multiple arguments, separate them by commas. Do NOT include floating-point values. Make sure that lists contain only a few elements, but are not empty.
+
+'''python
+{function_code}
+'''
