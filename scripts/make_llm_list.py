@@ -44,7 +44,7 @@ def parse_code_response(results):
         code = code.strip("`")
         lines = [l for l in code.splitlines() if not l.lower().startswith("python")]
         code = "\n".join(lines).strip()
-    if "def" not in code:
+    if "def " not in code:
         raise ValueError("No function definition found in code response.")
     # sanity check valid python
     ast.parse(code)
@@ -73,6 +73,19 @@ def call_llm(prompt):
         reasoning={ "effort": "low" },
         text={ "verbosity": "low" },
     )
+
+    if hasattr(result, "output_text") and result.output_text:
+        return result.output_text
+    if hasattr(result, "content") and result.content:
+        parts = []
+        for c in result.content:
+            if getattr(c, "text", None):
+                parts.append(c.text)
+            elif getattr(c, "type", None) == "output_text" and getattr(c, "output_text", None):
+                parts.append(c.output_text)
+        return "\n".join(parts).strip()
+
+    return str(result)
 
 # Call LLM with brainstorm prompt to get function headers and descriptions 
 def brainstorm():
@@ -107,22 +120,54 @@ def code_generation(headers_descriptions):
     functions = []
     # hd should contain header, desc
     for i, hd in enumerate(headers_descriptions):
-        prompt = (PROMPTS_DIR / "codegen.txt").read_text()
+        header, desc = (hd[0], hd[1]) if not isinstance(hd, dict) else (hd["header"], hd["desc"])
+        prompt_tmpl = (PROMPTS_DIR / "codegen.txt").read_text()
+        prompt = prompt_tmpl.format(HEADER=header, DESC=desc)
         results = call_llm(prompt)
         code = parse_code_response(results)
         functions.append({
             "id": f"llmlist_{i}",
-            "header": hd.header,
-            "description": hd.desc,
+            "header": header,
+            "description": desc,
             "code": code,
         })
     FUNCTIONS_JSON.write_text(json.dumps(functions, indent=2))
     return functions
 
+# Execute python function
+def execute_function(code, header, inputs):
+    env = {}
+    exec(compile(code, "<prog>", "exec"), env, env)
+
+    fname = header.split("def ", 1)[1].split("(", 1)[0].strip()
+    fn = env[fname]
+
+    outputs = []
+    for arglist in inputs:
+        parsed = [ast.literal_eval(a) for a in arglist]
+        result = fn(*parsed)
+        outputs.append(repr(result))
+    return outputs
+
 # Validate generated inputs for constraints
-def validate_inputs(inputs):
-    #TODO
-    pass
+def validate_inputs(inputs, function):
+    for arglist in inputs:
+        for arg in arglist:
+            try:
+                val = ast.literal_eval(arg)
+            except Exception:
+                return False, None
+            if isinstance(val, float):
+                return False, None
+            if isinstance(val, list):
+                if len(val) == 0 or len(val) >= 1000:
+                    return False, None
+    # Execute function
+    try:
+        outs = execute_function(function["code"], function["header"], inputs)
+        return True, outs
+    except Exception:
+        return False, None
 
 # Call LLM with input gen prompt to get inputs
 def input_generation(functions, max_retries):
@@ -132,12 +177,17 @@ def input_generation(functions, max_retries):
         inputs = []
         outputs = []
         for i in range(max_retries):
-            prompt = (PROMPTS_DIR / "inputgen.txt").read_text()
+            prompt_tmpl = (PROMPTS_DIR / "inputgen.txt").read_text()
+            prompt = prompt_tmpl.format(
+                function_name=f["header"].split("def ",1)[1].split("(",1)[0].strip(),
+                function_description=f["description"],
+                function_code=f["code"],
+            )
             results = call_llm(prompt)
             try:
                 possible_inputs = parse_input_response(results)
                 # Execute + validate inputs
-                valid, outs = validate_inputs(possible_inputs)
+                valid, outs = validate_inputs(possible_inputs, f)
                 if valid:
                     inputs = possible_inputs
                     outputs = outs
