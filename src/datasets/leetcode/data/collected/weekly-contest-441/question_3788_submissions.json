@@ -1,0 +1,23 @@
+[
+  {
+    "submission_id": 1575094028,
+    "code": "class Solution:\n    def maxSum(self, a: List[int]) -> int:\n        s = {x for x in a if x > 0}\n        return sum(s) if s else max(a)\n",
+    "lang": "python3",
+    "question_id": 3788,
+    "contest_submission": 23149839
+  },
+  {
+    "submission_id": 1575079192,
+    "code": "class Solution:\n    def maxSum(self, nums: List[int]) -> int:\n        positive_set = {num for num in nums if num > 0}\n        \n        if positive_set:\n            return sum(positive_set)\n        else:\n            return max(nums)",
+    "lang": "python3",
+    "question_id": 3788,
+    "contest_submission": 23138161
+  },
+  {
+    "submission_id": 1575080067,
+    "code": "class Solution:\n    def maxSum(self, nums: List[int]) -> int:\n        positive_set = set()\n        total_sum = 0\n        for num in nums:\n            if num > 0 and num not in positive_set:\n                positive_set.add(num)\n                total_sum += num\n        if total_sum > 0:\n            return total_sum\n        return max(nums)",
+    "lang": "python3",
+    "question_id": 3788,
+    "contest_submission": 23138682
+  }
+]

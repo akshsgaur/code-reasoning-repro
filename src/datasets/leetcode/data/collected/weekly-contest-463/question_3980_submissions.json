@@ -1,0 +1,23 @@
+[
+  {
+    "submission_id": 1737962979,
+    "code": "class Solution:\n    def maxProfit(self, p: List[int], s: List[int], k: int) -> int:\n        n=len(p); h=k//2\n        pp=[0]*(n+1); pc=[0]*(n+1)\n        t=0\n        for i in range(n):\n            pp[i+1]=pp[i]+p[i]\n            v=s[i]*p[i]\n            pc[i+1]=pc[i]+v\n            t+=v\n        b=-inf; e=n-k; i=0\n        while i<=e:\n            d=(pp[i+k]-pp[i+h])-(pc[i+k]-pc[i])\n            if b<d: b=d\n            i+=1\n        if b>0: t+=b\n        return t",
+    "lang": "python3",
+    "question_id": 3980,
+    "contest_submission": 25841736
+  },
+  {
+    "submission_id": 1737964304,
+    "code": "class Solution:\n    def maxProfit(self, a: List[int], b: List[int], k: int) -> int:\n        n = len(a)\n        h = k // 2\n        x = sum(i * j for i, j in zip(a, b))\n        y = sum(b[i] * a[i] for i in range(k))\n        z = sum(a[i] for i in range(h, k))\n        m = z - y\n        for i in range(1, n - k + 1):\n            o = i - 1\n            j = i + k - 1\n            y += b[j] * a[j] - b[o] * a[o]\n            z += a[j] - a[o + h]\n            if z - y > m:\n                m = z - y\n        return x if m < 0 else x + m\n",
+    "lang": "python3",
+    "question_id": 3980,
+    "contest_submission": 25842654
+  },
+  {
+    "submission_id": 1737969042,
+    "code": "class Solution:\n    def maxProfit(self, prices: List[int], strategy: List[int], k: int) -> int:\n        n = len(prices)\n        base = sum(prices[i] * strategy[i] for i in range(n))\n        half = k // 2\n        prefP = [0] * (n + 1)\n        prefSP = [0] * (n + 1)\n        for i in range(n):\n            prefP[i + 1] = prefP[i] + prices[i]\n            prefSP[i + 1] = prefSP[i] + prices[i] * strategy[i]\n        max_delta = 0\n        for l in range(n - k + 1):\n            sumP = prefP[l + k] - prefP[l + half]\n            sumSP = prefSP[l + k] - prefSP[l]\n            delta = sumP - sumSP\n            if delta > max_delta:\n                max_delta = delta\n        return base + max_delta",
+    "lang": "python3",
+    "question_id": 3980,
+    "contest_submission": 25845981
+  }
+]

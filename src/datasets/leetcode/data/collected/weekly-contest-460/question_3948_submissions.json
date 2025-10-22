@@ -1,0 +1,23 @@
+[
+  {
+    "submission_id": 1712744585,
+    "code": "class Solution:\n    def numOfSubsequences(self, s: str) -> int:\n        n = len(s)\n        prefixL, prefixLC = [0]*(n + 1), [0]*(n + 1)\n        for i, ch in enumerate(s):\n            prefixL[i + 1] = prefixL[i] + (ch == 'L')\n            prefixLC[i + 1] = prefixLC[i] + (ch == 'C') * prefixL[i]\n        suffixT, suffixCT = [0] * (n + 1), [0] * (n + 1)\n        t, ct = 0, 0\n        for i in range(n - 1, -1, -1):\n            ch = s[i]\n            if ch == 'T':\n                t += 1\n            elif ch == 'C':\n                ct += t\n            suffixT[i] = t\n            suffixCT[i] = ct\n        l, lc = 0, 0\n        cnt = 0\n        for ch in s:\n            if ch == 'L':\n                l += 1\n            elif ch == 'C':\n                lc += l\n            elif ch == 'T':\n                cnt += lc\n        best = 0\n        for p in range(n + 1):\n            incL = suffixCT[p]\n            incC = prefixL[p] * suffixT[p]\n            incT = prefixLC[p]\n            best = max(best, incL)\n            best = max(best, incC)\n            best = max(best, incT)\n        \n        return cnt + best",
+    "lang": "python3",
+    "question_id": 3948,
+    "contest_submission": 25330934
+  },
+  {
+    "submission_id": 1712779968,
+    "code": "class Solution:\n    def numOfSubsequences(self, s):\n        ln = len(s)\n        preL, sufT = [0] * (ln + 1), [0] * (ln + 1)\n        total, leftSum, rightSum, maxCombo = 0, 0, 0, 0\n        i, j, ch, temp = 0, 0, '', 0\n\n        while i < ln:\n            ch = s[i]\n            preL[i + 1] = preL[i] + (ch == 'L')\n            i += 1\n\n        j = ln - 1\n        while j >= 0:\n            sufT[j] = sufT[j + 1] + (s[j] == 'T')\n            j -= 1\n\n        for idx in range(ln):\n            ch = s[idx]\n            if ch == 'C':\n                total += preL[idx] * sufT[idx + 1]\n                rightSum += sufT[idx + 1]\n                leftSum += preL[idx]\n\n        i = 0\n        while i <= ln:\n            temp = preL[i] * sufT[i]\n            if temp > maxCombo:\n                maxCombo = temp\n            i += 1\n\n        return total + max(leftSum, rightSum, maxCombo)\n",
+    "lang": "python3",
+    "question_id": 3948,
+    "contest_submission": 25357049
+  },
+  {
+    "submission_id": 1712740274,
+    "code": "class Solution:\n    def numOfSubsequences(self, s: str) -> int:\n        n=len(s)\n        pl=[0]*(n+1)\n        for i,ch in enumerate(s):\n            pl[i+1]=pl[i]+(ch=='L')\n        st=[0]*(n+1)\n        for i in range(n-1,-1,-1):\n            st[i]=st[i+1]+(s[i]=='T')\n        oc=bl=bt=0\n        for i,ch in enumerate(s):\n            if ch=='C':\n                oc+=pl[i]*st[i+1]; bl+=st[i+1]; bt+=pl[i]\n        mc=0\n        for i in range(n+1):\n            v=pl[i]*st[i]\n            if v>mc: mc=v\n        return oc+max(0,bl,bt,mc)",
+    "lang": "python3",
+    "question_id": 3948,
+    "contest_submission": 25327637
+  }
+]

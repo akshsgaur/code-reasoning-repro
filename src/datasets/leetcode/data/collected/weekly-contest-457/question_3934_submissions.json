@@ -1,0 +1,23 @@
+[
+  {
+    "submission_id": 1687844513,
+    "code": "class Solution:\n    def validateCoupons(\n        self, code: List[str], businessLine: List[str], isActive: List[bool]\n    ) -> List[str]:\n        _map = {\"electronics\": 0, \"grocery\": 1, \"pharmacy\": 2, \"restaurant\": 3}\n\n        return [\n            i\n            for _, i in sorted(\n                (_map[y], x)\n                for x, y, z in zip(code, businessLine, isActive)\n                if z and y in _map and x and all(_c.isalnum() or _c == \"_\" for _c in x)\n            )\n        ]\n",
+    "lang": "python3",
+    "question_id": 3934,
+    "contest_submission": 24946712
+  },
+  {
+    "submission_id": 1687848904,
+    "code": "class Solution:\n    def validateCoupons(self, C: List[str], B: List[str], A: List[bool]) -> List[str]:\n        m = {'electronics':0,'grocery':1,'pharmacy':2,'restaurant':3}\n        p,x=re.compile(r'^[A-Za-z0-9_]+$'), []\n        for c,b,a in zip(C,B,A):\n            if a and b in m and c and p.match(c):\n                x.append((m[b],c))\n        x.sort()\n        return [c for _,c in x]",
+    "lang": "python3",
+    "question_id": 3934,
+    "contest_submission": 24949027
+  },
+  {
+    "submission_id": 1687847182,
+    "code": "class Solution:\n    def validateCoupons(self, code: List[str], businessLine: List[str], isActive: List[bool]) -> List[str]:\n        order = {\n            \"electronics\": 0,\n            \"grocery\":     1,\n            \"pharmacy\":    2,\n            \"restaurant\":  3\n        }\n        valid = []\n        for c, b, active in zip(code, businessLine, isActive):\n            if not active:\n                continue\n            if not c:\n                continue\n            if not all(ch.isalnum() or ch == \"_\" for ch in c):\n                continue\n            if b not in order:\n                continue\n            valid.append((order[b], c))\n        valid.sort(key=lambda x: (x[0], x[1]))\n        return [c for _, c in valid]\n",
+    "lang": "python3",
+    "question_id": 3934,
+    "contest_submission": 24947951
+  }
+]

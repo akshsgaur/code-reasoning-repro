@@ -1,0 +1,23 @@
+[
+  {
+    "submission_id": 1695805176,
+    "code": "class Solution:\n    def maxLen(self, n: int, e: List[List[int]], l: str) -> int:\n        g = [[] for _ in range(n)]\n        for u, v in e:\n            g[u].append(v); g[v].append(u)\n        q = deque(); vis = set(); ans = 1\n        for i in range(n):\n            m = 1 << i; st = (m, i ,i); q.append(st); vis.add(st)\n        for u, v in e:\n            if l[u] == l[v]:\n                m = (1 << u) | (1 << v); st = (m, u, v); q.append(st); vis.add(st);ans = 2\n\n        while q:\n            m, u, v = q.popleft(); c = m.bit_count()\n            if c > ans: ans = c\n            for x in g[u]:\n                if m >> x & 1: continue\n                for y in g[v]:\n                    if x == y or m >> y & 1: continue\n                    if l[x] != l[y]: continue\n                    nm = m | (1 << x) | (1 << y); st2 = (nm, x, y)\n                    if st2 in vis: continue\n                    vis.add(st2); q.append(st2)\n        return ans\n        ",
+    "lang": "python3",
+    "question_id": 3930,
+    "contest_submission": 25034440
+  },
+  {
+    "submission_id": 1695822416,
+    "code": "from collections import deque\nfrom typing import List\n\nclass Solution:\n    def maxLen(self, n: int, edges: List[List[int]], label: str) -> int:\n        g = [[] for _ in range(n)]\n        for u, v in edges:\n            g[u].append(v)\n            g[v].append(u)\n        lbl = label\n        size = 1 << n\n        vis = [[[False] * n for _ in range(n)] for _ in range(size)]\n        q = deque()\n        ans = 1\n        for i in range(n):\n            m = 1 << i\n            vis[m][i][i] = True\n            q.append((m, i, i, 1))\n        for u in range(n):\n            for v in g[u]:\n                if lbl[u] == lbl[v]:\n                    m = (1 << u) | (1 << v)\n                    if not vis[m][u][v]:\n                        vis[m][u][v] = True\n                        q.append((m, u, v, 2))\n                        ans = 2\n        while q:\n            mask, u, v, length = q.popleft()\n            for nu in g[u]:\n                if mask & (1 << nu):\n                    continue\n                for nv in g[v]:\n                    if nu == nv or (mask & (1 << nv)) or lbl[nu] != lbl[nv]:\n                        continue\n                    new_mask = mask | (1 << nu) | (1 << nv)\n                    if not vis[new_mask][nu][nv]:\n                        vis[new_mask][nu][nv] = True\n                        q.append((new_mask, nu, nv, length + 2))\n                        ans = max(ans, length + 2)\n        return ans\n",
+    "lang": "python3",
+    "question_id": 3930,
+    "contest_submission": 25047605
+  },
+  {
+    "submission_id": 1695835727,
+    "code": "class Solution:\n    def maxLen(self, n: int, edges: List[List[int]], label: str) -> int:\n        adj = [[] for _ in range(n)]\n        for u,v in edges:\n            adj[u].append(v)\n            adj[v].append(u)\n        # bucket neighbors by character\n        from collections import defaultdict\n        buckets = [defaultdict(list) for _ in range(n)]\n        for u in range(n):\n            for w in adj[u]:\n                buckets[u][label[w]].append(w)\n\n        best = 1\n        full = n\n        popc = int.bit_count\n\n        from functools import lru_cache\n        @lru_cache(None)\n        def dfs(u,v,mask):\n            nonlocal best\n            cnt = popc(mask)\n            if cnt > best: best = cnt\n            if best == full: \n                return True\n            # optimistic bound\n            rem = full - cnt\n            if cnt + (rem//2)*2 <= best:\n                return False\n            for ch in buckets[u].keys() & buckets[v].keys():\n                for nu in buckets[u][ch]:\n                    if mask>>nu & 1: continue\n                    for nv in buckets[v][ch]:\n                        if nu==nv or (mask>>nv & 1): continue\n                        a,b = sorted((nu,nv))\n                        if dfs(a,b, mask | (1<<nu) | (1<<nv)):\n                            return True\n            return False\n\n        # try all centers u<=v\n        for u in range(n):\n            if dfs(u,u, 1<<u): return best\n        for u,v in edges:\n            if label[u]==label[v]:\n                a,b = sorted((u,v))\n                if dfs(a,b, (1<<u)|(1<<v)):\n                    return best\n        return best",
+    "lang": "python3",
+    "question_id": 3930,
+    "contest_submission": 25057473
+  }
+]

@@ -1,0 +1,23 @@
+[
+  {
+    "submission_id": 1605121226,
+    "code": "class Solution:\n    def findClosest(self, x: int, y: int, z: int) -> int:\n        if abs(z-x) < abs(z-y):\n            return 1\n        elif abs(z-y) < abs(z-x):\n            return 2\n        return 0\n",
+    "lang": "python3",
+    "question_id": 3830,
+    "contest_submission": 23652219
+  },
+  {
+    "submission_id": 1605117709,
+    "code": "class Solution:\n    def findClosest(self, x: int, y: int, z: int) -> int:\n        if abs(z - y) == abs(z - x):\n            return 0\n        elif abs(z - y) < abs(z - x):\n            return 2\n        else:\n            return 1",
+    "lang": "python3",
+    "question_id": 3830,
+    "contest_submission": 23649322
+  },
+  {
+    "submission_id": 1605121176,
+    "code": "class Solution:\n    def findClosest(self, x: int, y: int, z: int) -> int:\n        d1, d2 = abs(x - z), abs(y - z)\n        return 1 if d1 < d2 else 2 if d2 < d1 else 0\n",
+    "lang": "python3",
+    "question_id": 3830,
+    "contest_submission": 23652176
+  }
+]

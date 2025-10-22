@@ -1,0 +1,23 @@
+[
+  {
+    "submission_id": 1575092171,
+    "code": "class Solution:\n    def solveQueries(self, a: List[int], b: List[int]) -> List[int]:\n        n = len(a)\n        d = {}\n        for i, x in enumerate(a):\n            d.setdefault(x, []).append(i)\n        for x in d: d[x].sort()\n        r = []\n        import bisect\n        for i in b:\n            x = a[i]\n            L = d[x]\n            if len(L) == 1:\n                r.append(-1)\n                continue\n            p = bisect.bisect_left(L, i)\n            m = n\n            if p:\n                j = L[p - 1]\n                k = i - j if i >= j else j - i\n                m = min(m, k, n - k)\n            if p < len(L) - 1:\n                j = L[p + 1]\n                k = j - i if j >= i else i - j\n                m = min(m, k, n - k)\n            if p == 0:\n                j = L[-1]\n                k = i - j if i >= j else j - i\n                m = min(m, k, n - k)\n            if p == len(L) - 1:\n                j = L[0]\n                k = j - i if j >= i else i - j\n                m = min(m, k, n - k)\n            r.append(m)\n        return r\n",
+    "lang": "python3",
+    "question_id": 3750,
+    "contest_submission": 23148376
+  },
+  {
+    "submission_id": 1575081382,
+    "code": "class Solution:\n    def solveQueries(self, nums: List[int], queries: List[int]) -> List[int]:\n        n = len(nums)\n        pos_map = defaultdict(list)\n        for idx, num in enumerate(nums):\n            pos_map[num].append(idx)\n        \n        result = []\n        for q in queries:\n            val = nums[q]\n            indices = pos_map[val]\n            if len(indices) == 1:\n                result.append(-1)\n                continue\n            \n            pos = bisect.bisect_left(indices, q)\n            \n            left_neighbor = indices[pos - 1]\n            right_neighbor = indices[(pos + 1) % len(indices)]\n            \n            def circular_distance(i, j):\n                diff = abs(i - j)\n                return min(diff, n - diff)\n            \n            d_left = circular_distance(q, left_neighbor)\n            d_right = circular_distance(q, right_neighbor)\n            answer = min(d_left, d_right)\n            \n            result.append(answer)\n        \n        return result",
+    "lang": "python3",
+    "question_id": 3750,
+    "contest_submission": 23139685
+  },
+  {
+    "submission_id": 1575086006,
+    "code": "class Solution:\n    def solveQueries(self, nums: List[int], queries: List[int]) -> List[int]:\n        n = len(nums)\n        occurrences = {}\n        for index, value in enumerate(nums):\n            occurrences.setdefault(value, []).append(index)\n        for value in occurrences:\n            occurrences[value].sort()\n        answer = []\n        for query in queries:\n            value = nums[query]\n            occ = occurrences[value]\n            if len(occ) < 2:\n                answer.append(-1)\n            else:\n                pos = bisect.bisect_left(occ, query)\n                distances = []\n                if pos > 0:\n                    candidate = occ[pos - 1]\n                    diff = abs(query - candidate)\n                    distances.append(min(diff, n - diff))\n                if pos < len(occ) - 1:\n                    candidate = occ[pos + 1]\n                    diff = abs(query - candidate)\n                    distances.append(min(diff, n - diff))\n                if pos == 0:\n                    candidate = occ[-1]\n                    diff = abs(query - candidate)\n                    distances.append(min(diff, n - diff))\n                if pos == len(occ) - 1:\n                    candidate = occ[0]\n                    diff = abs(query - candidate)\n                    distances.append(min(diff, n - diff))\n                answer.append(min(distances))\n        return answer",
+    "lang": "python3",
+    "question_id": 3750,
+    "contest_submission": 23143384
+  }
+]

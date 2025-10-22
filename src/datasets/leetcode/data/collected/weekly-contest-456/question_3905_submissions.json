@@ -1,0 +1,23 @@
+[
+  {
+    "submission_id": 1679827104,
+    "code": "class Solution:\n    def partitionString(self, s: str) -> List[str]:\n        se, rs, n, i = set(), [], len(s), 0\n        while i < n:\n            cu, j = '', i\n            while j < n:\n                cu += s[j]\n                if cu not in se:\n                    se.add(cu)\n                    rs.append(cu)\n                    i = j + 1\n                    break\n                j += 1\n            else: break\n        return rs\n",
+    "lang": "python3",
+    "question_id": 3905,
+    "contest_submission": 24796300
+  },
+  {
+    "submission_id": 1679826968,
+    "code": "class Solution:\n    def partitionString(self, s: str) -> List[str]:\n        r, t, i = [], set(), 0\n        for j in range(len(s)):\n            c = s[i:j+1]\n            if c not in t: r.append(c); t.add(c); i = j + 1\n        return r",
+    "lang": "python3",
+    "question_id": 3905,
+    "contest_submission": 24796221
+  },
+  {
+    "submission_id": 1679848786,
+    "code": "class Solution:\n    def partitionString(self, txt):\n        op, mem, tmp = [], set(), \"\"\n        for z in txt:\n            k = tmp + z\n            if k not in mem:\n                op.append(k)\n                mem.add(k)\n                tmp = \"\"\n            else:\n                tmp = k\n        return op\n",
+    "lang": "python3",
+    "question_id": 3905,
+    "contest_submission": 24811442
+  }
+]

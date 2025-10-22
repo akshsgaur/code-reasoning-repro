@@ -1,0 +1,23 @@
+[
+  {
+    "submission_id": 1664369401,
+    "code": "from collections import Counter\nclass Solution:\n    def specialTriplets(self, a: list[int]) -> int:\n        m = 10**9+7; n = len(a); l, r = Counter(), Counter(a); s = 0\n        for i in range(n):\n            r[a[i]] -= 1; d = a[i] * 2\n            s += l[d] * r[d]; s %= m\n            l[a[i]] += 1\n        return s\n",
+    "lang": "python3",
+    "question_id": 3885,
+    "contest_submission": 24541950
+  },
+  {
+    "submission_id": 1664370474,
+    "code": "class Solution:\n    def specialTriplets(self, a: List[int]) -> int:\n        mod,R,L,res=10**9+7,Counter(a),{},0\n        for x in a:\n            R[x]-=1\n            if R[x]==0: del R[x]\n            y=x*2\n            res=(res+L.get(y,0)*R.get(y,0))%mod\n            L[x]=L.get(x,0)+1\n        return res",
+    "lang": "python3",
+    "question_id": 3885,
+    "contest_submission": 24542848
+  },
+  {
+    "submission_id": 1664364578,
+    "code": "class Solution:\n    def specialTriplets(self, nums: List[int]) -> int:\n        MOD = 10**9 + 7\n\n        seenLeft = Counter()\n        seenRight = Counter(nums)\n        seenRight[nums[0]] -= 1\n        # print(seenRight)\n\n        res = 0\n        for j in range(1, len(nums) - 1):\n            seenLeft[nums[j-1]] += 1\n            seenRight[nums[j]] -= 1\n            # print(seenLeft)\n            res += seenLeft[nums[j] * 2] * seenRight[nums[j] * 2]\n        return res % MOD\n            ",
+    "lang": "python3",
+    "question_id": 3885,
+    "contest_submission": 24538201
+  }
+]

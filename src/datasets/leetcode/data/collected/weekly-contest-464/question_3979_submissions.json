@@ -1,0 +1,23 @@
+[
+  {
+    "submission_id": 1745992498,
+    "code": "class Solution:\n    def partitionArray(self, a: List[int], k: int) -> bool:\n        n=len(a)\n        if n%k!=0: return False\n\n        m=n//k\n        d=defaultdict(int)\n        for x in a: d[x]+=1\n\n        mx=0\n        for v in d.values():\n            mx=v if v>mx else mx\n\n        return True if mx<=m else False",
+    "lang": "python3",
+    "question_id": 3979,
+    "contest_submission": 25917811
+  },
+  {
+    "submission_id": 1745988949,
+    "code": "from collections import Counter\n\nclass Solution:\n    def partitionArray(self, nums: List[int], k: int) -> bool:\n        n = len(nums)\n        if n % k != 0:\n            return False\n\n        groups = n // k\n        freq = Counter(nums)\n\n        return all(count <= groups for count in freq.values())",
+    "lang": "python3",
+    "question_id": 3979,
+    "contest_submission": 25914990
+  },
+  {
+    "submission_id": 1746020390,
+    "code": "fmin = lambda x,y: x if x<y else y\nclass Solution:\n    def partitionArray(self, A: List[int], K: int) -> bool:\n        N = len(A)\n        if N % K != 0: return False\n        G = N // K\n        for v in Counter(A).values():\n            if v > G: return False\n        return True\n        ",
+    "lang": "python3",
+    "question_id": 3979,
+    "contest_submission": 25939894
+  }
+]

@@ -1,0 +1,7 @@
+# Requirements for model inference and evaluation
+openai>=1.12.0
+google-generativeai>=0.3.0
+numpy>=1.24.0
+pandas>=2.0.0
+selenium>=4.0.0
+radon>=5.1.0

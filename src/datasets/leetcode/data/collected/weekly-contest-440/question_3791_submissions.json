@@ -1,0 +1,23 @@
+[
+  {
+    "submission_id": 1567552448,
+    "code": "class Solution:\n    def numOfUnplacedFruits(self, f: List[int], b: List[int]) -> int:\n        n = len(b)\n        s = 1\n        while s < n: s *= 2\n        t = [0]*(2*s)\n        for i in range(n): t[s+i] = b[i]\n        for i in range(s-1, 0, -1): t[i] = max(t[2*i], t[2*i+1])\n        c = 0\n        for x in f:\n            if t[1] < x:\n                c += 1\n            else:\n                i = 1\n                while i < s:\n                    if t[2*i] >= x:\n                        i = 2*i\n                    else:\n                        i = 2*i+1\n                j = i - s\n                t[i] = -1\n                i //= 2\n                while i:\n                    t[i] = max(t[2*i], t[2*i+1])\n                    i //= 2\n        return c\n",
+    "lang": "python3",
+    "question_id": 3791,
+    "contest_submission": 22978418
+  },
+  {
+    "submission_id": 1567569757,
+    "code": "class Solution:\n    def numOfUnplacedFruits(self, fruits, baskets):\n        n = len(baskets)\n        treeSize = 1\n        while treeSize < n:\n            treeSize *= 2\n        tree = [0] * (2 * treeSize)\n        i = 0\n        while i < n:\n            tree[treeSize + i] = baskets[i]\n            i += 1\n        i = n\n        while i < treeSize:\n            tree[treeSize + i] = 0\n            i += 1\n        i = treeSize - 1\n        while i >= 1:\n            leftChild = tree[2 * i]\n            rightChild = tree[2 * i + 1]\n            if leftChild >= rightChild:\n                tree[i] = leftChild\n            else:\n                tree[i] = rightChild\n            i -= 1\n        def query(val):\n            if tree[1] < val:\n                return -1\n            idx = 1\n            while idx < treeSize:\n                leftIdx = 2 * idx\n                if tree[leftIdx] >= val:\n                    idx = leftIdx\n                else:\n                    idx = leftIdx + 1\n            return idx - treeSize\n        def update(pos, newVal):\n            idx = pos + treeSize\n            tree[idx] = newVal\n            idx //= 2\n            while idx >= 1:\n                leftVal = tree[2 * idx]\n                rightVal = tree[2 * idx + 1]\n                if leftVal >= rightVal:\n                    tree[idx] = leftVal\n                else:\n                    tree[idx] = rightVal\n                idx //= 2\n        unplaced = 0\n        i = 0\n        while i < len(fruits):\n            fVal = fruits[i]\n            pos = query(fVal)\n            if pos == -1:\n                unplaced += 1\n            else:\n                update(pos, 0)\n            i += 1\n        return unplaced",
+    "lang": "python3",
+    "question_id": 3791,
+    "contest_submission": 22990753
+  },
+  {
+    "submission_id": 1567582045,
+    "code": "class Solution:\n    def numOfUnplacedFruits(self, a: List[int], b: List[int]) -> int:\n        n = len(a)\n        m = 1 << ((n - 1).bit_length())\n        \n        t = [-1] * (2 * m)\n        for i in range(n):\n            t[m + i] = b[i]\n            \n        for i in range(m - 1, 0, -1):\n            t[i] = max(t[2 * i], t[2 * i + 1])\n        def u(i, v):\n            i += m\n            t[i] = v\n            i //= 2\n            while i:\n                t[i] = max(t[2 * i], t[2 * i + 1])\n                i //= 2\n        def q(x):\n            if t[1] < x:\n                return -1\n            i = 1\n            while i < m:\n                i = 2 * i if t[2 * i] >= x else 2 * i + 1\n            return i - m if i - m < n else -1\n        ans = 0\n        for x in a:\n            i = q(x)\n            if i == -1:\n                ans += 1\n            else:\n                u(i, -1)\n        return ans",
+    "lang": "python3",
+    "question_id": 3791,
+    "contest_submission": 22999344
+  }
+]

@@ -1,0 +1,23 @@
+[
+  {
+    "submission_id": 1582808446,
+    "code": "class Solution:\n    def maxContainers(self, n: int, w: int, maxWeight: int) -> int:\n        return min(n*n, maxWeight//w)",
+    "lang": "python3",
+    "question_id": 3817,
+    "contest_submission": 23259917
+  },
+  {
+    "submission_id": 1582806336,
+    "code": "class Solution:\n    def maxContainers(self, n: int, w: int, maxWeight: int) -> int:\n        return min(n * n, maxWeight // w)\n",
+    "lang": "python3",
+    "question_id": 3817,
+    "contest_submission": 23258251
+  },
+  {
+    "submission_id": 1582820286,
+    "code": "class Solution:\n    def maxContainers(self, n: int, w: int, maxWeight: int) -> int:\n        return min(maxWeight // w, n * n)",
+    "lang": "python3",
+    "question_id": 3817,
+    "contest_submission": 23269327
+  }
+]

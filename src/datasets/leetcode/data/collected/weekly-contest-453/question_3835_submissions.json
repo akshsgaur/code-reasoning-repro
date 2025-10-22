@@ -1,0 +1,23 @@
+[
+  {
+    "submission_id": 1657154777,
+    "code": "class Solution:\n    def countPartitions(self, nums: List[int], k: int) -> int:\n        MOD, n = 10**9+7,  len(nums)\n        dp = [0] * (n + 1)\n        ps = [0] * (n + 1)\n        dp[0] = 1; ps[0] = 1;  l = 0\n        \n        maxdq = deque()\n        mindq = deque()\n        for i in range(n):\n            while maxdq and nums[i] > nums[maxdq[-1]]:\n                maxdq.pop()\n                \n            maxdq.append(i)\n            while mindq and nums[i] < nums[mindq[-1]]:\n                mindq.pop()\n                \n            mindq.append(i)\n            while nums[maxdq[0]] - nums[mindq[0]] > k:\n                l += 1\n                if maxdq[0] < l: maxdq.popleft()\n                if mindq[0] < l: mindq.popleft()\n                    \n            dp[i+1] = ps[i] - (ps[l-1] if l > 0 else 0)\n            dp[i+1] %= MOD\n            ps[i+1] = (ps[i] + dp[i+1]) % MOD\n            \n        return dp[n]",
+    "lang": "python3",
+    "question_id": 3835,
+    "contest_submission": 24460363
+  },
+  {
+    "submission_id": 1657193577,
+    "code": "from collections import deque\nfrom typing import List\n\nclass Solution:\n    def countPartitions(self, nums: List[int], k: int) -> int:\n        MOD = 10**9 + 7\n        n = len(nums)\n        \n        # prefix[i] = dp[0] + dp[1] + ... + dp[i]\n        # where dp[0]=1 (empty prefix) and dp[i] = #ways to partition nums[:i]\n        prefix = [0] * (n+1)\n        prefix[0] = 1\n        \n        maxD = deque()   # will store pairs (value, index), decreasing by value\n        minD = deque()   # will store pairs (value, index), increasing by value\n        low = 1          # 1-based left edge of our current valid window\n        \n        dp_n = 0\n        for i in range(1, n+1):\n            x = nums[i-1]\n            # push x into maxDeque\n            while maxD and maxD[-1][0] < x:\n                maxD.pop()\n            maxD.append((x, i))\n            # push x into minDeque\n            while minD and minD[-1][0] > x:\n                minD.pop()\n            minD.append((x, i))\n            \n            # shrink from the left until window [low..i] is valid\n            while maxD[0][0] - minD[0][0] > k:\n                # if the outgoing index matches deque fronts, pop them\n                if maxD[0][1] == low:\n                    maxD.popleft()\n                if minD[0][1] == low:\n                    minD.popleft()\n                low += 1\n            \n            # now every start j in [low..i] gives a valid segment [j..i]\n            # so dp[i] = sum(dp[j-1] for j in [low..i]) \n            #          = prefix[i-1] - prefix[low-2]   (if low>=2)\n            if low >= 2:\n                dp_i = prefix[i-1] - prefix[low-2]\n            else:\n                dp_i = prefix[i-1]\n            dp_i %= MOD\n            \n            # update prefix sum\n            prefix[i] = (prefix[i-1] + dp_i) % MOD\n            \n            if i == n:\n                dp_n = dp_i\n        \n        return dp_n\n",
+    "lang": "python3",
+    "question_id": 3835,
+    "contest_submission": 24488764
+  },
+  {
+    "submission_id": 1657171764,
+    "code": "MOD = 10**9 + 7\n\n\nclass Solution:\n    def countPartitions(self, nums: List[int], k: int) -> int:\n        N = len(nums)\n\n        mq = deque()\n        nq = deque()\n\n        l = 0\n\n        pre = [0] * (N + 1)\n        pre[0] = 1\n\n        dp = [0] * (N + 1)\n        dp[0] = 1\n\n        for i in range(N):\n            v = nums[i]\n            while mq and mq[-1] < v:\n                mq.pop()\n            mq.append(v)\n            # print(f\"mq: {mq}\")\n\n            while nq and nq[-1] > v:\n                nq.pop()\n            nq.append(v)\n            # print(f\"nq: {nq}\")\n\n            while mq[0] - nq[0] > k:\n                if nums[l] == mq[0]:\n                    mq.popleft()\n                if nums[l] == nq[0]:\n                    nq.popleft()\n                l += 1\n                # print(f\"l: {l}, mq: {mq}, nq: {nq}\")\n\n            dp[i + 1] = (pre[i] - (pre[l - 1] if l > 0 else 0)) % MOD\n            # print(f\"i: {i}, v: {v}, dp[i + 1]: {dp[i + 1]}, pre: {pre}, l: {l}\")\n            pre[i + 1] = (pre[i] + dp[i + 1]) % MOD\n            # print(f\"i: {i}, v: {v}, pre[i + 1]: {pre[i + 1]}, dp: {dp}\")\n\n        # return dp[N - 1] if N > 0 else 1\n        return dp[N]\n",
+    "lang": "python3",
+    "question_id": 3835,
+    "contest_submission": 24472781
+  }
+]

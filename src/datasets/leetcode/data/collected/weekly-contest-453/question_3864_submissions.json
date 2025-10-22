@@ -1,0 +1,23 @@
+[
+  {
+    "submission_id": 1657151639,
+    "code": "class Solution:\n    def countPermutations(self, c: List[int]) -> int:\n        mod = 10**9+7\n        n = len(c)\n        for i in range(1, n):\n            if c[i] <= c[0]:\n                return 0\n        res = 1\n        for i in range(1, n):\n            res = res * i % mod\n        return res",
+    "lang": "python3",
+    "question_id": 3864,
+    "contest_submission": 24458244
+  },
+  {
+    "submission_id": 1657189523,
+    "code": "class Solution:\n    def countPermutations(self, complexity: List[int]) -> int:\n        MOD = 10**9 + 7\n        n = len(complexity)\n\n        # check feasibility: comp[0] must be strictly the smallest\n        root = complexity[0]\n        for x in complexity[1:]:\n            if x <= root:\n                return 0\n\n        # all other n\u22121 computers can be unlocked in any order\n        res = 1\n        for k in range(1, n):\n            res = res * k % MOD\n        return res\n",
+    "lang": "python3",
+    "question_id": 3864,
+    "contest_submission": 24485861
+  },
+  {
+    "submission_id": 1657156029,
+    "code": "MOD = 10**9 + 7\n\n\nclass Solution:\n    def countPermutations(self, complexity: List[int]) -> int:\n        n = len(complexity)\n        m = min(complexity)\n        if complexity[0] != m or complexity.count(m) > 1:\n            return 0\n        return math.prod(range(1, n)) % MOD\n",
+    "lang": "python3",
+    "question_id": 3864,
+    "contest_submission": 24461246
+  }
+]

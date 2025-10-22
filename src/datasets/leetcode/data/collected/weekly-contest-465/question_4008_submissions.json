@@ -1,0 +1,23 @@
+[
+  {
+    "submission_id": 1754171804,
+    "code": "class Solution:\n    def recoverOrder(self, order: List[int], friends: List[int]) -> List[int]:\n        p = {v:i for i,v in enumerate(order)}\n        return sorted(friends, key=lambda x: p[x])",
+    "lang": "python3",
+    "question_id": 4008,
+    "contest_submission": 26117027
+  },
+  {
+    "submission_id": 1754170161,
+    "code": "class Solution:\n    def recoverOrder(self, order: List[int], friends: List[int]) -> List[int]:\n        f = set(friends)\n        ans = []\n        for o in order:\n            if o in f:\n               ans.append(o) \n        return ans",
+    "lang": "python3",
+    "question_id": 4008,
+    "contest_submission": 26115782
+  },
+  {
+    "submission_id": 1754196326,
+    "code": "class Solution:\n    def recoverOrder(self, a: List[int], b: List[int]) -> List[int]:\n        s = set(b)\n        r = []\n        for x in a:\n            if x in s:\n                r.append(x)\n        return r\n",
+    "lang": "python3",
+    "question_id": 4008,
+    "contest_submission": 26134603
+  }
+]

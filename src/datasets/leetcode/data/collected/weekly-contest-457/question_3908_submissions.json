@@ -1,0 +1,23 @@
+[
+  {
+    "submission_id": 1687869450,
+    "code": "class Solution:\n    def minTime(self, n: int, edges: List[List[int]], k: int) -> int:\n        edges.sort(key=lambda x: x[2])\n\n        parent = list(range(n))\n        rank = [0] * n\n\n        arr = sorted({0, *[w for *_, w in edges]}, reverse=True)\n\n        # print(f\"arr: {arr}\")\n\n        def find(x: int) -> int:\n            while parent[x] != x:\n                parent[x] = parent[parent[x]]\n                x = parent[x]\n            return x\n\n        i = len(edges) - 1\n        count = n\n\n        ans = 0\n        for w in arr:\n            while i >= 0 and edges[i][2] > w:\n                u, v, _ = edges[i]\n                a, b = find(u), find(v)\n                if a != b:\n                    if rank[a] < rank[b]:\n                        a, b = b, a\n                    parent[b] = a\n                    if rank[a] == rank[b]:\n                        rank[a] += 1\n                    # print(f\" union {u} and  {v}. time: {w}\")\n                    count -= 1\n                i -= 1\n\n            # print(f\"w: {w}, count: {count}, i: {i}\")\n            if count >= k:\n                ans = w\n\n        return ans\n",
+    "lang": "python3",
+    "question_id": 3908,
+    "contest_submission": 24963655
+  },
+  {
+    "submission_id": 1687859842,
+    "code": "class Solution:\n    def minTime(self,n,e,k):\n        def f(tt):\n            p=[-1]*n\n            def ff(i):\n                while p[i]>=0:\n                    if p[p[i]]>=0: p[i]=p[p[i]]\n                    i=p[i]\n                return i\n            cnt=n\n            for a,b,t0 in e:\n                if t0>tt:\n                    ra=ff(a); rb=ff(b)\n                    if ra!=rb:\n                        if p[ra]>p[rb]: ra,rb=rb,ra\n                        p[ra]+=p[rb]; p[rb]=ra\n                        cnt-=1\n            return cnt\n\n        v=sorted({x[2] for x in e})\n        v=[0]+v\n        l=0; r=len(v)-1; res=v[-1]\n        while l<=r:\n            m=(l+r)//2\n            if f(v[m])>=k:  res=v[m]; r=m-1\n            else:           l=m+1\n        return res",
+    "lang": "python3",
+    "question_id": 3908,
+    "contest_submission": 24956774
+  },
+  {
+    "submission_id": 1687862517,
+    "code": "class Solution:\n    def minTime(self, n: int, edges: List[List[int]], k: int) -> int:\n        class DSU:\n            def __init__(self, size: int):\n                self.parent = list(range(size))\n                self.size = [1] * size\n            def find(self, x: int) -> int:\n                if self.parent[x] != x:\n                    self.parent[x] = self.find(self.parent[x])\n                return self.parent[x]\n            def union(self, a: int, b: int) -> bool:\n                ra = self.find(a)\n                rb = self.find(b)\n                if ra == rb:\n                    return False\n                if self.size[ra] < self.size[rb]:\n                    ra, rb = rb, ra\n                self.parent[rb] = ra\n                self.size[ra] += self.size[rb]\n                return True\n\n        dsu = DSU(n)\n        comps = n\n        edges.sort(key=lambda x: -x[2])\n        ans = -1\n        for u, v, w in edges:\n            if comps >= k:\n                ans = w\n            if dsu.union(u, v):\n                comps -= 1\n        return 0 if comps >= k else ans\n",
+    "lang": "python3",
+    "question_id": 3908,
+    "contest_submission": 24958726
+  }
+]

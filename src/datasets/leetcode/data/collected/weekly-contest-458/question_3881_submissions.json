@@ -1,0 +1,23 @@
+[
+  {
+    "submission_id": 1695812833,
+    "code": "class Solution:\n    def minCost(self, n: int, ed: List[List[int]], k: int) -> int:\n        ed.sort(key = lambda x: x[2])\n        lo, hi = 0, max((w for *_, w in ed), default = 0)\n        def ok(x):\n            p = list(range(n))\n            def f(i):\n                while p[i] != i:\n                    p[i] = p[p[i]]\n                    i = p[i]\n                return i\n            c = n\n            for u, v, w in ed:\n                if w > x:\n                    break\n                a, b = f(u), f(v)\n                if a != b:\n                    p[b] = a\n                    c -= 1\n            return c<= k\n        ans = hi\n        while lo <= hi:\n            m = (lo + hi) // 2\n            if ok(m):\n                ans = m\n                hi = m - 1\n            else :\n                lo = m + 1\n        return ans\n        \n        ",
+    "lang": "python3",
+    "question_id": 3881,
+    "contest_submission": 25040397
+  },
+  {
+    "submission_id": 1695801097,
+    "code": "from typing import List\n\nclass Solution:\n    def minCost(self, n: int, edges: List[List[int]], k: int) -> int:\n        if k >= n:\n            return 0\n        parent = list(range(n))\n        def find(x):\n            while parent[x] != x:\n                parent[x] = parent[parent[x]]\n                x = parent[x]\n            return x\n        def union(x, y):\n            rx, ry = find(x), find(y)\n            if rx != ry:\n                parent[ry] = rx\n        weights = sorted({w for _, _, w in edges})\n        ans = weights[-1]\n        lo, hi = 0, len(weights) - 1\n        while lo <= hi:\n            mid = (lo + hi) // 2\n            thresh = weights[mid]\n            for i in range(n):\n                parent[i] = i\n            for u, v, w in edges:\n                if w <= thresh:\n                    union(u, v)\n            comps = len({find(i) for i in range(n)})\n            if comps <= k:\n                ans = thresh\n                hi = mid - 1\n            else:\n                lo = mid + 1\n        return ans\n",
+    "lang": "python3",
+    "question_id": 3881,
+    "contest_submission": 25031206
+  },
+  {
+    "submission_id": 1695808971,
+    "code": "class Solution:\n    def minCost(self, n: int, edges: List[List[int]], k: int) -> int:\n        if k >= n:\n            return 0\n        edges.sort(key = lambda x: x[2])\n        parent = list(range(n))\n        #finder\n        def find(x):\n            while parent[x] != x:\n                parent[x] = parent[parent[x]]\n                x = parent[x]\n            return x\n        comp = n\n        for u, v, w in edges:\n            ru, rv = find(u), find(v)\n            if ru != rv:\n                parent[rv] = ru\n                comp -= 1\n                if comp == k:\n                    return w\n        return 0",
+    "lang": "python3",
+    "question_id": 3881,
+    "contest_submission": 25037387
+  }
+]

@@ -1,0 +1,23 @@
+[
+  {
+    "submission_id": 1712734488,
+    "code": "class Solution:\n    def maximumMedianSum(self, nums: list[int]) -> int:\n        nums.sort()\n        n = len(nums)\n        cnt, idx = 0, n-2\n        for _ in range(n // 3):\n            cnt += nums[idx]\n            idx -= 2\n        return cnt",
+    "lang": "python3",
+    "question_id": 3766,
+    "contest_submission": 25323347
+  },
+  {
+    "submission_id": 1712777024,
+    "code": "class Solution:\n    def maximumMedianSum(self, nums: List[int]) -> int:\n        from heapq import heapify, heappop, heappush\n        s = sorted(nums)\n        l = len(s)\n        i = l // 3\n        res = 0\n        while i < l:\n            res += s[i]\n            i += 2\n        return res\n",
+    "lang": "python3",
+    "question_id": 3766,
+    "contest_submission": 25354866
+  },
+  {
+    "submission_id": 1712744021,
+    "code": "class Solution:\n    def maximumMedianSum(self, a: List[int]) -> int:\n        a.sort()\n        m = len(a) // 3\n        return sum(a[-2 - 2*i] for i in range(m))",
+    "lang": "python3",
+    "question_id": 3766,
+    "contest_submission": 25330497
+  }
+]

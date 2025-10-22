@@ -1,0 +1,23 @@
+[
+  {
+    "submission_id": 1737954104,
+    "code": "class Solution:\n    def xorAfterQueries(self, a: List[int], q: List[List[int]]) -> int:\n        M=1000000007\n        for l,r,k,v in q:\n            i=l\n            while i<=r:\n                a[i]=(a[i]*v)%M\n                i+=k\n        x=0\n        for y in a:\n            x^=y\n        return x",
+    "lang": "python3",
+    "question_id": 3974,
+    "contest_submission": 25836314
+  },
+  {
+    "submission_id": 1737964557,
+    "code": "class Solution:\n    def xorAfterQueries(self, a: List[int], q: List[List[int]]) -> int:\n        m = 10**9 + 7\n        neg_inf = -sys.maxsize\n        pos_inf = sys.maxsize\n        t = (a, q)\n        for l, r, k, v in q:\n            i = l\n            while i <= r:\n                a[i] = (a[i] * v) % m\n                i += k\n        ans = 0\n        for x in a:\n            ans ^= x\n        return ans\n",
+    "lang": "python3",
+    "question_id": 3974,
+    "contest_submission": 25842828
+  },
+  {
+    "submission_id": 1737955530,
+    "code": "class Solution:\n    def xorAfterQueries(self, nums: List[int], queries: List[List[int]]) -> int:\n        mod = 10**9 + 7\n        for l, r, k, v in queries:\n            for i in range(l,r + 1, k):\n                nums[i] = (nums[i] * v) % mod\n        ans = 0\n        for x in nums:\n            ans ^= x\n        return ans\n        ",
+    "lang": "python3",
+    "question_id": 3974,
+    "contest_submission": 25837003
+  }
+]

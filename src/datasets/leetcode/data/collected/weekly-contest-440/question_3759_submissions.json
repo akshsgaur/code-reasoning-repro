@@ -1,0 +1,23 @@
+[
+  {
+    "submission_id": 1567561194,
+    "code": "class Solution:\n    def findMaxSum(self, a: List[int], b: List[int], k: int) -> List[int]:\n        import heapq\n        n=len(a)\n        L=[(a[i],b[i],i) for i in range(n)]\n        L.sort(key=lambda x:x[0])\n        r=[0]*n\n        h=[]\n        s=0\n        i=0\n        while i<n:\n            v=L[i][0]\n            j=i\n            while j<n and L[j][0]==v:\n                r[L[j][2]]=s\n                j+=1\n            for p in range(i,j):\n                y=L[p][1]\n                if len(h)<k:\n                    heapq.heappush(h,y)\n                    s+=y\n                elif y>h[0]:\n                    t=heapq.heapreplace(h,y)\n                    s+=y-t\n            i=j\n        return r\n",
+    "lang": "python3",
+    "question_id": 3759,
+    "contest_submission": 22984619
+  },
+  {
+    "submission_id": 1567558204,
+    "code": "import heapq\n\nclass Solution:\n    def findMaxSum(self, nums1, nums2, k):\n        n = len(nums1)\n        pairArr = []\n        i = 0\n        while i < n:\n            pairArr.append((nums1[i], nums2[i], i))\n            i += 1\n        pairArr.sort(key=lambda x: x[0])\n        ans = [0] * n\n        heap = []\n        currentSum = 0\n        i = 0\n        while i < n:\n            j = i\n            while j < n and pairArr[j][0] == pairArr[i][0]:\n                j += 1\n            p = i\n            while p < j:\n                origIdx = pairArr[p][2]\n                ans[origIdx] = currentSum\n                p += 1\n            p = i\n            while p < j:\n                val = pairArr[p][1]\n                heapq.heappush(heap, val)\n                currentSum += val\n                if len(heap) > k:\n                    rem = heapq.heappop(heap)\n                    currentSum -= rem\n                p += 1\n            i = j\n        return ans",
+    "lang": "python3",
+    "question_id": 3759,
+    "contest_submission": 22982463
+  },
+  {
+    "submission_id": 1567577211,
+    "code": "class Solution:\n    def findMaxSum(self, a: List[int], b: List[int], k: int) -> List[int]:\n        n = len(a)\n        P = sorted(zip(a, b, range(n)), key=lambda x: x[0])\n        R = [0] * n\n        h, s = [], 0\n        i = 0\n        while i < n:\n            j = i\n            while j < n and P[j][0] == P[i][0]:\n                R[P[j][2]] = s\n                j += 1\n            for _, y, _ in P[i:j]:\n                if len(h) < k:\n                    heapq.heappush(h, y)\n                    s += y\n                elif y > h[0]:\n                    s += y - h[0]\n                    heapq.heapreplace(h, y)\n            i = j\n        return R",
+    "lang": "python3",
+    "question_id": 3759,
+    "contest_submission": 22995946
+  }
+]

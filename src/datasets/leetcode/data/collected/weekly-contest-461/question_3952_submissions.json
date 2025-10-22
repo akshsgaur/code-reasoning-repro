@@ -1,0 +1,23 @@
+[
+  {
+    "submission_id": 1721337202,
+    "code": "class Solution:\n    def isTrionic(self, a: list[int]) -> bool:\n        n = len(a)\n        if n < 3:\n            return False\n        p = 0\n        f1 = f2 = f3 = False\n        for i in range(1, n):\n            u, v = a[i - 1], a[i]\n            if v == u:\n                return False\n            if p == 0:\n                if v > u:\n                    f1 = True\n                else:\n                    if not f1:\n                        return False\n                    p = 1\n                    f2 = True\n            elif p == 1:\n                if v < u:\n                    f2 = True\n                else:\n                    if not f2:\n                        return False\n                    p = 2\n                    f3 = True\n            else:\n                if v > u:\n                    f3 = True\n                else:\n                    return False\n        return p == 2 and f1 and f2 and f3",
+    "lang": "python3",
+    "question_id": 3952,
+    "contest_submission": 25560181
+  },
+  {
+    "submission_id": 1721313297,
+    "code": "class Solution:\n    def isTrionic(self, nums: List[int]) -> bool:\n        n = len(nums)\n        for p in range(1, n - 1):\n            for q in range(p + 1, n - 1):\n                inc1 = all(nums[i] < nums[i + 1] for i in range(p))\n                dec = all(nums[i] > nums[i + 1] for i in range(p, q))\n                inc2 = all(nums[i] < nums[i + 1] for i in range(q, n - 1))\n                if inc1 and dec and inc2:\n                    return True\n        return False",
+    "lang": "python3",
+    "question_id": 3952,
+    "contest_submission": 25541873
+  },
+  {
+    "submission_id": 1721315243,
+    "code": "class Solution:\n    def isTrionic(self, nums: List[int]) -> bool:\n        prev = -1\n        for i in range(1, len(nums)):\n            a = nums[i-1]\n            b = nums[i]\n            if a == b:\n                return False\n            if a > b:\n                if i == 1:\n                    return False\n                if prev != -1 and prev != i-1:\n                    return False\n                prev = i\n        return prev != -1 and prev < len(nums) - 1",
+    "lang": "python3",
+    "question_id": 3952,
+    "contest_submission": 25542704
+  }
+]

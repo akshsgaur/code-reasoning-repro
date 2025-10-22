@@ -1,0 +1,23 @@
+[
+  {
+    "submission_id": 1612012595,
+    "code": "class Solution:\n    def maximumPossibleSize(self, nums: List[int]) -> int:\n        a = []\n        for b in nums:\n            a.append(b)\n            while len(a) >= 2 and a[-2] > a[-1]:\n                a.pop()\n        return len(a)\n",
+    "lang": "python3",
+    "question_id": 3738,
+    "contest_submission": 23732412
+  },
+  {
+    "submission_id": 1612019160,
+    "code": "class Solution:\n    def maximumPossibleSize(self, nums: List[int]) -> int:\n        res = 0\n        mx = float('-inf')\n        for el in nums:\n            if el >= mx:\n                mx = el\n                res += 1\n        return res",
+    "lang": "python3",
+    "question_id": 3738,
+    "contest_submission": 23737515
+  },
+  {
+    "submission_id": 1612002603,
+    "code": "class Solution:\n    def maximumPossibleSize(self, nums: List[int]) -> int:\n        stack = []\n        for currVal in nums:\n            stack.append(currVal)\n            while len(stack) > 1 and stack[-2] > stack[-1]:\n                lastVal = stack.pop()\n                prevVal = stack.pop()\n                stack.append(lastVal if lastVal > prevVal else prevVal)\n        return len(stack)",
+    "lang": "python3",
+    "question_id": 3738,
+    "contest_submission": 23724496
+  }
+]

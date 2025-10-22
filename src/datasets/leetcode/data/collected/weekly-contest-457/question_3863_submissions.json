@@ -1,0 +1,23 @@
+[
+  {
+    "submission_id": 1687854117,
+    "code": "class Solution:\n    def processQueries(self, c: int, connections: List[List[int]], queries: List[List[int]]) -> List[int]:\n        rank = [0] * (c + 1)\n        parent = list(range(c + 1))\n\n        def find(x):\n            while parent[x] != x:\n                parent[x] = parent[parent[x]]\n                x = parent[x]\n            return x\n\n        def union(a, b):\n            a, b = find(a), find(b)\n            if a == b:\n                return\n            if rank[a] < rank[b]:\n                a, b = b, a\n            parent[b] = a\n            if rank[a] == rank[b]:\n                rank[a] += 1\n\n        for a, b in connections:\n            union(a, b)\n\n        _map = defaultdict(list)\n\n        for a in range(1, c + 1):\n            _map[find(a)].append(a)\n\n        for b in _map:\n            heapq.heapify(_map[b])\n\n        arr = [True] * (c + 1)\n\n        ans = []\n        for x, y in queries:\n            if x != 1:\n                arr[y] = False\n            else:\n                if arr[y]:\n                    ans.append(y)\n                else:\n                    h = _map[find(y)]\n                    while h and not arr[h[0]]:\n                        heapq.heappop(h)\n                    ans.append(h[0] if h else -1)\n                    # print(f\"query ({x}, {y}): pop, new val: {ans[-1]}\")\n\n        return ans\n",
+    "lang": "python3",
+    "question_id": 3863,
+    "contest_submission": 24952633
+  },
+  {
+    "submission_id": 1687846549,
+    "code": "class Solution:\n    def processQueries(self,c,e,q):\n        def f(i):\n            while p[i]!=i:\n                p[i]=p[p[i]]\n                i=p[i]\n            return i\n        def u(a,b):\n            ra,rb=f(a),f(b)\n            if ra==rb: return\n            if s[ra]<s[rb]: p[ra]=rb\n            elif s[ra]>s[rb]: p[rb]=ra\n            else:\n                p[rb]=ra; s[ra]+=1\n\n        p=list(range(c+1)); s=[0]*(c+1)\n        for a,b in e: u(a,b)\n\n        d={}\n        for i in range(1,c+1):\n            r0=f(i)\n            d.setdefault(r0,[]).append(i)\n\n        for k0 in d: heapify(d[k0])\n        ok=[True]*(c+1); res=[]\n        for t,x in q:\n            if t==1:\n                if ok[x]: res.append(x)\n                else:\n                    h=d[f(x)]\n                    while h and not ok[h[0]]: heappop(h)\n                    res.append(h[0] if h else -1)\n            else: ok[x]=False\n        return res\n\n        ",
+    "lang": "python3",
+    "question_id": 3863,
+    "contest_submission": 24947597
+  },
+  {
+    "submission_id": 1687855064,
+    "code": "import heapq\n\nclass Solution:\n    def processQueries(self, c: int, connections: List[List[int]], queries: List[List[int]]) -> List[int]:\n        parent = list(range(c))\n        size = [1] * c\n\n        def find(x: int) -> int:\n            if parent[x] != x:\n                parent[x] = find(parent[x])\n            return parent[x]\n\n        def union(a: int, b: int) -> None:\n            ra, rb = find(a), find(b)\n            if ra == rb:\n                return\n            if size[ra] < size[rb]:\n                ra, rb = rb, ra\n            parent[rb] = ra\n            size[ra] += size[rb]\n\n        for u, v in connections:\n            union(u - 1, v - 1)\n\n        heaps = [[] for _ in range(c)]\n        for i in range(c):\n            root = find(i)\n            heapq.heappush(heaps[root], i + 1)\n\n        online = [True] * (c + 1)\n        ans: List[int] = []\n\n        for t, x in queries:\n            if t == 1:\n                if online[x]:\n                    ans.append(x)\n                    continue\n                root = find(x - 1)\n                heap = heaps[root]\n                while heap and not online[heap[0]]:\n                    heapq.heappop(heap)\n                ans.append(heap[0] if heap else -1)\n            elif t == 2:\n                online[x] = False\n\n        return ans\n",
+    "lang": "python3",
+    "question_id": 3863,
+    "contest_submission": 24953312
+  }
+]
