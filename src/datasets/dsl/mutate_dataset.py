@@ -9,12 +9,16 @@ from typing import Dict, Optional
 
 from .simple_mutator import generate_all_mutants
 
+MAX_MUTATED = 100
 
-def mutate_records(records: list[Dict]) -> list[Dict]:
-    """Return the mutated dataset entries."""
 
-    mutated = []
-    for idx, entry in enumerate(records):
+def mutate_records(records: list[Dict], limit: int = MAX_MUTATED) -> list[Dict]:
+    """Return up to `limit` mutated dataset entries."""
+
+    mutated: list[Dict] = []
+    for entry in records:
+        if len(mutated) >= limit:
+            break
         code = entry["code"]
         call_examples = entry["input"]
         outputs = entry["output"]
@@ -31,7 +35,7 @@ def mutate_records(records: list[Dict]) -> list[Dict]:
                     valid = False
                     break
                 candidate_outputs.append(mutated_output)
-            if valid:
+            if valid and len(set(candidate_outputs)) > 1:
                 best_mutation = {
                     "mutated_code": mutated_candidate,
                     "mutated_output": candidate_outputs,
@@ -40,24 +44,18 @@ def mutate_records(records: list[Dict]) -> list[Dict]:
                 }
                 break
 
+        if not best_mutation:
+            continue
+
         entry = entry.copy()
-        entry["has_mutation"] = bool(best_mutation)
-        if best_mutation:
-            entry["mutated_code"] = best_mutation["mutated_code"]
-            entry["mutated_output"] = best_mutation["mutated_output"]
-            entry["mutation_info"] = {
-                "mutation_type": best_mutation["mutation_type"],
-                "mutation_id": best_mutation["mutation_id"],
-                "coverage_similarity": 0.0,
-            }
-        else:
-            entry["mutated_code"] = ""
-            entry["mutated_output"] = ""
-            entry["mutation_info"] = {
-                "mutation_type": "",
-                "mutation_id": -1,
-                "coverage_similarity": 0.0,
-            }
+        entry["has_mutation"] = True
+        entry["mutated_code"] = best_mutation["mutated_code"]
+        entry["mutated_output"] = best_mutation["mutated_output"]
+        entry["mutation_info"] = {
+            "mutation_type": best_mutation["mutation_type"],
+            "mutation_id": best_mutation["mutation_id"],
+            "coverage_similarity": 0.0,
+        }
         mutated.append(entry)
     return mutated
 
@@ -101,11 +99,13 @@ def _execute_code(code: str, function_name: str, call_expr: str) -> tuple[bool, 
         return False, ""
 
 
-def mutate_dataset(json_path: Path, jsonl_path: Path) -> None:
+def mutate_dataset(json_path: Path, jsonl_path: Path, limit: int = MAX_MUTATED) -> None:
     """Load programs_structured.json, apply mutations, and rewrite in place."""
 
     data = json.loads(json_path.read_text())
-    mutated = mutate_records(data)
+    mutated = mutate_records(data, limit=limit)
+    if len(mutated) < limit:
+        print(f"Warning: only {len(mutated)} mutated programs generated (requested {limit}).")
     json_path.write_text(json.dumps(mutated, indent=2))
 
     with jsonl_path.open("w", encoding="utf-8") as f:
