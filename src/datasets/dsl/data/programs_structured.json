@@ -18,12 +18,16 @@
       "dsl_prog_0(a1=[2, 3, 5, 3, 0]) == [3, 5, 3, 0, 0]",
       "dsl_prog_0(a1=[4, 0, 4]) == [0, 4, 0]"
     ],
-    "mutated_code": "",
-    "mutated_output": "",
+    "mutated_code": "def dsl_prog_0(a1):\n    return ([] if 5 % 2 != 0 else a1 + [0])[1:]",
+    "mutated_output": [
+      "[]",
+      "[]",
+      "[]"
+    ],
     "has_mutation": true,
     "mutation_info": {
-      "mutation_type": "",
-      "mutation_id": 1,
+      "mutation_type": "relational",
+      "mutation_id": 0,
       "coverage_similarity": 0.0
     },
     "dsl": "(cdr (if (is-mod 2 5) empty (append 0 var0)))",
@@ -54,10 +58,10 @@
     ],
     "mutated_code": "",
     "mutated_output": "",
-    "has_mutation": true,
+    "has_mutation": false,
     "mutation_info": {
       "mutation_type": "",
-      "mutation_id": 2,
+      "mutation_id": -1,
       "coverage_similarity": 0.0
     },
     "dsl": "(filter (gt? 2) (car (cons var0 empty)))",
@@ -86,12 +90,16 @@
       "dsl_prog_2(a1=[1, 3, 2, 1]) == [0, 1, 3, 2, 1, 2]",
       "dsl_prog_2(a1=[3, 0, 3]) == [0, 3, 0, 3, 3]"
     ],
-    "mutated_code": "",
-    "mutated_output": "",
+    "mutated_code": "def dsl_prog_2(a1):\n    return [len([][1:])] + (a1 + [a1[1]])",
+    "mutated_output": [
+      "[0, 2, 5, 3, 2, 5]",
+      "[0, 1, 3, 2, 1, 3]",
+      "[0, 3, 0, 3, 0]"
+    ],
     "has_mutation": true,
     "mutation_info": {
-      "mutation_type": "",
-      "mutation_id": 3,
+      "mutation_type": "number",
+      "mutation_id": 1,
       "coverage_similarity": 0.0
     },
     "dsl": "(cons (length (cdr empty)) (append (index 2 var0) var0))",
@@ -120,12 +128,16 @@
       "dsl_prog_3(a1=[4, 5, 2, 0, 5]) == [0, 4, 5, 2, 0, 5, 3]",
       "dsl_prog_3(a1=[2, 2, 1]) == [0, 2, 2, 1, 3]"
     ],
-    "mutated_code": "",
-    "mutated_output": "",
+    "mutated_code": "def dsl_prog_3(a1):\n    return list(filter(lambda elem_0: len([]) < elem_0, [len([])] + (a1 + [3])))",
+    "mutated_output": [
+      "[4, 5, 1, 2, 2, 3]",
+      "[4, 5, 2, 5, 3]",
+      "[2, 2, 1, 3]"
+    ],
     "has_mutation": true,
     "mutation_info": {
-      "mutation_type": "",
-      "mutation_id": 4,
+      "mutation_type": "relational",
+      "mutation_id": 0,
       "coverage_similarity": 0.0
     },
     "dsl": "(filter (le? (length empty)) (cons (length empty) (append 3 var0)))",
@@ -154,12 +166,16 @@
       "dsl_prog_4(a1=[4, 5, 2, 1]) == [4, 5, 2, 1]",
       "dsl_prog_4(a1=[2, 2, 3, 4, 5]) == [2, 2, 3, 4, 5]"
     ],
-    "mutated_code": "",
-    "mutated_output": "",
+    "mutated_code": "def dsl_prog_4(a1):\n    return ([a1] + ([[]] + []))[1]",
+    "mutated_output": [
+      "[]",
+      "[]",
+      "[]"
+    ],
     "has_mutation": true,
     "mutation_info": {
-      "mutation_type": "",
-      "mutation_id": 5,
+      "mutation_type": "number",
+      "mutation_id": 0,
       "coverage_similarity": 0.0
     },
     "dsl": "(car (cons var0 (cons empty empty)))",
@@ -188,12 +204,16 @@
       "dsl_prog_5(a1=[0, 1, 5, 0]) == [1, 5, 0]",
       "dsl_prog_5(a1=[2, 5, 1]) == [5, 1]"
     ],
-    "mutated_code": "",
-    "mutated_output": "",
+    "mutated_code": "def dsl_prog_5(a1):\n    return a1[2:]",
+    "mutated_output": [
+      "[5, 0]",
+      "[5, 0]",
+      "[1]"
+    ],
     "has_mutation": true,
     "mutation_info": {
-      "mutation_type": "",
-      "mutation_id": 6,
+      "mutation_type": "number",
+      "mutation_id": 0,
       "coverage_similarity": 0.0
     },
     "dsl": "(cdr var0)",
@@ -222,12 +242,16 @@
       "dsl_prog_6(a1=[4, 5, 1, 1, 2]) == [4, 5, 1, 1, 2, 0]",
       "dsl_prog_6(a1=[2, 5, 5, 5]) == [2, 5, 5, 5, 0]"
     ],
-    "mutated_code": "",
-    "mutated_output": "",
+    "mutated_code": "def dsl_prog_6(a1):\n    return ([] + [a1])[0] + [-1]",
+    "mutated_output": [
+      "[0, 1, 4, -1]",
+      "[4, 5, 1, 1, 2, -1]",
+      "[2, 5, 5, 5, -1]"
+    ],
     "has_mutation": true,
     "mutation_info": {
-      "mutation_type": "",
-      "mutation_id": 7,
+      "mutation_type": "number",
+      "mutation_id": 1,
       "coverage_similarity": 0.0
     },
     "dsl": "(append 0 (index 0 (append var0 empty)))",
@@ -258,10 +282,10 @@
     ],
     "mutated_code": "",
     "mutated_output": "",
-    "has_mutation": true,
+    "has_mutation": false,
     "mutation_info": {
       "mutation_type": "",
-      "mutation_id": 8,
+      "mutation_id": -1,
       "coverage_similarity": 0.0
     },
     "dsl": "(car (if (index 5 empty) (cons var0 empty) (cons var0 empty)))",
@@ -292,10 +316,10 @@
     ],
     "mutated_code": "",
     "mutated_output": "",
-    "has_mutation": true,
+    "has_mutation": false,
     "mutation_info": {
       "mutation_type": "",
-      "mutation_id": 9,
+      "mutation_id": -1,
       "coverage_similarity": 0.0
     },
     "dsl": "(append (* (max 4 0) (index 3 var0)) (cdr (cdr empty)))",
@@ -324,12 +348,16 @@
       "dsl_prog_9(a1=[0, 1, 1, 3]) == [0, 1, 1, 3]",
       "dsl_prog_9(a1=[5, 4, 0, 2, 3]) == [5, 4, 0, 2, 3]"
     ],
-    "mutated_code": "",
-    "mutated_output": "",
+    "mutated_code": "def dsl_prog_9(a1):\n    return ([a1] + [] if 2 // 2 == 0 else [[]] + [])[0]",
+    "mutated_output": [
+      "[]",
+      "[]",
+      "[]"
+    ],
     "has_mutation": true,
     "mutation_info": {
-      "mutation_type": "",
-      "mutation_id": 10,
+      "mutation_type": "arithmetic",
+      "mutation_id": 0,
       "coverage_similarity": 0.0
     },
     "dsl": "(car (if (is-mod 2 2) (cons var0 empty) (cons empty empty)))",
@@ -358,12 +386,16 @@
       "dsl_prog_10(a1=[0, 0, 1, 1, 1]) == [3, 0, 0, 1, 1, 1]",
       "dsl_prog_10(a1=[3, 1, 0, 5, 1]) == [3, 3, 1, 0, 5, 1]"
     ],
-    "mutated_code": "",
-    "mutated_output": "",
+    "mutated_code": "def dsl_prog_10(a1):\n    return [max(2, 2)] + a1",
+    "mutated_output": [
+      "[2, 0, 1, 3, 0, 1]",
+      "[2, 0, 0, 1, 1, 1]",
+      "[2, 3, 1, 0, 5, 1]"
+    ],
     "has_mutation": true,
     "mutation_info": {
-      "mutation_type": "",
-      "mutation_id": 11,
+      "mutation_type": "number",
+      "mutation_id": 1,
       "coverage_similarity": 0.0
     },
     "dsl": "(cons (max 2 3) var0)",
@@ -392,12 +424,16 @@
       "dsl_prog_11(a1=[1, 5, 2, 0, 4]) == [1, 5, 2, 0, 4, 4]",
       "dsl_prog_11(a1=[5, 2, 0, 2]) == [5, 2, 0, 2, 4]"
     ],
-    "mutated_code": "",
-    "mutated_output": "",
+    "mutated_code": "def dsl_prog_11(a1):\n    return list(map(lambda elem_0: elem_0 + [5], [] + [a1]))[0]",
+    "mutated_output": [
+      "[4, 4, 0, 5]",
+      "[1, 5, 2, 0, 4, 5]",
+      "[5, 2, 0, 2, 5]"
+    ],
     "has_mutation": true,
     "mutation_info": {
-      "mutation_type": "",
-      "mutation_id": 12,
+      "mutation_type": "number",
+      "mutation_id": 0,
       "coverage_similarity": 0.0
     },
     "dsl": "(car (map (append 4) (append var0 empty)))",
@@ -426,12 +462,16 @@
       "dsl_prog_12(a1=[4, 4, 4, 3, 5]) == [0, 4, 4, 4, 3, 5]",
       "dsl_prog_12(a1=[0, 5, 4, 2, 5]) == [0, 0, 5, 4, 2, 5]"
     ],
-    "mutated_code": "",
-    "mutated_output": "",
+    "mutated_code": "def dsl_prog_12(a1):\n    return [1] + ([a1[0]] + a1[1:])",
+    "mutated_output": [
+      "[1, 4, 1, 1]",
+      "[1, 4, 4, 4, 3, 5]",
+      "[1, 0, 5, 4, 2, 5]"
+    ],
     "has_mutation": true,
     "mutation_info": {
-      "mutation_type": "",
-      "mutation_id": 13,
+      "mutation_type": "number",
+      "mutation_id": 0,
       "coverage_similarity": 0.0
     },
     "dsl": "(cons 0 (cons (car var0) (cdr var0)))",
@@ -462,10 +502,10 @@
     ],
     "mutated_code": "",
     "mutated_output": "",
-    "has_mutation": true,
+    "has_mutation": false,
     "mutation_info": {
       "mutation_type": "",
-      "mutation_id": 14,
+      "mutation_id": -1,
       "coverage_similarity": 0.0
     },
     "dsl": "(if (is-prime 4) (if (index 0 empty) var0 (cdr empty)) var0)",
@@ -494,12 +534,16 @@
       "dsl_prog_14(a1=[5, 2, 5, 1]) == [0, 5, 2, 5, 1]",
       "dsl_prog_14(a1=[2, 1, 0, 5, 3]) == [0, 2, 1, 0, 5, 3]"
     ],
-    "mutated_code": "",
-    "mutated_output": "",
+    "mutated_code": "def dsl_prog_14(a1):\n    return [max(len([]), 3 + 5)] + a1",
+    "mutated_output": [
+      "[8, 2, 1, 4, 2]",
+      "[8, 5, 2, 5, 1]",
+      "[8, 2, 1, 0, 5, 3]"
+    ],
     "has_mutation": true,
     "mutation_info": {
-      "mutation_type": "",
-      "mutation_id": 15,
+      "mutation_type": "arithmetic",
+      "mutation_id": 1,
       "coverage_similarity": 0.0
     },
     "dsl": "(cons (max (length empty) (- 3 5)) var0)",
@@ -528,12 +572,16 @@
       "dsl_prog_15(a1=[5, 2, 0]) == [17, 19]",
       "dsl_prog_15(a1=[1, 5, 2]) == [14, 17]"
     ],
-    "mutated_code": "",
-    "mutated_output": "",
+    "mutated_code": "def dsl_prog_15(a1):\n    return list(map(lambda elem_0: 4 * 4 - elem_0, list(map(lambda elem_1: 3 - elem_1, a1[1:]))))",
+    "mutated_output": [
+      "[18, 14]",
+      "[15, 13]",
+      "[18, 15]"
+    ],
     "has_mutation": true,
     "mutation_info": {
-      "mutation_type": "",
-      "mutation_id": 16,
+      "mutation_type": "arithmetic",
+      "mutation_id": 0,
       "coverage_similarity": 0.0
     },
     "dsl": "(map (+ (* 4 4)) (map (- 3) (cdr var0)))",
@@ -562,12 +610,16 @@
       "dsl_prog_16(a1=[4, 0, 1]) == [0, 1]",
       "dsl_prog_16(a1=[0, 0, 2, 2]) == [0]"
     ],
-    "mutated_code": "",
-    "mutated_output": "",
+    "mutated_code": "def dsl_prog_16(a1):\n    import math\n    return list(filter(lambda elem_0: int(math.sqrt(elem_0)) ** 2 != elem_0, a1))[1:]",
+    "mutated_output": [
+      "[3, 2]",
+      "[]",
+      "[2]"
+    ],
     "has_mutation": true,
     "mutation_info": {
-      "mutation_type": "",
-      "mutation_id": 17,
+      "mutation_type": "relational",
+      "mutation_id": 0,
       "coverage_similarity": 0.0
     },
     "dsl": "(cdr (filter is-square var0))",
@@ -596,12 +648,16 @@
       "dsl_prog_17(a1=[0, 1, 3, 0]) == []",
       "dsl_prog_17(a1=[0, 1, 2]) == []"
     ],
-    "mutated_code": "",
-    "mutated_output": "",
+    "mutated_code": "def dsl_prog_17(a1):\n    return list(map(lambda elem_0: list(range(elem_0)), a1 + [1]))[-1]",
+    "mutated_output": [
+      "[0]",
+      "[0]",
+      "[0]"
+    ],
     "has_mutation": true,
     "mutation_info": {
-      "mutation_type": "",
-      "mutation_id": 18,
+      "mutation_type": "number",
+      "mutation_id": 1,
       "coverage_similarity": 0.0
     },
     "dsl": "(car (map range (append 1 var0)))",
@@ -630,12 +686,16 @@
       "dsl_prog_18(a1=[2, 4, 2]) == [3]",
       "dsl_prog_18(a1=[4, 1, 5, 5, 4]) == [5]"
     ],
-    "mutated_code": "",
-    "mutated_output": "",
+    "mutated_code": "def dsl_prog_18(a1):\n    return list(map(lambda elem_0: len(elem_0), [][1:] if 3 != 4 else [a1] + []))",
+    "mutated_output": [
+      "[]",
+      "[]",
+      "[]"
+    ],
     "has_mutation": true,
     "mutation_info": {
-      "mutation_type": "",
-      "mutation_id": 19,
+      "mutation_type": "relational",
+      "mutation_id": 0,
       "coverage_similarity": 0.0
     },
     "dsl": "(map length (if (eq? 3 4) (cdr empty) (cons var0 empty)))",
@@ -664,12 +724,16 @@
       "dsl_prog_19(a1=[1, 4, 5]) == [4, 0]",
       "dsl_prog_19(a1=[2, 2, 4, 3, 5]) == [2, 2, 4, 0]"
     ],
-    "mutated_code": "",
-    "mutated_output": "",
+    "mutated_code": "def dsl_prog_19(a1):\n    return list(filter(lambda elem_0: elem_0 // max(1, 2) == 0, a1 + [len([])]))",
+    "mutated_output": [
+      "[1, 0]",
+      "[1, 0]",
+      "[0]"
+    ],
     "has_mutation": true,
     "mutation_info": {
-      "mutation_type": "",
-      "mutation_id": 20,
+      "mutation_type": "arithmetic",
+      "mutation_id": 0,
       "coverage_similarity": 0.0
     },
     "dsl": "(filter (is-mod (max 1 2)) (append (length empty) var0))",
@@ -698,12 +762,16 @@
       "dsl_prog_20(a1=[5, 0, 2, 0, 4]) == [0, 2, 0, 4]",
       "dsl_prog_20(a1=[1, 5, 4]) == [5, 4]"
     ],
-    "mutated_code": "",
-    "mutated_output": "",
+    "mutated_code": "def dsl_prog_20(a1):\n    return a1[2:]",
+    "mutated_output": [
+      "[2, 5, 4]",
+      "[2, 0, 4]",
+      "[4]"
+    ],
     "has_mutation": true,
     "mutation_info": {
-      "mutation_type": "",
-      "mutation_id": 21,
+      "mutation_type": "number",
+      "mutation_id": 0,
       "coverage_similarity": 0.0
     },
     "dsl": "(cdr var0)",
@@ -734,10 +802,10 @@
     ],
     "mutated_code": "",
     "mutated_output": "",
-    "has_mutation": true,
+    "has_mutation": false,
     "mutation_info": {
       "mutation_type": "",
-      "mutation_id": 22,
+      "mutation_id": -1,
       "coverage_similarity": 0.0
     },
     "dsl": "(append (length empty) (car (cons var0 empty)))",
@@ -766,12 +834,16 @@
       "dsl_prog_22(a1=[4, 4, 4, 0, 4]) == [4, 4, 0, 4, 3, 0]",
       "dsl_prog_22(a1=[1, 5, 4, 3]) == [5, 4, 3, 3, 0]"
     ],
-    "mutated_code": "",
-    "mutated_output": "",
+    "mutated_code": "def dsl_prog_22(a1):\n    return (a1 + [4] + [len([])])[1:]",
+    "mutated_output": [
+      "[3, 5, 2, 1, 4, 0]",
+      "[4, 4, 0, 4, 4, 0]",
+      "[5, 4, 3, 4, 0]"
+    ],
     "has_mutation": true,
     "mutation_info": {
-      "mutation_type": "",
-      "mutation_id": 23,
+      "mutation_type": "number",
+      "mutation_id": 0,
       "coverage_similarity": 0.0
     },
     "dsl": "(cdr (append (length empty) (append 3 var0)))",
@@ -800,12 +872,16 @@
       "dsl_prog_23(a1=[0, 4, 3, 3]) == [-8, 0, 4, 3, 3, 4]",
       "dsl_prog_23(a1=[4, 2, 0, 2]) == [-8, 4, 2, 0, 2, 4]"
     ],
-    "mutated_code": "",
-    "mutated_output": "",
+    "mutated_code": "def dsl_prog_23(a1):\n    return [((lambda elem_0: 4 / elem_0) if 1 > 0 else lambda elem_1: min(2, elem_1))(3 - 5)] + (a1 + [2 * 2])",
+    "mutated_output": [
+      "[-2.0, 3, 4, 5, 2, 4]",
+      "[-2.0, 0, 4, 3, 3, 4]",
+      "[-2.0, 4, 2, 0, 2, 4]"
+    ],
     "has_mutation": true,
     "mutation_info": {
-      "mutation_type": "",
-      "mutation_id": 24,
+      "mutation_type": "arithmetic",
+      "mutation_id": 1,
       "coverage_similarity": 0.0
     },
     "dsl": "(cons (if (gt? 1 0) (* 4) (min 2) (- 3 5)) (append (* 2 2) var0))",
@@ -834,12 +910,16 @@
       "dsl_prog_24(a1=[4, 5, 4, 4, 4]) == [4, 5, 4, 4, 4]",
       "dsl_prog_24(a1=[1, 4, 3, 3, 3]) == [1, 4, 3, 3, 3]"
     ],
-    "mutated_code": "",
-    "mutated_output": "",
+    "mutated_code": "def dsl_prog_24(a1):\n    return ([a1] + ([[]] + []))[1]",
+    "mutated_output": [
+      "[]",
+      "[]",
+      "[]"
+    ],
     "has_mutation": true,
     "mutation_info": {
-      "mutation_type": "",
-      "mutation_id": 25,
+      "mutation_type": "number",
+      "mutation_id": 0,
       "coverage_similarity": 0.0
     },
     "dsl": "(car (cons var0 (cons empty empty)))",
@@ -870,10 +950,10 @@
     ],
     "mutated_code": "",
     "mutated_output": "",
-    "has_mutation": true,
+    "has_mutation": false,
     "mutation_info": {
       "mutation_type": "",
-      "mutation_id": 26,
+      "mutation_id": -1,
       "coverage_similarity": 0.0
     },
     "dsl": "(if (le? 3 3) (filter (le? 0) var0) (filter is-prime (index 0 empty)))",
@@ -904,10 +984,10 @@
     ],
     "mutated_code": "",
     "mutated_output": "",
-    "has_mutation": true,
+    "has_mutation": false,
     "mutation_info": {
       "mutation_type": "",
-      "mutation_id": 27,
+      "mutation_id": -1,
       "coverage_similarity": 0.0
     },
     "dsl": "(index (length (cdr empty)) (map range var0))",
@@ -936,12 +1016,16 @@
       "dsl_prog_27(a1=[2, 5, 2]) == [0, 1]",
       "dsl_prog_27(a1=[2, 4, 0, 3]) == [0, 1]"
     ],
-    "mutated_code": "",
-    "mutated_output": "",
+    "mutated_code": "def dsl_prog_27(a1):\n    return list(map(lambda elem_0: list(range(elem_0)), a1))[1]",
+    "mutated_output": [
+      "[0, 1, 2, 3]",
+      "[0, 1, 2, 3, 4]",
+      "[0, 1, 2, 3]"
+    ],
     "has_mutation": true,
     "mutation_info": {
-      "mutation_type": "",
-      "mutation_id": 28,
+      "mutation_type": "number",
+      "mutation_id": 0,
       "coverage_similarity": 0.0
     },
     "dsl": "(car (map range var0))",
@@ -970,12 +1054,16 @@
       "dsl_prog_28(a1=[0, 1, 4, 3, 5]) == [1, 0, 1, 1, 0, 2]",
       "dsl_prog_28(a1=[3, 3, 4, 0, 0]) == [1, 0, 0, 1, 0, 0]"
     ],
-    "mutated_code": "",
-    "mutated_output": "",
+    "mutated_code": "def dsl_prog_28(a1):\n    return list(map(lambda elem_0: elem_0 // (1 * 3), [min(4, 1)] + a1))",
+    "mutated_output": [
+      "[0, 1, 0, 0]",
+      "[0, 0, 0, 1, 1, 1]",
+      "[0, 1, 1, 1, 0, 0]"
+    ],
     "has_mutation": true,
     "mutation_info": {
-      "mutation_type": "",
-      "mutation_id": 29,
+      "mutation_type": "arithmetic",
+      "mutation_id": 0,
       "coverage_similarity": 0.0
     },
     "dsl": "(map (mod (* 1 3)) (cons (min 4 1) var0))",
@@ -1006,10 +1094,10 @@
     ],
     "mutated_code": "",
     "mutated_output": "",
-    "has_mutation": true,
+    "has_mutation": false,
     "mutation_info": {
       "mutation_type": "",
-      "mutation_id": 30,
+      "mutation_id": -1,
       "coverage_similarity": 0.0
     },
     "dsl": "(car (append var0 empty))",
@@ -1038,12 +1126,16 @@
       "dsl_prog_30(a1=[5, 4, 1, 5, 0]) == [5, 4, 1, 5, 0, 4]",
       "dsl_prog_30(a1=[5, 2, 1]) == [5, 2, 1, 4]"
     ],
-    "mutated_code": "",
-    "mutated_output": "",
+    "mutated_code": "def dsl_prog_30(a1):\n    return list(map(lambda elem_0: elem_0 + [5], [a1] + []))[0]",
+    "mutated_output": [
+      "[5, 5, 3, 2, 5]",
+      "[5, 4, 1, 5, 0, 5]",
+      "[5, 2, 1, 5]"
+    ],
     "has_mutation": true,
     "mutation_info": {
-      "mutation_type": "",
-      "mutation_id": 31,
+      "mutation_type": "number",
+      "mutation_id": 0,
       "coverage_similarity": 0.0
     },
     "dsl": "(car (map (append 4) (cons var0 empty)))",
@@ -1074,10 +1166,10 @@
     ],
     "mutated_code": "",
     "mutated_output": "",
-    "has_mutation": true,
+    "has_mutation": false,
     "mutation_info": {
       "mutation_type": "",
-      "mutation_id": 32,
+      "mutation_id": -1,
       "coverage_similarity": 0.0
     },
     "dsl": "(map length (map (append 5) (append var0 empty)))",
@@ -1108,10 +1200,10 @@
     ],
     "mutated_code": "",
     "mutated_output": "",
-    "has_mutation": true,
+    "has_mutation": false,
     "mutation_info": {
       "mutation_type": "",
-      "mutation_id": 33,
+      "mutation_id": -1,
       "coverage_similarity": 0.0
     },
     "dsl": "(car (cons var0 empty))",
@@ -1140,12 +1232,16 @@
       "dsl_prog_33(a1=[0, 0, 2, 1]) == [0, 0, 1, 4]",
       "dsl_prog_33(a1=[0, 4, 5, 4]) == [0, 4, 4, 4]"
     ],
-    "mutated_code": "",
-    "mutated_output": "",
+    "mutated_code": "def dsl_prog_33(a1):\n    import math\n    return list(filter(lambda elem_0: int(math.sqrt(elem_0)) ** 2 != elem_0, [5 * 4] + (a1 + [4])))",
+    "mutated_output": [
+      "[20, 2]",
+      "[20, 2]",
+      "[20, 5]"
+    ],
     "has_mutation": true,
     "mutation_info": {
-      "mutation_type": "",
-      "mutation_id": 34,
+      "mutation_type": "relational",
+      "mutation_id": 0,
       "coverage_similarity": 0.0
     },
     "dsl": "(filter is-square (cons (* 5 4) (append 4 var0)))",
@@ -1174,12 +1270,16 @@
       "dsl_prog_34(a1=[4, 1, 1]) == [3, 3]",
       "dsl_prog_34(a1=[0, 0, 3]) == [4, 1]"
     ],
-    "mutated_code": "",
-    "mutated_output": "",
+    "mutated_code": "def dsl_prog_34(a1):\n    return list(filter(lambda elem_0: elem_0 // 1 == 0, list(map(lambda elem_1: 4 - elem_1, a1[1:]))))",
+    "mutated_output": [
+      "[0]",
+      "[]",
+      "[]"
+    ],
     "has_mutation": true,
     "mutation_info": {
-      "mutation_type": "",
-      "mutation_id": 35,
+      "mutation_type": "arithmetic",
+      "mutation_id": 0,
       "coverage_similarity": 0.0
     },
     "dsl": "(filter (is-mod 1) (map (- 4) (cdr var0)))",
@@ -1208,12 +1308,16 @@
       "dsl_prog_35(a1=[0, 4, 4, 1, 1]) == [1, 0, 4, 4, 1, 1]",
       "dsl_prog_35(a1=[1, 4, 0, 3]) == [1, 1, 4, 0, 3]"
     ],
-    "mutated_code": "",
-    "mutated_output": "",
+    "mutated_code": "def dsl_prog_35(a1):\n    return ([[2] + a1] + ([a1] + []))[0]",
+    "mutated_output": [
+      "[2, 0, 4, 3, 0, 4]",
+      "[2, 0, 4, 4, 1, 1]",
+      "[2, 1, 4, 0, 3]"
+    ],
     "has_mutation": true,
     "mutation_info": {
-      "mutation_type": "",
-      "mutation_id": 36,
+      "mutation_type": "number",
+      "mutation_id": 0,
       "coverage_similarity": 0.0
     },
     "dsl": "(car (cons (cons 1 var0) (cons var0 empty)))",
@@ -1242,12 +1346,16 @@
       "dsl_prog_36(a1=[5, 0, 5, 0, 2]) == [5, 0, 5, 0, 2, 2]",
       "dsl_prog_36(a1=[2, 5, 0]) == [2, 5, 0, 2]"
     ],
-    "mutated_code": "",
-    "mutated_output": "",
+    "mutated_code": "def dsl_prog_36(a1):\n    return ([a1] + [])[0] + [1]",
+    "mutated_output": [
+      "[5, 2, 4, 0, 1]",
+      "[5, 0, 5, 0, 2, 1]",
+      "[2, 5, 0, 1]"
+    ],
     "has_mutation": true,
     "mutation_info": {
-      "mutation_type": "",
-      "mutation_id": 37,
+      "mutation_type": "number",
+      "mutation_id": 1,
       "coverage_similarity": 0.0
     },
     "dsl": "(append 2 (car (cons var0 empty)))",
@@ -1276,12 +1384,16 @@
       "dsl_prog_37(a1=[4, 4, 5]) == [4, 4, 5]",
       "dsl_prog_37(a1=[5, 3, 4]) == [5, 3, 4]"
     ],
-    "mutated_code": "",
-    "mutated_output": "",
+    "mutated_code": "def dsl_prog_37(a1):\n    return ([a1] + [] + [a1[1:]])[-1]",
+    "mutated_output": [
+      "[5, 0, 0]",
+      "[4, 5]",
+      "[3, 4]"
+    ],
     "has_mutation": true,
     "mutation_info": {
-      "mutation_type": "",
-      "mutation_id": 38,
+      "mutation_type": "number",
+      "mutation_id": 1,
       "coverage_similarity": 0.0
     },
     "dsl": "(car (append (cdr var0) (cons var0 empty)))",
@@ -1310,12 +1422,16 @@
       "dsl_prog_38(a1=[5, 0, 2, 0, 3]) == [0, 0, 2, 0, 3]",
       "dsl_prog_38(a1=[2, 2, 3]) == [0, 2, 3]"
     ],
-    "mutated_code": "",
-    "mutated_output": "",
+    "mutated_code": "def dsl_prog_38(a1):\n    return [1] + a1[1:]",
+    "mutated_output": [
+      "[1, 4, 5]",
+      "[1, 0, 2, 0, 3]",
+      "[1, 2, 3]"
+    ],
     "has_mutation": true,
     "mutation_info": {
-      "mutation_type": "",
-      "mutation_id": 39,
+      "mutation_type": "number",
+      "mutation_id": 0,
       "coverage_similarity": 0.0
     },
     "dsl": "(cons 0 (cdr var0))",
@@ -1344,12 +1460,16 @@
       "dsl_prog_39(a1=[4, 5, 5, 5, 3]) == [4, 0]",
       "dsl_prog_39(a1=[2, 1, 5]) == [1, 0]"
     ],
-    "mutated_code": "",
-    "mutated_output": "",
+    "mutated_code": "def dsl_prog_39(a1):\n    import math\n    return list(filter(lambda elem_0: int(math.sqrt(elem_0)) ** 2 != elem_0, [][0] if 3 == 0 else a1 + [0]))",
+    "mutated_output": [
+      "[]",
+      "[5, 5, 5, 3]",
+      "[2, 5]"
+    ],
     "has_mutation": true,
     "mutation_info": {
-      "mutation_type": "",
-      "mutation_id": 40,
+      "mutation_type": "relational",
+      "mutation_id": 0,
       "coverage_similarity": 0.0
     },
     "dsl": "(filter is-square (if (eq? 3 0) (car empty) (append 0 var0)))",
@@ -1378,12 +1498,16 @@
       "dsl_prog_40(a1=[5, 4, 1, 2, 5]) == [5, 0]",
       "dsl_prog_40(a1=[1, 1, 2, 4]) == [1, 0]"
     ],
-    "mutated_code": "",
-    "mutated_output": "",
+    "mutated_code": "def dsl_prog_40(a1):\n    return list(map(lambda elem_0: elem_0[len([])], [a1] + [] + [[1] + a1]))",
+    "mutated_output": [
+      "[5, 1]",
+      "[5, 1]",
+      "[1, 1]"
+    ],
     "has_mutation": true,
     "mutation_info": {
-      "mutation_type": "",
-      "mutation_id": 41,
+      "mutation_type": "number",
+      "mutation_id": 0,
       "coverage_similarity": 0.0
     },
     "dsl": "(map (index (length empty)) (append (cons 0 var0) (cons var0 empty)))",
@@ -1414,10 +1538,10 @@
     ],
     "mutated_code": "",
     "mutated_output": "",
-    "has_mutation": true,
+    "has_mutation": false,
     "mutation_info": {
       "mutation_type": "",
-      "mutation_id": 42,
+      "mutation_id": -1,
       "coverage_similarity": 0.0
     },
     "dsl": "(car (map range (cdr var0)))",
@@ -1446,12 +1570,16 @@
       "dsl_prog_42(a1=[2, 4, 0, 5]) == [2, 4, 0, 4]",
       "dsl_prog_42(a1=[2, 4, 2, 1, 1]) == [2, 4, 2, 1, 1]"
     ],
-    "mutated_code": "",
-    "mutated_output": "",
+    "mutated_code": "def dsl_prog_42(a1):\n    return list(map((lambda elem_0: max(2, elem_0)) if 4 <= 2 else lambda elem_1: min(3, elem_1), a1))",
+    "mutated_output": [
+      "[3, 0, 3]",
+      "[2, 3, 0, 3]",
+      "[2, 3, 2, 1, 1]"
+    ],
     "has_mutation": true,
     "mutation_info": {
-      "mutation_type": "",
-      "mutation_id": 43,
+      "mutation_type": "number",
+      "mutation_id": 3,
       "coverage_similarity": 0.0
     },
     "dsl": "(map (if (le? 4 2) (max 2) (min 4)) var0)",
@@ -1482,10 +1610,10 @@
     ],
     "mutated_code": "",
     "mutated_output": "",
-    "has_mutation": true,
+    "has_mutation": false,
     "mutation_info": {
       "mutation_type": "",
-      "mutation_id": 44,
+      "mutation_id": -1,
       "coverage_similarity": 0.0
     },
     "dsl": "(car (cons var0 (cons var0 empty)))",
@@ -1514,12 +1642,16 @@
       "dsl_prog_44(a1=[3, 4, 4, 3, 2]) == [3, 2]",
       "dsl_prog_44(a1=[2, 3, 4]) == [3]"
     ],
-    "mutated_code": "",
-    "mutated_output": "",
+    "mutated_code": "def dsl_prog_44(a1):\n    import math\n    return list(filter(lambda elem_0: all((elem_0 // i for i in range(2, int(math.sqrt(elem_0)) + 1))) if elem_0 >= 2 else False, a1 + [1]))[1:]",
+    "mutated_output": [
+      "[4]",
+      "[4, 4, 3, 2]",
+      "[3, 4]"
+    ],
     "has_mutation": true,
     "mutation_info": {
-      "mutation_type": "",
-      "mutation_id": 45,
+      "mutation_type": "arithmetic",
+      "mutation_id": 0,
       "coverage_similarity": 0.0
     },
     "dsl": "(cdr (filter is-prime (append 1 var0)))",
@@ -1548,12 +1680,16 @@
       "dsl_prog_45(a1=[5, 4, 5]) == [4, 5]",
       "dsl_prog_45(a1=[4, 5, 4, 1, 5]) == [5, 4, 1, 5]"
     ],
-    "mutated_code": "",
-    "mutated_output": "",
+    "mutated_code": "def dsl_prog_45(a1):\n    return ([a1[2:]] + [][1:])[0]",
+    "mutated_output": [
+      "[1, 1, 5]",
+      "[5]",
+      "[4, 1, 5]"
+    ],
     "has_mutation": true,
     "mutation_info": {
-      "mutation_type": "",
-      "mutation_id": 46,
+      "mutation_type": "number",
+      "mutation_id": 0,
       "coverage_similarity": 0.0
     },
     "dsl": "(car (cons (cdr var0) (cdr empty)))",
@@ -1582,12 +1718,16 @@
       "dsl_prog_46(a1=[4, 4, 0, 5, 5]) == [0, 4, 0, 5, 5, 3]",
       "dsl_prog_46(a1=[2, 5, 4, 2, 2]) == [0, 5, 4, 2, 2, 3]"
     ],
-    "mutated_code": "",
-    "mutated_output": "",
+    "mutated_code": "def dsl_prog_46(a1):\n    return [len([][1:])] + (a1[0:] + [min(4, 3)])",
+    "mutated_output": [
+      "[0, 3, 0, 1, 3]",
+      "[0, 4, 4, 0, 5, 5, 3]",
+      "[0, 2, 5, 4, 2, 2, 3]"
+    ],
     "has_mutation": true,
     "mutation_info": {
-      "mutation_type": "",
-      "mutation_id": 47,
+      "mutation_type": "number",
+      "mutation_id": 1,
       "coverage_similarity": 0.0
     },
     "dsl": "(cons (length (cdr empty)) (append (min 4 3) (cdr var0)))",
@@ -1616,12 +1756,16 @@
       "dsl_prog_47(a1=[5, 2, 0, 1, 2]) == [0, 1, 2, 3, 4, 0]",
       "dsl_prog_47(a1=[1, 3, 5, 0, 2]) == [0, 1, 2, 3, 4, 0]"
     ],
-    "mutated_code": "",
-    "mutated_output": "",
+    "mutated_code": "def dsl_prog_47(a1):\n    return ([[]] + [])[len([])] if a1[0] % 3 != 0 else list(range(5)) + [len([])]",
+    "mutated_output": [
+      "[0, 1, 2, 3, 4, 0]",
+      "[]",
+      "[]"
+    ],
     "has_mutation": true,
     "mutation_info": {
-      "mutation_type": "",
-      "mutation_id": 48,
+      "mutation_type": "relational",
+      "mutation_id": 0,
       "coverage_similarity": 0.0
     },
     "dsl": "(if (is-mod 3 (index 0 var0)) (index (length empty) (cons empty empty)) (append (length empty) (range 5)))",
@@ -1650,12 +1794,16 @@
       "dsl_prog_48(a1=[3, 5, 0, 2, 1]) == [3, 5, 0, 2, 1]",
       "dsl_prog_48(a1=[4, 0, 5]) == [4, 0, 5]"
     ],
-    "mutated_code": "",
-    "mutated_output": "",
+    "mutated_code": "def dsl_prog_48(a1):\n    return ([a1] + [] + [list(range(3))])[-1]",
+    "mutated_output": [
+      "[0, 1, 2]",
+      "[0, 1, 2]",
+      "[0, 1, 2]"
+    ],
     "has_mutation": true,
     "mutation_info": {
-      "mutation_type": "",
-      "mutation_id": 49,
+      "mutation_type": "number",
+      "mutation_id": 1,
       "coverage_similarity": 0.0
     },
     "dsl": "(car (append (range 3) (cons var0 empty)))",
@@ -1686,10 +1834,10 @@
     ],
     "mutated_code": "",
     "mutated_output": "",
-    "has_mutation": true,
+    "has_mutation": false,
     "mutation_info": {
       "mutation_type": "",
-      "mutation_id": 50,
+      "mutation_id": -1,
       "coverage_similarity": 0.0
     },
     "dsl": "(map (max 4) (map (index 4) (append var0 empty)))",
@@ -1718,12 +1866,16 @@
       "dsl_prog_50(a1=[5, 2, 0, 0]) == [4, 4, 4, 4]",
       "dsl_prog_50(a1=[5, 3, 3, 3, 1]) == [4, 4, 4, 4, 4]"
     ],
-    "mutated_code": "",
-    "mutated_output": "",
+    "mutated_code": "def dsl_prog_50(a1):\n    return list(map(lambda elem_0: max(5, elem_0), a1 + [1]))[1:]",
+    "mutated_output": [
+      "[5, 5, 5]",
+      "[5, 5, 5, 5]",
+      "[5, 5, 5, 5, 5]"
+    ],
     "has_mutation": true,
     "mutation_info": {
-      "mutation_type": "",
-      "mutation_id": 51,
+      "mutation_type": "number",
+      "mutation_id": 0,
       "coverage_similarity": 0.0
     },
     "dsl": "(cdr (map (max 4) (append 1 var0)))",
@@ -1754,10 +1906,10 @@
     ],
     "mutated_code": "",
     "mutated_output": "",
-    "has_mutation": true,
+    "has_mutation": false,
     "mutation_info": {
       "mutation_type": "",
-      "mutation_id": 52,
+      "mutation_id": -1,
       "coverage_similarity": 0.0
     },
     "dsl": "(if (car empty) (map (- 0) empty) (filter (eq? 0) var0))",
@@ -1786,12 +1938,16 @@
       "dsl_prog_52(a1=[1, 3, 4]) == [2, 0, -1]",
       "dsl_prog_52(a1=[5, 5, 5, 0]) == [-2, -2, -2, 3]"
     ],
-    "mutated_code": "",
-    "mutated_output": "",
+    "mutated_code": "def dsl_prog_52(a1):\n    return list(map(lambda elem_0: 2 + 1 + elem_0, a1))",
+    "mutated_output": [
+      "[3, 4, 8]",
+      "[4, 6, 7]",
+      "[8, 8, 8, 3]"
+    ],
     "has_mutation": true,
     "mutation_info": {
-      "mutation_type": "",
-      "mutation_id": 53,
+      "mutation_type": "arithmetic",
+      "mutation_id": 0,
       "coverage_similarity": 0.0
     },
     "dsl": "(map (- (+ 2 1)) var0)",
@@ -1820,12 +1976,16 @@
       "dsl_prog_53(a1=[3, 3, 1]) == []",
       "dsl_prog_53(a1=[3, 2, 4, 5, 1]) == []"
     ],
-    "mutated_code": "",
-    "mutated_output": "",
+    "mutated_code": "def dsl_prog_53(a1):\n    return list(filter(lambda elem_0: 1 >= elem_0, a1[1:]))",
+    "mutated_output": [
+      "[0, 1]",
+      "[1]",
+      "[1]"
+    ],
     "has_mutation": true,
     "mutation_info": {
-      "mutation_type": "",
-      "mutation_id": 54,
+      "mutation_type": "relational",
+      "mutation_id": 0,
       "coverage_similarity": 0.0
     },
     "dsl": "(filter (gt? 1) (cdr var0))",
@@ -1854,12 +2014,16 @@
       "dsl_prog_54(a1=[3, 2, 3, 1]) == [2, 3, 1]",
       "dsl_prog_54(a1=[5, 0, 3, 3]) == [0, 3, 3]"
     ],
-    "mutated_code": "",
-    "mutated_output": "",
+    "mutated_code": "def dsl_prog_54(a1):\n    return a1[2:]",
+    "mutated_output": [
+      "[0]",
+      "[3, 1]",
+      "[3, 3]"
+    ],
     "has_mutation": true,
     "mutation_info": {
-      "mutation_type": "",
-      "mutation_id": 55,
+      "mutation_type": "number",
+      "mutation_id": 0,
       "coverage_similarity": 0.0
     },
     "dsl": "(cdr var0)",
@@ -1888,12 +2052,16 @@
       "dsl_prog_55(a1=[1, 4, 5, 3]) == [3, 4, 5, 3, 3]",
       "dsl_prog_55(a1=[2, 4, 2, 4]) == [3, 4, 2, 4, 3]"
     ],
-    "mutated_code": "",
-    "mutated_output": "",
+    "mutated_code": "def dsl_prog_55(a1):\n    return [4] + (a1 + [3])[1:]",
+    "mutated_output": [
+      "[4, 0, 5, 3]",
+      "[4, 4, 5, 3, 3]",
+      "[4, 4, 2, 4, 3]"
+    ],
     "has_mutation": true,
     "mutation_info": {
-      "mutation_type": "",
-      "mutation_id": 56,
+      "mutation_type": "number",
+      "mutation_id": 0,
       "coverage_similarity": 0.0
     },
     "dsl": "(cons 3 (cdr (append 3 var0)))",
@@ -1922,12 +2090,16 @@
       "dsl_prog_56(a1=[4, 4, 4]) == [0]",
       "dsl_prog_56(a1=[3, 2, 3, 0]) == [0, 0]"
     ],
-    "mutated_code": "",
-    "mutated_output": "",
+    "mutated_code": "def dsl_prog_56(a1):\n    return list(filter(lambda elem_0: elem_0 // (3 + 5) == 0, [len([])] + a1))",
+    "mutated_output": [
+      "[0, 0, 1, 4, 4]",
+      "[0, 4, 4, 4]",
+      "[0, 3, 2, 3, 0]"
+    ],
     "has_mutation": true,
     "mutation_info": {
-      "mutation_type": "",
-      "mutation_id": 57,
+      "mutation_type": "arithmetic",
+      "mutation_id": 0,
       "coverage_similarity": 0.0
     },
     "dsl": "(filter (is-mod (+ 3 5)) (cons (length empty) var0))",
@@ -1956,12 +2128,16 @@
       "dsl_prog_57(a1=[3, 1, 0]) == [1, 0]",
       "dsl_prog_57(a1=[3, 0, 4, 1]) == [0, 4, 1]"
     ],
-    "mutated_code": "",
-    "mutated_output": "",
+    "mutated_code": "def dsl_prog_57(a1):\n    return a1[2:]",
+    "mutated_output": [
+      "[2, 0, 5]",
+      "[0]",
+      "[4, 1]"
+    ],
     "has_mutation": true,
     "mutation_info": {
-      "mutation_type": "",
-      "mutation_id": 58,
+      "mutation_type": "number",
+      "mutation_id": 0,
       "coverage_similarity": 0.0
     },
     "dsl": "(cdr var0)",
@@ -1992,10 +2168,10 @@
     ],
     "mutated_code": "",
     "mutated_output": "",
-    "has_mutation": true,
+    "has_mutation": false,
     "mutation_info": {
       "mutation_type": "",
-      "mutation_id": 59,
+      "mutation_id": -1,
       "coverage_similarity": 0.0
     },
     "dsl": "(range (length (cons 0 var0)))",
@@ -2024,12 +2200,16 @@
       "dsl_prog_59(a1=[4, 3, 5]) == [5, 4, 3, 5]",
       "dsl_prog_59(a1=[2, 0, 3, 3, 4]) == [5, 2, 0, 3, 3, 4]"
     ],
-    "mutated_code": "",
-    "mutated_output": "",
+    "mutated_code": "def dsl_prog_59(a1):\n    return ([] + [[6] + a1])[len([])]",
+    "mutated_output": [
+      "[6, 2, 5, 3, 3]",
+      "[6, 4, 3, 5]",
+      "[6, 2, 0, 3, 3, 4]"
+    ],
     "has_mutation": true,
     "mutation_info": {
-      "mutation_type": "",
-      "mutation_id": 60,
+      "mutation_type": "number",
+      "mutation_id": 0,
       "coverage_similarity": 0.0
     },
     "dsl": "(index (length empty) (append (cons 5 var0) empty))",
@@ -2058,12 +2238,16 @@
       "dsl_prog_60(a1=[2, 5, 5, 1, 1]) == [2, 1, 1, 1, 1]",
       "dsl_prog_60(a1=[3, 3, 4]) == [3, 3, 0]"
     ],
-    "mutated_code": "",
-    "mutated_output": "",
+    "mutated_code": "def dsl_prog_60(a1):\n    return list(map(lambda elem_0: elem_0 // 4, [0] + a1))[1:]",
+    "mutated_output": [
+      "[1, 1, 0, 0]",
+      "[0, 1, 1, 0, 0]",
+      "[0, 0, 1]"
+    ],
     "has_mutation": true,
     "mutation_info": {
-      "mutation_type": "",
-      "mutation_id": 61,
+      "mutation_type": "arithmetic",
+      "mutation_id": 0,
       "coverage_similarity": 0.0
     },
     "dsl": "(cdr (map (mod 4) (cons 0 var0)))",
@@ -2094,10 +2278,10 @@
     ],
     "mutated_code": "",
     "mutated_output": "",
-    "has_mutation": true,
+    "has_mutation": false,
     "mutation_info": {
       "mutation_type": "",
-      "mutation_id": 62,
+      "mutation_id": -1,
       "coverage_similarity": 0.0
     },
     "dsl": "(map length (append var0 (cons var0 empty)))",
@@ -2126,12 +2310,16 @@
       "dsl_prog_62(a1=[0, 3, 3, 5]) == []",
       "dsl_prog_62(a1=[1, 3, 5, 1, 0]) == [0]"
     ],
-    "mutated_code": "",
-    "mutated_output": "",
+    "mutated_code": "def dsl_prog_62(a1):\n    return list(filter(lambda elem_0: 3 >= elem_0, a1[1:]))[1:]",
+    "mutated_output": [
+      "[3, 2, 2]",
+      "[3]",
+      "[1, 0]"
+    ],
     "has_mutation": true,
     "mutation_info": {
-      "mutation_type": "",
-      "mutation_id": 63,
+      "mutation_type": "relational",
+      "mutation_id": 0,
       "coverage_similarity": 0.0
     },
     "dsl": "(cdr (filter (gt? 3) (cdr var0)))",
@@ -2160,12 +2348,16 @@
       "dsl_prog_63(a1=[0, 4, 1]) == [0, 0, 4, 1]",
       "dsl_prog_63(a1=[2, 5, 1, 4, 4]) == [0, 2, 5, 1, 4, 4]"
     ],
-    "mutated_code": "",
-    "mutated_output": "",
+    "mutated_code": "def dsl_prog_63(a1):\n    return [3 * 0 % (5 / 1)] + a1",
+    "mutated_output": [
+      "[0.0, 2, 3, 1, 4]",
+      "[0.0, 0, 4, 1]",
+      "[0.0, 2, 5, 1, 4, 4]"
+    ],
     "has_mutation": true,
     "mutation_info": {
-      "mutation_type": "",
-      "mutation_id": 64,
+      "mutation_type": "arithmetic",
+      "mutation_id": 3,
       "coverage_similarity": 0.0
     },
     "dsl": "(cons (mod (* 5 1) (* 3 0)) var0)",
@@ -2194,12 +2386,16 @@
       "dsl_prog_64(a1=[4, 4, 3]) == [5, 0, 1, 2, 3, 4]",
       "dsl_prog_64(a1=[3, 0, 1]) == [4, 0, 1, 2, 3, 4]"
     ],
-    "mutated_code": "",
-    "mutated_output": "",
+    "mutated_code": "def dsl_prog_64(a1):\n    return [a1[0] - 1] + list(range(5))",
+    "mutated_output": [
+      "[-1, 0, 1, 2, 3, 4]",
+      "[3, 0, 1, 2, 3, 4]",
+      "[2, 0, 1, 2, 3, 4]"
+    ],
     "has_mutation": true,
     "mutation_info": {
-      "mutation_type": "",
-      "mutation_id": 65,
+      "mutation_type": "arithmetic",
+      "mutation_id": 1,
       "coverage_similarity": 0.0
     },
     "dsl": "(cons (+ (car var0) 1) (range 5))",
@@ -2228,12 +2424,16 @@
       "dsl_prog_65(a1=[0, 4, 3]) == [2, 3, 0, 3, 3]",
       "dsl_prog_65(a1=[1, 2, 2]) == [2, 3, 1, 2, 2]"
     ],
-    "mutated_code": "",
-    "mutated_output": "",
+    "mutated_code": "def dsl_prog_65(a1):\n    return [3] + list(map(lambda elem_0: min(3, elem_0), [5] + a1))",
+    "mutated_output": [
+      "[3, 3, 3, 2, 1, 2, 0]",
+      "[3, 3, 0, 3, 3]",
+      "[3, 3, 1, 2, 2]"
+    ],
     "has_mutation": true,
     "mutation_info": {
-      "mutation_type": "",
-      "mutation_id": 66,
+      "mutation_type": "number",
+      "mutation_id": 0,
       "coverage_similarity": 0.0
     },
     "dsl": "(cons 2 (map (min 3) (cons 5 var0)))",
@@ -2262,12 +2462,16 @@
       "dsl_prog_66(a1=[3, 4, 5, 1, 2]) == [5, 3, 4, 5, 1, 2]",
       "dsl_prog_66(a1=[2, 3, 0]) == [5, 2, 3, 0]"
     ],
-    "mutated_code": "",
-    "mutated_output": "",
+    "mutated_code": "def dsl_prog_66(a1):\n    return ([a1] + [] + [[6] + a1])[len([]) - 1]",
+    "mutated_output": [
+      "[6, 4, 1, 3, 2]",
+      "[6, 3, 4, 5, 1, 2]",
+      "[6, 2, 3, 0]"
+    ],
     "has_mutation": true,
     "mutation_info": {
-      "mutation_type": "",
-      "mutation_id": 67,
+      "mutation_type": "number",
+      "mutation_id": 0,
       "coverage_similarity": 0.0
     },
     "dsl": "(index (- (length empty) 1) (append (cons 5 var0) (cons var0 empty)))",
@@ -2298,10 +2502,10 @@
     ],
     "mutated_code": "",
     "mutated_output": "",
-    "has_mutation": true,
+    "has_mutation": false,
     "mutation_info": {
       "mutation_type": "",
-      "mutation_id": 68,
+      "mutation_id": -1,
       "coverage_similarity": 0.0
     },
     "dsl": "(index (* (mod 5 1) (mod 1 0)) (cons var0 empty))",
@@ -2332,10 +2536,10 @@
     ],
     "mutated_code": "",
     "mutated_output": "",
-    "has_mutation": true,
+    "has_mutation": false,
     "mutation_info": {
       "mutation_type": "",
-      "mutation_id": 69,
+      "mutation_id": -1,
       "coverage_similarity": 0.0
     },
     "dsl": "(map (index 4) (if (gt? 2 3) (cons empty empty) (cons var0 empty)))",
@@ -2364,12 +2568,16 @@
       "dsl_prog_69(a1=[5, 5, 0, 3]) == [5, 0, 3, 0]",
       "dsl_prog_69(a1=[3, 0, 4, 1, 2]) == [0, 4, 1, 2, 0]"
     ],
-    "mutated_code": "",
-    "mutated_output": "",
+    "mutated_code": "def dsl_prog_69(a1):\n    return a1[2:] + [list(range(4))[0]]",
+    "mutated_output": [
+      "[4, 0]",
+      "[0, 3, 0]",
+      "[4, 1, 2, 0]"
+    ],
     "has_mutation": true,
     "mutation_info": {
-      "mutation_type": "",
-      "mutation_id": 70,
+      "mutation_type": "number",
+      "mutation_id": 0,
       "coverage_similarity": 0.0
     },
     "dsl": "(append (car (range 4)) (cdr var0))",
@@ -2398,12 +2606,16 @@
       "dsl_prog_70(a1=[3, 1, 5]) == [0, 1, 2, 3, 4, 5]",
       "dsl_prog_70(a1=[0, 3, 0]) == []"
     ],
-    "mutated_code": "",
-    "mutated_output": "",
+    "mutated_code": "def dsl_prog_70(a1):\n    return list(range(a1[1] * (3 - 1)))",
+    "mutated_output": [
+      "[0, 1, 2, 3, 4, 5]",
+      "[0, 1]",
+      "[0, 1, 2, 3, 4, 5]"
+    ],
     "has_mutation": true,
     "mutation_info": {
-      "mutation_type": "",
-      "mutation_id": 71,
+      "mutation_type": "number",
+      "mutation_id": 0,
       "coverage_similarity": 0.0
     },
     "dsl": "(range (* (car var0) (- 3 1)))",
@@ -2432,12 +2644,16 @@
       "dsl_prog_71(a1=[2, 5, 2, 3]) == [0, 2, 5, 2, 3]",
       "dsl_prog_71(a1=[5, 2, 5, 3]) == [0, 5, 2, 5, 3]"
     ],
-    "mutated_code": "",
-    "mutated_output": "",
+    "mutated_code": "def dsl_prog_71(a1):\n    return [0 / 4] + a1",
+    "mutated_output": [
+      "[0.0, 2, 0, 2, 2]",
+      "[0.0, 2, 5, 2, 3]",
+      "[0.0, 5, 2, 5, 3]"
+    ],
     "has_mutation": true,
     "mutation_info": {
-      "mutation_type": "",
-      "mutation_id": 72,
+      "mutation_type": "arithmetic",
+      "mutation_id": 1,
       "coverage_similarity": 0.0
     },
     "dsl": "(cons (* 0 4) var0)",
@@ -2468,10 +2684,10 @@
     ],
     "mutated_code": "",
     "mutated_output": "",
-    "has_mutation": true,
+    "has_mutation": false,
     "mutation_info": {
       "mutation_type": "",
-      "mutation_id": 73,
+      "mutation_id": -1,
       "coverage_similarity": 0.0
     },
     "dsl": "(append (length (index 4 empty)) var0)",
@@ -2500,12 +2716,16 @@
       "dsl_prog_73(a1=[1, 0, 5, 0]) == [1, 0, 0, 1]",
       "dsl_prog_73(a1=[5, 5, 2]) == []"
     ],
-    "mutated_code": "",
-    "mutated_output": "",
+    "mutated_code": "def dsl_prog_73(a1):\n    import math\n    return list(filter(lambda elem_0: int(math.sqrt(elem_0)) ** 2 != elem_0, a1 + [a1[0]]))",
+    "mutated_output": [
+      "[3, 3]",
+      "[5]",
+      "[5, 5, 2, 5]"
+    ],
     "has_mutation": true,
     "mutation_info": {
-      "mutation_type": "",
-      "mutation_id": 74,
+      "mutation_type": "relational",
+      "mutation_id": 0,
       "coverage_similarity": 0.0
     },
     "dsl": "(filter is-square (append (car var0) var0))",
@@ -2534,12 +2754,16 @@
       "dsl_prog_74(a1=[5, 3, 1, 3]) == [0, 0]",
       "dsl_prog_74(a1=[1, 4, 1]) == [0, 4, 0]"
     ],
-    "mutated_code": "",
-    "mutated_output": "",
+    "mutated_code": "def dsl_prog_74(a1):\n    return list(filter(lambda elem_0: elem_0 // 4 == 0, [0] + a1)) + [min(3, 0 % 5)]",
+    "mutated_output": [
+      "[0, 0, 3, 2, 0]",
+      "[0, 3, 1, 3, 0]",
+      "[0, 1, 1, 0]"
+    ],
     "has_mutation": true,
     "mutation_info": {
-      "mutation_type": "",
-      "mutation_id": 75,
+      "mutation_type": "arithmetic",
+      "mutation_id": 1,
       "coverage_similarity": 0.0
     },
     "dsl": "(append (min 3 (mod 5 0)) (filter (is-mod 4) (cons 0 var0)))",
@@ -2568,12 +2792,16 @@
       "dsl_prog_75(a1=[1, 2, 3]) == [3]",
       "dsl_prog_75(a1=[4, 2, 2, 2]) == [4]"
     ],
-    "mutated_code": "",
-    "mutated_output": "",
+    "mutated_code": "def dsl_prog_75(a1):\n    import math\n    return [] if (all((len([]) % i for i in range(2, int(math.sqrt(len([]))) + 1))) if len([]) >= 2 else True) else list(map(lambda elem_0: len(elem_0), [a1] + []))",
+    "mutated_output": [
+      "[]",
+      "[]",
+      "[]"
+    ],
     "has_mutation": true,
     "mutation_info": {
-      "mutation_type": "",
-      "mutation_id": 76,
+      "mutation_type": "keyword",
+      "mutation_id": 0,
       "coverage_similarity": 0.0
     },
     "dsl": "(if (is-prime (length empty)) empty (map length (cons var0 empty)))",
@@ -2604,10 +2832,10 @@
     ],
     "mutated_code": "",
     "mutated_output": "",
-    "has_mutation": true,
+    "has_mutation": false,
     "mutation_info": {
       "mutation_type": "",
-      "mutation_id": 77,
+      "mutation_id": -1,
       "coverage_similarity": 0.0
     },
     "dsl": "(cons (max (car empty) (* 0 4)) var0)",
@@ -2636,12 +2864,16 @@
       "dsl_prog_77(a1=[3, 4, 5, 0]) == [3, 4, 5, 0]",
       "dsl_prog_77(a1=[1, 0, 3]) == [1, 0, 3]"
     ],
-    "mutated_code": "",
-    "mutated_output": "",
+    "mutated_code": "def dsl_prog_77(a1):\n    return list(filter(lambda elem_0: elem_0 // min(2, 1) == 0, a1))",
+    "mutated_output": [
+      "[]",
+      "[0]",
+      "[0]"
+    ],
     "has_mutation": true,
     "mutation_info": {
-      "mutation_type": "",
-      "mutation_id": 78,
+      "mutation_type": "arithmetic",
+      "mutation_id": 0,
       "coverage_similarity": 0.0
     },
     "dsl": "(filter (is-mod (min 2 1)) var0)",
@@ -2670,12 +2902,16 @@
       "dsl_prog_78(a1=[0, 2, 3, 3, 1]) == [12, 8, 8, 16]",
       "dsl_prog_78(a1=[2, 2, 1, 4, 1]) == [12, 16, 4, 16]"
     ],
-    "mutated_code": "",
-    "mutated_output": "",
+    "mutated_code": "def dsl_prog_78(a1):\n    return list(map(lambda elem_0: 4 / elem_0, list(map(lambda elem_1: 5 - elem_1, a1[1:]))))",
+    "mutated_output": [
+      "[1.0, 0.8, 4.0, 1.0]",
+      "[1.3333333333333333, 2.0, 2.0, 1.0]",
+      "[1.3333333333333333, 1.0, 4.0, 1.0]"
+    ],
     "has_mutation": true,
     "mutation_info": {
-      "mutation_type": "",
-      "mutation_id": 79,
+      "mutation_type": "arithmetic",
+      "mutation_id": 0,
       "coverage_similarity": 0.0
     },
     "dsl": "(map (* 4) (map (- 5) (cdr var0)))",
@@ -2706,10 +2942,10 @@
     ],
     "mutated_code": "",
     "mutated_output": "",
-    "has_mutation": true,
+    "has_mutation": false,
     "mutation_info": {
       "mutation_type": "",
-      "mutation_id": 80,
+      "mutation_id": -1,
       "coverage_similarity": 0.0
     },
     "dsl": "(map (index 2) (map cdr (append var0 empty)))",
@@ -2740,10 +2976,10 @@
     ],
     "mutated_code": "",
     "mutated_output": "",
-    "has_mutation": true,
+    "has_mutation": false,
     "mutation_info": {
       "mutation_type": "",
-      "mutation_id": 81,
+      "mutation_id": -1,
       "coverage_similarity": 0.0
     },
     "dsl": "(index (length empty) (map range (append 5 var0)))",
@@ -2772,12 +3008,16 @@
       "dsl_prog_81(a1=[0, 5, 1]) == [0, 5, 1, 3]",
       "dsl_prog_81(a1=[5, 1, 3]) == [5, 1, 3, 3]"
     ],
-    "mutated_code": "",
-    "mutated_output": "",
+    "mutated_code": "def dsl_prog_81(a1):\n    return list(map(lambda elem_0: elem_0 + [4], [] + [a1]))[0]",
+    "mutated_output": [
+      "[5, 2, 5, 5, 3, 4]",
+      "[0, 5, 1, 4]",
+      "[5, 1, 3, 4]"
+    ],
     "has_mutation": true,
     "mutation_info": {
-      "mutation_type": "",
-      "mutation_id": 82,
+      "mutation_type": "number",
+      "mutation_id": 0,
       "coverage_similarity": 0.0
     },
     "dsl": "(car (map (append 3) (append var0 empty)))",
@@ -2806,12 +3046,16 @@
       "dsl_prog_82(a1=[3, 3, 4, 4, 2]) == [3, 3, 4, 4, 2]",
       "dsl_prog_82(a1=[5, 2, 3, 1, 5]) == [5, 2, 3, 1, 5]"
     ],
-    "mutated_code": "",
-    "mutated_output": "",
+    "mutated_code": "def dsl_prog_82(a1):\n    return ([] + [a1] + [list(range(4))])[-1]",
+    "mutated_output": [
+      "[0, 1, 2, 3]",
+      "[0, 1, 2, 3]",
+      "[0, 1, 2, 3]"
+    ],
     "has_mutation": true,
     "mutation_info": {
-      "mutation_type": "",
-      "mutation_id": 83,
+      "mutation_type": "number",
+      "mutation_id": 1,
       "coverage_similarity": 0.0
     },
     "dsl": "(car (append (range 4) (append var0 empty)))",
@@ -2840,12 +3084,16 @@
       "dsl_prog_83(a1=[0, 0, 4, 4]) == [0, 0, 4, 4]",
       "dsl_prog_83(a1=[1, 4, 5, 2]) == [1, 4, 5, 2]"
     ],
-    "mutated_code": "",
-    "mutated_output": "",
+    "mutated_code": "def dsl_prog_83(a1):\n    return ([3] + a1)[0:]",
+    "mutated_output": [
+      "[3, 3, 2, 1, 4, 3]",
+      "[3, 0, 0, 4, 4]",
+      "[3, 1, 4, 5, 2]"
+    ],
     "has_mutation": true,
     "mutation_info": {
-      "mutation_type": "",
-      "mutation_id": 84,
+      "mutation_type": "number",
+      "mutation_id": 1,
       "coverage_similarity": 0.0
     },
     "dsl": "(cdr (cons 3 var0))",
@@ -2874,12 +3122,16 @@
       "dsl_prog_84(a1=[4, 3, 3, 5, 5]) == [0, 4, 3, 3, 5, 5]",
       "dsl_prog_84(a1=[3, 2, 4]) == [0, 3, 2, 4]"
     ],
-    "mutated_code": "",
-    "mutated_output": "",
+    "mutated_code": "def dsl_prog_84(a1):\n    return [max(0 - 0, 4 // 2)] + ([] + [a1])[4 % 4]",
+    "mutated_output": [
+      "[2, 3, 5, 3, 1, 1]",
+      "[2, 4, 3, 3, 5, 5]",
+      "[2, 3, 2, 4]"
+    ],
     "has_mutation": true,
     "mutation_info": {
-      "mutation_type": "",
-      "mutation_id": 85,
+      "mutation_type": "arithmetic",
+      "mutation_id": 2,
       "coverage_similarity": 0.0
     },
     "dsl": "(cons (max (- 0 0) (mod 2 4)) (index (mod 4 4) (append var0 empty)))",
@@ -2908,12 +3160,16 @@
       "dsl_prog_85(a1=[2, 5, 5]) == [5, 5, 5]",
       "dsl_prog_85(a1=[1, 2, 5, 1, 5]) == [2, 5, 1, 5, 5]"
     ],
-    "mutated_code": "",
-    "mutated_output": "",
+    "mutated_code": "def dsl_prog_85(a1):\n    return (a1 + [1 / 5])[1:]",
+    "mutated_output": [
+      "[2, 0, 0.2]",
+      "[5, 5, 0.2]",
+      "[2, 5, 1, 5, 0.2]"
+    ],
     "has_mutation": true,
     "mutation_info": {
-      "mutation_type": "",
-      "mutation_id": 86,
+      "mutation_type": "arithmetic",
+      "mutation_id": 1,
       "coverage_similarity": 0.0
     },
     "dsl": "(cdr (append (* 1 5) var0))",
@@ -2944,10 +3200,10 @@
     ],
     "mutated_code": "",
     "mutated_output": "",
-    "has_mutation": true,
+    "has_mutation": false,
     "mutation_info": {
       "mutation_type": "",
-      "mutation_id": 87,
+      "mutation_id": -1,
       "coverage_similarity": 0.0
     },
     "dsl": "(car (if (le? 3 1) (cons var0 empty) (append var0 empty)))",
@@ -2976,12 +3232,16 @@
       "dsl_prog_87(a1=[4, 0, 0, 5]) == [4, 0, 0, 5]",
       "dsl_prog_87(a1=[2, 4, 3]) == [2, 4, 3]"
     ],
-    "mutated_code": "",
-    "mutated_output": "",
+    "mutated_code": "def dsl_prog_87(a1):\n    return ([a1] + [] + [[5] + []])[-1]",
+    "mutated_output": [
+      "[5]",
+      "[5]",
+      "[5]"
+    ],
     "has_mutation": true,
     "mutation_info": {
-      "mutation_type": "",
-      "mutation_id": 88,
+      "mutation_type": "number",
+      "mutation_id": 1,
       "coverage_similarity": 0.0
     },
     "dsl": "(car (append (cons 5 empty) (cons var0 empty)))",
@@ -3010,12 +3270,16 @@
       "dsl_prog_88(a1=[4, 2, 1, 2]) == [4, 2, 1, 2]",
       "dsl_prog_88(a1=[2, 4, 0]) == [2, 4, 0]"
     ],
-    "mutated_code": "",
-    "mutated_output": "",
+    "mutated_code": "def dsl_prog_88(a1):\n    return ([a1] + ([[]] + []))[1]",
+    "mutated_output": [
+      "[]",
+      "[]",
+      "[]"
+    ],
     "has_mutation": true,
     "mutation_info": {
-      "mutation_type": "",
-      "mutation_id": 89,
+      "mutation_type": "number",
+      "mutation_id": 0,
       "coverage_similarity": 0.0
     },
     "dsl": "(car (cons var0 (cons empty empty)))",
@@ -3044,12 +3308,16 @@
       "dsl_prog_89(a1=[5, 5, 0]) == [5, 0]",
       "dsl_prog_89(a1=[3, 5, 1, 4, 4]) == [5, 1, 4, 4]"
     ],
-    "mutated_code": "",
-    "mutated_output": "",
+    "mutated_code": "def dsl_prog_89(a1):\n    return a1[2:]",
+    "mutated_output": [
+      "[1, 4]",
+      "[0]",
+      "[1, 4, 4]"
+    ],
     "has_mutation": true,
     "mutation_info": {
-      "mutation_type": "",
-      "mutation_id": 90,
+      "mutation_type": "number",
+      "mutation_id": 0,
       "coverage_similarity": 0.0
     },
     "dsl": "(cdr var0)",
@@ -3078,12 +3346,16 @@
       "dsl_prog_90(a1=[4, 3, 1, 2]) == [4, 3, 1, 2]",
       "dsl_prog_90(a1=[0, 1, 2]) == [0, 1, 2]"
     ],
-    "mutated_code": "",
-    "mutated_output": "",
+    "mutated_code": "def dsl_prog_90(a1):\n    return ([len([])] + a1)[2:]",
+    "mutated_output": [
+      "[4, 5, 3]",
+      "[3, 1, 2]",
+      "[1, 2]"
+    ],
     "has_mutation": true,
     "mutation_info": {
-      "mutation_type": "",
-      "mutation_id": 91,
+      "mutation_type": "number",
+      "mutation_id": 0,
       "coverage_similarity": 0.0
     },
     "dsl": "(cdr (cons (length empty) var0))",
@@ -3114,10 +3386,10 @@
     ],
     "mutated_code": "",
     "mutated_output": "",
-    "has_mutation": true,
+    "has_mutation": false,
     "mutation_info": {
       "mutation_type": "",
-      "mutation_id": 92,
+      "mutation_id": -1,
       "coverage_similarity": 0.0
     },
     "dsl": "(filter (if (car empty) is-square (is-mod 1)) (cdr (cons 2 var0)))",
@@ -3146,12 +3418,16 @@
       "dsl_prog_92(a1=[5, 2, 1]) == [5]",
       "dsl_prog_92(a1=[3, 3, 3, 5]) == [3]"
     ],
-    "mutated_code": "",
-    "mutated_output": "",
+    "mutated_code": "def dsl_prog_92(a1):\n    return list(map(lambda elem_0: len([]) - elem_0, list(map(lambda elem_1: elem_1[0], [a1] + []))))",
+    "mutated_output": [
+      "[-2]",
+      "[-5]",
+      "[-3]"
+    ],
     "has_mutation": true,
     "mutation_info": {
-      "mutation_type": "",
-      "mutation_id": 93,
+      "mutation_type": "arithmetic",
+      "mutation_id": 0,
       "coverage_similarity": 0.0
     },
     "dsl": "(map (+ (length empty)) (map car (cons var0 empty)))",
@@ -3180,12 +3456,16 @@
       "dsl_prog_93(a1=[2, 0, 4, 0, 0]) == [0, 0]",
       "dsl_prog_93(a1=[3, 1, 5, 3, 1]) == [3, 1]"
     ],
-    "mutated_code": "",
-    "mutated_output": "",
+    "mutated_code": "def dsl_prog_93(a1):\n    return a1[2:][1:][1:]",
+    "mutated_output": [
+      "[]",
+      "[0]",
+      "[1]"
+    ],
     "has_mutation": true,
     "mutation_info": {
-      "mutation_type": "",
-      "mutation_id": 94,
+      "mutation_type": "number",
+      "mutation_id": 0,
       "coverage_similarity": 0.0
     },
     "dsl": "(cdr (cdr (cdr var0)))",
@@ -3214,12 +3494,16 @@
       "dsl_prog_94(a1=[3, 5, 2, 3]) == [5, 3, 5, 2, 3]",
       "dsl_prog_94(a1=[5, 0, 5, 1, 0]) == [5, 5, 5]"
     ],
-    "mutated_code": "",
-    "mutated_output": "",
+    "mutated_code": "def dsl_prog_94(a1):\n    import math\n    return list(range(3 - 5)) if a1[1] != 2 else list(filter(lambda elem_0: all((elem_0 % i for i in range(2, int(math.sqrt(elem_0)) + 1))) if elem_0 >= 2 else False, [5] + a1))",
+    "mutated_output": [
+      "[5, 3, 2]",
+      "[]",
+      "[]"
+    ],
     "has_mutation": true,
     "mutation_info": {
-      "mutation_type": "",
-      "mutation_id": 95,
+      "mutation_type": "relational",
+      "mutation_id": 0,
       "coverage_similarity": 0.0
     },
     "dsl": "(if (eq? (index 1 var0) 2) (range (- 3 5)) (filter is-prime (cons 5 var0)))",
@@ -3248,12 +3532,16 @@
       "dsl_prog_95(a1=[2, 1, 5, 3]) == [2, 1, 5, 3]",
       "dsl_prog_95(a1=[2, 1, 3, 1]) == [2, 1, 3, 1]"
     ],
-    "mutated_code": "",
-    "mutated_output": "",
+    "mutated_code": "def dsl_prog_95(a1):\n    import math\n    return ([][0] if int(math.sqrt(5)) ** 2 == 5 else [3] + a1) if 3 != min(1, 4) else a1",
+    "mutated_output": [
+      "[3, 5, 3, 0]",
+      "[3, 2, 1, 5, 3]",
+      "[3, 2, 1, 3, 1]"
+    ],
     "has_mutation": true,
     "mutation_info": {
-      "mutation_type": "",
-      "mutation_id": 96,
+      "mutation_type": "relational",
+      "mutation_id": 0,
       "coverage_similarity": 0.0
     },
     "dsl": "(if (eq? 3 (min 1 4)) (if (is-square 5) (car empty) (cons 3 var0)) var0)",
@@ -3284,10 +3572,10 @@
     ],
     "mutated_code": "",
     "mutated_output": "",
-    "has_mutation": true,
+    "has_mutation": false,
     "mutation_info": {
       "mutation_type": "",
-      "mutation_id": 97,
+      "mutation_id": -1,
       "coverage_similarity": 0.0
     },
     "dsl": "(car (cons var0 (cdr empty)))",
@@ -3318,10 +3606,10 @@
     ],
     "mutated_code": "",
     "mutated_output": "",
-    "has_mutation": true,
+    "has_mutation": false,
     "mutation_info": {
       "mutation_type": "",
-      "mutation_id": 98,
+      "mutation_id": -1,
       "coverage_similarity": 0.0
     },
     "dsl": "(car (map range (cdr var0)))",
@@ -3350,12 +3638,16 @@
       "dsl_prog_98(a1=[4, 2, 4]) == []",
       "dsl_prog_98(a1=[2, 2, 1]) == [1]"
     ],
-    "mutated_code": "",
-    "mutated_output": "",
+    "mutated_code": "def dsl_prog_98(a1):\n    return list(filter(lambda elem_0: 0 <= elem_0, list(filter(lambda elem_1: 1 != elem_1, a1))))",
+    "mutated_output": [
+      "[5, 4, 4, 2, 5]",
+      "[4, 2, 4]",
+      "[2, 2]"
+    ],
     "has_mutation": true,
     "mutation_info": {
-      "mutation_type": "",
-      "mutation_id": 99,
+      "mutation_type": "relational",
+      "mutation_id": 1,
       "coverage_similarity": 0.0
     },
     "dsl": "(filter (le? 0) (filter (eq? 1) var0))",
@@ -3384,12 +3676,16 @@
       "dsl_prog_99(a1=[4, 0, 5]) == [1, 4, 0, 5]",
       "dsl_prog_99(a1=[3, 2, 1, 2, 2]) == [1, 3, 2, 1, 2, 2]"
     ],
-    "mutated_code": "",
-    "mutated_output": "",
+    "mutated_code": "def dsl_prog_99(a1):\n    return [2] + a1",
+    "mutated_output": [
+      "[2, 1, 1, 2, 3, 2]",
+      "[2, 4, 0, 5]",
+      "[2, 3, 2, 1, 2, 2]"
+    ],
     "has_mutation": true,
     "mutation_info": {
-      "mutation_type": "",
-      "mutation_id": 100,
+      "mutation_type": "number",
+      "mutation_id": 0,
       "coverage_similarity": 0.0
     },
     "dsl": "(cons 1 var0)",
