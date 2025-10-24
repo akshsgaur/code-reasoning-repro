@@ -104,10 +104,10 @@ def _persist_structured(records: List[DSLProgramRecord], path: Path) -> None:
                 "correct_condition": conditions,
                 "mutated_code": "",
                 "mutated_output": "",
-                "has_mutation": True,
+                "has_mutation": False,
                 "mutation_info": {
                     "mutation_type": "",
-                    "mutation_id": idx + 1,
+                    "mutation_id": -1,
                     "coverage_similarity": 0.0,
                 },
                 "dsl": rec.dsl,

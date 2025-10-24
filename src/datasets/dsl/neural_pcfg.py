@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import ast
 import importlib
 import json
 import math
@@ -19,6 +20,10 @@ Expression = str
 
 class TranslationError(RuntimeError):
     """Raised when a DeepSynth program cannot be translated to Python."""
+
+
+class ConstraintViolation(RuntimeError):
+    """Raised when a sampled program violates DSL-to-Python constraints."""
 
 
 @dataclass
@@ -116,6 +121,10 @@ class DeepSynthNeuralSampler:
                 sampled = self._build_sample(program)
             except TranslationError:
                 continue
+            try:
+                self._validate_python_sample(sampled)
+            except ConstraintViolation:
+                continue
             if self._validate_outputs(sampled.outputs):
                 return DSLProgramRecord(
                     arity=sampled.arity,
@@ -194,11 +203,63 @@ class DeepSynthNeuralSampler:
             body_lines.append(f"return {body_expr}")
         return "\n".join([header, indent("\n".join(body_lines), "    ")])
 
+    def _validate_python_sample(self, sampled: _SampledProgram) -> None:
+        """Ensure the translated Python satisfies syntactic and runtime constraints."""
+
+        self._check_ast_constraints(sampled.python_source)
+        self._execute_python(sampled.python_source, sampled.inputs, sampled.outputs)
+
     def _validate_outputs(self, outputs: Sequence[object]) -> bool:
         if len(outputs) < 2:
             return False
         first = json.dumps(outputs[0], sort_keys=True)
         return any(json.dumps(o, sort_keys=True) != first for o in outputs[1:])
+
+    # ------------------------------------------------------------------ #
+    # Python validation helpers
+    # ------------------------------------------------------------------ #
+
+    def _check_ast_constraints(self, source: str) -> None:
+        try:
+            tree = ast.parse(source)
+        except SyntaxError as exc:  # pragma: no cover - defensive
+            raise ConstraintViolation("invalid python syntax") from exc
+
+        func_defs = [node for node in tree.body if isinstance(node, ast.FunctionDef)]
+        if len(func_defs) != 1:
+            raise ConstraintViolation("expected exactly one function definition")
+
+        func_def = func_defs[0]
+        params = [arg.arg for arg in func_def.args.args]
+
+        visitor = _ASTConstraintVisitor(params)
+        visitor.visit(func_def)
+
+        missing_params = set(params) - visitor.used_params
+        if missing_params:
+            raise ConstraintViolation(f"unused parameters: {sorted(missing_params)}")
+
+    def _execute_python(
+        self,
+        source: str,
+        inputs: Sequence[Sequence[Sequence[int]]],
+        expected_outputs: Sequence[object],
+    ) -> None:
+        namespace: dict = {}
+        exec(compile(source, "<dsl_sample>", "exec"), namespace)
+        fn = namespace.get("f")
+        if not callable(fn):  # pragma: no cover - defensive
+            raise ConstraintViolation("translated function `f` not found")
+
+        for args, expected in zip(inputs, expected_outputs):
+            safe_args = [json.loads(json.dumps(arg)) for arg in args]
+            try:
+                result = fn(*safe_args)
+            except Exception as exc:  # pragma: no cover - defensive
+                raise ConstraintViolation("python execution raised") from exc
+
+            if result != expected:
+                raise ConstraintViolation("python result mismatch with DSL semantics")
 
     def _sample_list(self) -> List[int]:
         length = self.rng.randint(3, 5)
@@ -219,6 +280,106 @@ class _Expression:
 
     def __repr__(self) -> str:
         return f"_Expression({self.code!r})"
+
+
+class _ASTConstraintVisitor(ast.NodeVisitor):
+    """Validate structural constraints on the translated Python AST."""
+
+    def __init__(self, params: Sequence[str]) -> None:
+        self.params = set(params)
+        self.used_params: set[str] = set()
+        self._stack: list[ast.AST] = []
+
+    # ------------------------------------------------------------------ #
+    # Helpers
+    # ------------------------------------------------------------------ #
+    def visit(self, node: ast.AST) -> None:  # type: ignore[override]
+        self._stack.append(node)
+        method = "visit_" + node.__class__.__name__
+        visitor = getattr(self, method, self.generic_visit)
+        visitor(node)
+        self._stack.pop()
+
+    def _current_parent(self) -> Optional[ast.AST]:
+        return self._stack[-2] if len(self._stack) >= 2 else None
+
+    def _expressions_equal(self, left: ast.AST, right: ast.AST) -> bool:
+        return ast.dump(left, include_attributes=False) == ast.dump(right, include_attributes=False)
+
+    # ------------------------------------------------------------------ #
+    # Visitors
+    # ------------------------------------------------------------------ #
+    def visit_Name(self, node: ast.Name) -> None:  # noqa: N802
+        if isinstance(node.ctx, ast.Load) and node.id in self.params:
+            self.used_params.add(node.id)
+        self.generic_visit(node)
+
+    def visit_Compare(self, node: ast.Compare) -> None:  # noqa: N802
+        if isinstance(node.left, ast.Constant) and isinstance(node.left.value, int):
+            raise ConstraintViolation("comparison left operand must not be int literal")
+        seen: set[str] = {ast.dump(node.left, include_attributes=False)}
+        for comparator in node.comparators:
+            comp_dump = ast.dump(comparator, include_attributes=False)
+            if comp_dump in seen:
+                raise ConstraintViolation("identical expressions on both sides of comparison")
+            seen.add(comp_dump)
+        self.generic_visit(node)
+
+    def visit_BoolOp(self, node: ast.BoolOp) -> None:  # noqa: N802
+        seen: set[str] = set()
+        for value in node.values:
+            dump = ast.dump(value, include_attributes=False)
+            if dump in seen:
+                raise ConstraintViolation("duplicate expression in boolean operator")
+            seen.add(dump)
+        self.generic_visit(node)
+
+    def visit_IfExp(self, node: ast.IfExp) -> None:  # noqa: N802
+        if self._expressions_equal(node.body, node.orelse):
+            raise ConstraintViolation("identical branches in conditional expression")
+        self.generic_visit(node)
+
+    def visit_BinOp(self, node: ast.BinOp) -> None:  # noqa: N802
+        if isinstance(node.op, ast.Add):
+            if self._expressions_equal(node.left, node.right):
+                raise ConstraintViolation("list cannot be added to itself")
+        self.generic_visit(node)
+
+    def visit_Call(self, node: ast.Call) -> None:  # noqa: N802
+        func_name = self._resolve_call_name(node.func)
+        if func_name == "len":
+            if node.args and isinstance(node.args[0], ast.List) and not node.args[0].elts:
+                raise ConstraintViolation("len() argument must not be empty list literal")
+        elif func_name in {"map", "filter"}:
+            if node.args:
+                last_arg = node.args[-1]
+                if isinstance(last_arg, ast.List) and not last_arg.elts:
+                    raise ConstraintViolation("map/filter target must not be empty list literal")
+        self.generic_visit(node)
+
+    def visit_Subscript(self, node: ast.Subscript) -> None:  # noqa: N802
+        value = node.value
+        if isinstance(value, ast.List) and not value.elts:
+            raise ConstraintViolation("subscript on empty list literal is disallowed")
+        self.generic_visit(node)
+
+    def visit_UnaryOp(self, node: ast.UnaryOp) -> None:  # noqa: N802
+        parent = self._current_parent()
+        if (
+            isinstance(node.op, ast.USub)
+            and isinstance(node.operand, ast.Constant)
+            and isinstance(node.operand.value, int)
+        ):
+            if not (isinstance(parent, ast.Subscript) and parent.slice is node):
+                raise ConstraintViolation("negative literals are only allowed in indices")
+        self.generic_visit(node)
+
+    def _resolve_call_name(self, node: ast.AST) -> Optional[str]:
+        if isinstance(node, ast.Name):
+            return node.id
+        if isinstance(node, ast.Attribute):
+            return node.attr
+        return None
 
 
 class _LambdaClosure:
