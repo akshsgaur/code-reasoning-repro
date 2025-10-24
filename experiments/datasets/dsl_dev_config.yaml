@@ -1,0 +1,6 @@
+num_programs: 5
+max_depth: 4
+arity: 2
+input_trials: 3
+seed: 2025
+max_attempts: 10000
