@@ -1,4 +1,4 @@
-"""DSL-List dataset generation utilities."""
+"""DSL-List dataset generation utilities (neural PCFG only)."""
 
 from .generate import generate_dataset, persist_dataset
 from .spec import DSLGenerationConfig, DSLProgramRecord, GeneratedDataset

@@ -1,0 +1,1 @@
+{"arity": 1, "depth": 4, "dsl": "(append (max 4 (+ 2 0)) (cons 1 (cons 3 var0)))", "python": "def f(a1):\n    return ([1] + ([3] + (a1))) + [max(4, (2) + (0))]", "inputs": [[[4, 2, 1, 4]], [[2, 0, 2, 0]], [[4, 4, 2, 0]]], "outputs": [[1, 3, 4, 2, 1, 4, 4], [1, 3, 2, 0, 2, 0, 4], [1, 3, 4, 4, 2, 0, 4]], "metadata": {"source": "deepsynth_neural"}}

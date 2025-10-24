@@ -32,8 +32,7 @@ def main() -> None:
     parser.add_argument(
         "--out",
         type=Path,
-        required=True,
-        help="Target directory for the generated dataset.",
+        help="Target directory for the generated dataset. Defaults to src/datasets/dsl/data.",
     )
     parser.add_argument(
         "--dry-run",
@@ -48,7 +47,9 @@ def main() -> None:
         print(json.dumps(cfg.__dict__, indent=2))
         return
 
-    generate_dataset(cfg, args.out)
+    out_dir = args.out if args.out else Path("src/datasets/dsl/data")
+    out_dir.mkdir(parents=True, exist_ok=True)
+    generate_dataset(cfg, out_dir)
 
 
 if __name__ == "__main__":

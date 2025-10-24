@@ -1,4 +1,4 @@
-  num_programs: 20
+  num_programs: 1
   max_depth: 4
   arity: 1
   input_trials: 3
