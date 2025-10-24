@@ -10,6 +10,7 @@ from typing import List
 
 from . import inputs, sampler, transpile, validator
 from .ast import Ty, Var
+from .neural_pcfg import DeepSynthNeuralSampler
 from .spec import DSLGenerationConfig, DSLProgramRecord, GeneratedDataset
 
 
@@ -45,16 +46,30 @@ def generate_dataset(cfg: DSLGenerationConfig, out_dir: Path) -> GeneratedDatase
 
     rng = random.Random(cfg.seed)
     records: List[DSLProgramRecord] = []
-    attempts = 0
 
-    while len(records) < cfg.num_programs and attempts < cfg.max_attempts:
-        attempts += 1
-        record = _sample_program(cfg, rng)
-        if record is None:
-            continue
-        records.append(record)
+    if cfg.use_neural_pcfg:
+        neural_sampler = DeepSynthNeuralSampler(cfg, rng)
+        while len(records) < cfg.num_programs:
+            record = neural_sampler.sample_record()
+            if record is None:
+                break
+            records.append(record)
+    else:
+        attempts = 0
+        while len(records) < cfg.num_programs and attempts < cfg.max_attempts:
+            attempts += 1
+            record = _sample_program(cfg, rng)
+            if record is None:
+                continue
+            records.append(record)
 
     if len(records) < cfg.num_programs:
+        if cfg.use_neural_pcfg:
+            raise RuntimeError(
+                f"Neural PCFG sampler terminated early after collecting {len(records)} "
+                f"programs (target {cfg.num_programs}). Consider increasing "
+                "`neural_max_attempts` or relaxing constraints."
+            )
         raise RuntimeError(
             f"Failed to sample {cfg.num_programs} programs within "
             f"{cfg.max_attempts} attempts (collected {len(records)})."
@@ -82,4 +97,3 @@ def persist_dataset(dataset: GeneratedDataset) -> None:
         "config": asdict(dataset.config),
     }
     metadata_path.write_text(json.dumps(metadata, indent=2), encoding="utf-8")
-

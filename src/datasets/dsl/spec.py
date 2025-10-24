@@ -15,6 +15,9 @@ class DSLGenerationConfig:
     input_trials: int = 3
     max_attempts: int = 50_000
     seed: Optional[int] = None
+    use_neural_pcfg: bool = False
+    deepsynth_root: Optional[str] = None
+    neural_max_attempts: int = 5_000
 
 
 @dataclass
