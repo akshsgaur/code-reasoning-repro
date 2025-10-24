@@ -1,0 +1,23 @@
+[
+  {
+    "submission_id": 1721336485,
+    "code": "class Solution:\n    def minTime(self, s: str, o: List[int], k: int) -> int:\n        n = len(s)\n        l, r, a = 0, n - 1, -1\n        if n * (n + 1) // 2 < k:\n            return -1\n\n        def f(t):\n            b, v, p = sorted(o[:t+1]), 0, -1\n            for i in b:\n                v += (i - p) * (n - i)\n                p = i\n            return v\n\n        while l <= r:\n            m = (l + r) // 2\n            if f(m) >= k:\n                a = m\n                r = m - 1\n            else:\n                l = m + 1\n        return a\n",
+    "lang": "python3",
+    "question_id": 3944,
+    "contest_submission": 25559577
+  },
+  {
+    "submission_id": 1721317504,
+    "code": "class Solution:\n    def minTime(self, s: str, order: List[int], k: int) -> int:\n        n = len(s)\n        totalSub = n * (n + 1) // 2\n        sList = list(s)\n        segments = [(0, n - 1)]\n        freeCount = totalSub\n\n        def findSegment(pos):\n            i = bisect.bisect_right(segments, (pos, float('inf'))) - 1\n            if i >= 0:\n                start, end = segments[i]\n                if start <= pos <= end:\n                    return i, (start, end)\n            return None, None\n\n        for t, pos in enumerate(order):\n            i, seg = findSegment(pos)\n            if seg is None:\n                continue\n            start, end = seg\n            segments.pop(i)\n            segLen = end - start + 1\n            leftLen = pos - start\n            rightLen = end - pos\n            oldSub = segLen * (segLen + 1) // 2\n            newSub = 0\n            if leftLen > 0:\n                newSub += leftLen * (leftLen + 1) // 2\n            if rightLen > 0:\n                newSub += rightLen * (rightLen + 1) // 2\n            freeCount = freeCount - oldSub + newSub\n            if leftLen > 0:\n                bisect.insort(segments, (start, pos - 1))\n            if rightLen > 0:\n                bisect.insort(segments, (pos + 1, end))\n            sList[pos] = '*'\n            valid = totalSub - freeCount\n            if valid >= k:\n                return t\n        return -1",
+    "lang": "python3",
+    "question_id": 3944,
+    "contest_submission": 25544241
+  },
+  {
+    "submission_id": 1721344591,
+    "code": "class Solution:\n    def minTime(self, s: str, order: List[int], k: int) -> int:\n        segments = SortedList([(0, len(s))])\n        count = 0\n        for t in range(len(order)):\n            i = order[t]\n            l, r = segments[segments.bisect_left((i, inf)) - 1]\n            segments.remove((l, r))\n            if l < i:\n                segments.add((l, i))\n            if i+1 < r:\n                segments.add((i+1, r))\n            count += (i - l + 1) * (r - i)\n            # print(i, (l, r), segments, count)\n            if count >= k:\n                return t\n        return -1",
+    "lang": "python3",
+    "question_id": 3944,
+    "contest_submission": 25566281
+  }
+]

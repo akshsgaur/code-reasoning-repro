@@ -1,0 +1,23 @@
+[
+  {
+    "submission_id": 1552272304,
+    "code": "import sys\nsys.setrecursionlimit(10**7)\n\ndef solve(side, points, k):\n    def boundary_param(x, y, side):\n        if x == 0:\n            return y\n        elif y == side:\n            return side + x\n        elif x == side:\n            return 2*side + (side - y)\n        else:\n            return 3*side + (side - x)\n\n    p = []\n    for x, y in points:\n        p.append(boundary_param(x, y, side))\n    p.sort()\n    n = len(p)\n    e = p + [val + 4*side for val in p]\n\n    def can_pick_start(i, d, next_idx):\n        count = 1\n        cur = i\n        limit = e[i] + 4*side - d\n        while count < k:\n            nxt = next_idx[cur]\n            if nxt >= i + n:\n                return False\n            if e[nxt] > limit:\n                return False\n            cur = nxt\n            count += 1\n        return True\n\n    def feasible(d):\n        next_idx = [0]*(2*n)\n        s = 0\n        for j in range(2*n):\n            while s < 2*n and e[s] < e[j] + d:\n                s += 1\n            next_idx[j] = s\n        for i in range(n):\n            if can_pick_start(i, d, next_idx):\n                return True\n        return False\n\n    left, right = 0, 2*side\n    while left < right:\n        mid = (left + right + 1) // 2\n        if feasible(mid):\n            left = mid\n        else:\n            right = mid - 1\n    return left\n    \nclass Solution:\n    def maxDistance(self, side: int, points: List[List[int]], k: int) -> int:\n        return solve(side, points, k)\n",
+    "lang": "python3",
+    "question_id": 3781,
+    "contest_submission": 22712953
+  },
+  {
+    "submission_id": 1552295764,
+    "code": "def manhattan(p1, p2):\n    return abs(p1[0] - p2[0]) + abs(p1[1] - p2[1])\n\ndef is_valid(p, k, d):\n    for s in combinations(p, k):\n        if all(manhattan(p1, p2) >= d for i, p1 in enumerate(s) for p2 in s[:i]):\n            return True\n    return False\n\nclass Solution:\n    def maxDistance(self, s: int, p: List[List[int]], k: int) -> int:\n        peri = 4 * s\n        arr = []\n        for x, y in p:\n            if x == 0: pos = y\n            elif y == s: pos = s + x\n            elif x == s: pos = 3 * s - y\n            else: pos = 4 * s - x\n            arr.append(pos)\n        arr.sort()\n        lo, hi, ans = 0, 2 * s, 0\n        def is_pos(d):\n            if d == 0:\n                return True\n            n = len(arr)\n            for st in range(n):\n                sel = [arr[st]]\n                cur_v, cur_i = arr[st], st\n                for _ in range(k - 1):\n                    nxt_i = bisect_left(arr, cur_v + d, cur_i + 1, n)\n                    if nxt_i == n: break\n                    cur_v, cur_i = arr[nxt_i], nxt_i\n                    sel.append(cur_v)\n                if len(sel) >= k and peri - (sel[-1] - sel[0]) >= d: return True\n            return False\n    \n        while lo <= hi:\n            mid = (lo + hi) // 2\n            if is_pos(mid): ans, lo = mid, mid + 1\n            else: hi = mid - 1\n        return ans\n",
+    "lang": "python3",
+    "question_id": 3781,
+    "contest_submission": 22730521
+  },
+  {
+    "submission_id": 1552312689,
+    "code": "class Solution:\n    def maxDistance(self, side: int, points: List[List[int]], k: int) -> int:\n        _side = side\n        arr = []\n\n        for x, y in points:\n            if y == 0:\n                arr.append(x)\n            elif x == _side:\n                arr.append(_side + y)\n            elif y == _side:\n                arr.append(3 * _side - x)\n            else:\n                arr.append(4 * _side - y)\n\n        arr.sort()\n\n        n = len(arr)\n\n        p = 4 * _side\n\n        _arr = arr + [v + p for v in arr]\n        # print(_arr)\n\n        def check(z: int) -> bool:\n            for i in range(n):\n                st = _arr[i]\n                count = 1\n                j = i\n\n                while count < k:\n                    u = bisect.bisect_left(_arr, _arr[j] + z, j + 1, i + n)\n                    # print(u)\n                    if u == i + n:\n                        break\n\n                    j = u\n                    count += 1\n\n                if count == k:\n                    if st + p - _arr[j] >= z:\n                        return True\n\n            return False\n\n        low = 0\n        high = 2 * _side + 1\n\n        while low < high:\n            mid = (low + high) // 2\n            if check(mid):\n                low = mid + 1\n            else:\n                high = mid\n\n        ans = low - 1\n        # print(ans)\n\n        return ans",
+    "lang": "python3",
+    "question_id": 3781,
+    "contest_submission": 22743014
+  }
+]

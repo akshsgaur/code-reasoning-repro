@@ -1,0 +1,23 @@
+[
+  {
+    "submission_id": 1737960542,
+    "code": "class Solution:\n    def xorAfterQueries(self, a: List[int], q: List[List[int]]) -> int:\n        M=1000000007\n        n=len(a)\n        b=int(n**0.5)+1\n        d={}; inv={}\n        for l,r,k,v in q:\n            if k>=b:\n                i=l\n                while i<=r:\n                    a[i]=(a[i]*v)%M; i+=k\n            else:\n                c=l%k\n                key=(k,c)\n                if key not in d:d[key]={}\n                tl=(l-c)//k; tr=(r-c)//k\n                e=d[key]; u=inv.get(v)\n                if u is None:\n                    u=pow(v,M-2,M); inv[v]=u\n                e[tl]=(e.get(tl,1)*v)%M\n                x=tr+1\n                e[x]=(e.get(x,1)*u)%M\n        for (k,c),e in d.items():\n            if c>=n: continue\n            L=(n-1-c)//k+1\n            cur=1\n            for t in range(L):\n                cur=(cur*e.get(t,1))%M\n                i=c+t*k\n                a[i]=(a[i]*cur)%M\n        x=0\n        for v in a: x^=v\n        return x",
+    "lang": "python3",
+    "question_id": 3975,
+    "contest_submission": 25840096
+  },
+  {
+    "submission_id": 1737964920,
+    "code": "class Solution:\n    def xorAfterQueries(self, a: List[int], q: List[List[int]]) -> int:\n        m = 10**9 + 7\n        n = len(a)\n        g = defaultdict(list)\n        for l, r, k, v in q:\n            g[(k, l % k)].append((l, r, v))\n        b = a[:]\n        inv = {}\n        for (k, r), t in g.items():\n            if r >= n: \n                continue\n            d = [1] * (((n - 1 - r) // k) + 2)\n            for l, rr, v in t:\n                L, R = (l - r) // k, (rr - r) // k\n                d[L] = d[L] * v % m\n                if R + 1 < len(d) - 1:\n                    if v not in inv: \n                        inv[v] = pow(v, m - 2, m)\n                    d[R + 1] = d[R + 1] * inv[v] % m\n            c = 1\n            for i in range(len(d) - 1):\n                c = c * d[i] % m\n                b[r + i * k] = b[r + i * k] * c % m\n        ans = 0\n        for x in b: \n            ans ^= x\n        return ans\n",
+    "lang": "python3",
+    "question_id": 3975,
+    "contest_submission": 25843081
+  },
+  {
+    "submission_id": 1737961863,
+    "code": "class Solution:\n    def xorAfterQueries(self, nums: List[int], queries: List[List[int]]) -> int:\n        MOD = 10**9 + 7\n        n = len(nums)\n        B = math.isqrt(n) + 1\n        events_by_k = {}\n        large = []\n        for l, r, k, v in queries:\n            if k <= B:\n                d = events_by_k.get(k)\n                if d is None:\n                    d = {}\n                    events_by_k[k] = d\n                res = l % k\n                ev = d.get(res)\n                if ev is None:\n                    ev = {}\n                    d[res] = ev\n                s = (l - res) // k\n                e = (r - res) // k\n                ev[s] = ev.get(s, 1) * v % MOD\n                inv = pow(v, MOD - 2, MOD)\n                ev[e + 1] = ev.get(e + 1, 1) * inv % MOD\n            else:\n                large.append((l, r, k, v))\n        for k, d in events_by_k.items():\n            for res, ev in d.items():\n                curr = 1\n                t = 0\n                i = res\n                while i < n:\n                    m = ev.get(t)\n                    if m is not None:\n                        curr = (curr * m) % MOD\n                    if curr != 1:\n                        nums[i] = (nums[i] * curr) % MOD\n                    i += k\n                    t += 1\n        for l, r, k, v in large:\n            i = l\n            while i <= r:\n                nums[i] = (nums[i] * v) % MOD\n                i += k\n        ans = 0\n        for x in nums:\n            ans ^= x\n        return ans",
+    "lang": "python3",
+    "question_id": 3975,
+    "contest_submission": 25840962
+  }
+]

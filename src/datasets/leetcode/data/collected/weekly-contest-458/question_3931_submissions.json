@@ -1,0 +1,23 @@
+[
+  {
+    "submission_id": 1695807070,
+    "code": "class Solution:\n    def processStr(self, s: str) -> str:\n        r = \"\"\n        for c in s:\n            if 'a' <= c <= 'z':\n                r += c\n            elif c == '*':\n                r = r[:-1]\n            elif c == '#':\n                r += r\n            else: r = r[::-1]\n        return r",
+    "lang": "python3",
+    "question_id": 3931,
+    "contest_submission": 25035925
+  },
+  {
+    "submission_id": 1695797581,
+    "code": "class Solution:\n    def processStr(self, s: str) -> str:\n        res = []\n        for ch in s:\n            if 'a' <= ch <= 'z':\n                res.append(ch)\n            elif ch == '*':\n                if res:\n                    res.pop()\n            elif ch == '#':\n                # duplicate the current result\n                res = res + res\n            elif ch == '%':\n                # reverse the current result\n                res.reverse()\n        return ''.join(res)\n",
+    "lang": "python3",
+    "question_id": 3931,
+    "contest_submission": 25028452
+  },
+  {
+    "submission_id": 1695795684,
+    "code": "class Solution:\n    def processStr(self, s: str) -> str:\n        res = []\n        for c in s:\n            if c == '*':\n                if res: res.pop()\n            elif c == '#':\n                res = res + res\n            elif c == '%':\n                res.reverse()\n            else:\n                res.append(c)\n        return ''.join(res)",
+    "lang": "python3",
+    "question_id": 3931,
+    "contest_submission": 25026968
+  }
+]

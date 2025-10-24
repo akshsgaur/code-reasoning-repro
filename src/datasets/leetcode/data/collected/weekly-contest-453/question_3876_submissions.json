@@ -1,0 +1,23 @@
+[
+  {
+    "submission_id": 1657158036,
+    "code": "class Solution:\n    def canMakeEqual(self, nums: List[int], k: int) -> bool:\n        n = len(nums)\n        for t in (1, -1):\n            b = [1 if nums[i] != t else 0 for i in range(n)]\n            cnt = 0\n            for i in range(n - 1):\n                if b[i]:\n                    cnt += 1\n                    b[i] = 0\n                    b[i + 1] ^= 1\n            if b[-1] == 0 and cnt <= k:\n                return True\n        return False",
+    "lang": "python3",
+    "question_id": 3876,
+    "contest_submission": 24462683
+  },
+  {
+    "submission_id": 1657169141,
+    "code": "class Solution:\n    def canMakeEqual(self, nums: List[int], k: int) -> bool:\n        def can_t(target:int) -> bool:\n            arr= nums[:]\n            ops=0\n            for i in range(len(arr)-1):\n                if arr[i]!=target:\n                    arr[i]*=-1\n                    arr[i+1]*=-1\n                    ops+=1\n            return arr[-1]==target and ops<=k\n        return can_t(1) or can_t(-1)",
+    "lang": "python3",
+    "question_id": 3876,
+    "contest_submission": 24470854
+  },
+  {
+    "submission_id": 1657152717,
+    "code": "class Solution:\n    def canMakeEqual(self, nums: List[int], k: int) -> bool:\n        n = len(nums)\n        for x in (1, -1):\n            c = 0\n            r = 0\n\n            arr = [0] * (n + 2)\n            for i in range(n):\n                c += arr[i]\n\n                if nums[i] * (1 if c % 2 == 0 else -1) != x:\n                    if i == n - 1 or r == k:\n                        break\n                    # print(f\"i: {i}, c: {c}, r: {r}, arr: {arr}\")\n                    r += 1\n                    c += 1\n                    arr[i + 2] -= 1\n            else:\n                return True\n\n        return False\n",
+    "lang": "python3",
+    "question_id": 3876,
+    "contest_submission": 24458929
+  }
+]

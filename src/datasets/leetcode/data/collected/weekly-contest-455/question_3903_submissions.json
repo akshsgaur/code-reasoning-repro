@@ -1,0 +1,23 @@
+[
+  {
+    "submission_id": 1672149294,
+    "code": "class Solution:\n    def findCoins(self, w):\n        n = len(w)\n        dp = [1] + [0] * n\n        res = []\n        for i in range(1, n + 1):\n            c = dp[i]\n            d = w[i - 1]\n            if c > d:\n                return []\n            if c < d:\n                res.append(i)\n                for j in range(i, n + 1):\n                    dp[j] += dp[j - i]\n        return res if dp[1:] == w else []\n",
+    "lang": "python3",
+    "question_id": 3903,
+    "contest_submission": 24753169
+  },
+  {
+    "submission_id": 1672129964,
+    "code": "class Solution:\n    def findCoins(self, numWays: List[int]) -> List[int]:\n        l = len(numWays)\n        dp = [0] * (l + 1)\n        dp[0] = 1\n        sa = []\n        for d in range(1, l + 1):\n            if dp[d] < numWays[d - 1]:\n                if numWays[d - 1] - dp[d] != 1:\n                    return []\n                sa.append(d)\n                for i in range(d, l + 1):\n                    dp[i] += dp[i - d]\n            if dp[d] > numWays[d - 1]:\n                return []\n        for i in range(1, l + 1):\n            if dp[i] != numWays[i - 1]:\n                return []\n        return sa\n",
+    "lang": "python3",
+    "question_id": 3903,
+    "contest_submission": 24739550
+  },
+  {
+    "submission_id": 1672133304,
+    "code": "from typing import List\n\nclass Solution:\n    def findCoins(self, numWays: List[int]) -> List[int]:\n        n = len(numWays)\n        dp = [0]*(n+1)\n        dp[0] = 1\n        coins = [] # we will build this answer\n\n        for val in range(1, n+1):\n            cur = dp[val]\n            need = numWays[val-1]\n\n            # already matches\n            if cur == need:\n                continue\n\n            # fix deficit of exactly 1\n            if need - cur == 1:\n                coins.append(val)\n\n                for x in range(val, n+1):\n                    dp[x] += dp[x-val]\n\n                if dp[val] != need:\n                    return[]\n            else:\n                return[]\n        return coins",
+    "lang": "python3",
+    "question_id": 3903,
+    "contest_submission": 24742133
+  }
+]

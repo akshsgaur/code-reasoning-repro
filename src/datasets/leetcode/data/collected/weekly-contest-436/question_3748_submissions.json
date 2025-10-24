@@ -1,0 +1,23 @@
+[
+  {
+    "submission_id": 1536399828,
+    "code": "class Solution:\n    def sortMatrix(self, grid: List[List[int]]) -> List[List[int]]:\n        n = len(grid)\n        x = 0\n        y = n - 1\n        while True:\n            pos = []\n            cur = 0\n            while x + cur < n and y + cur < n:\n                pos.append(grid[x + cur][y + cur])\n                cur += 1\n            cur = 0\n            if y > 0:\n                pos.sort()\n            else:\n                pos.sort(reverse=True)\n            while x + cur < n and y + cur < n:\n                grid[x + cur][y + cur] = pos[cur]\n                cur += 1\n            \n\n\n            if y > 0:\n                y -= 1\n            elif x < n - 1:\n                x += 1\n            else:\n                break\n        return grid\n        ",
+    "lang": "python3",
+    "question_id": 3748,
+    "contest_submission": 22424543
+  },
+  {
+    "submission_id": 1536396372,
+    "code": "class Solution:\n    def sortMatrix(self, grid: List[List[int]]) -> List[List[int]]:\n        graph = collections.defaultdict(list)\n        \n        for i in range(len(grid)):\n            for j in range(len(grid[0])):\n                graph[i-j].append(grid[i][j])\n        \n        for key in graph:\n            if key >= 0:\n                graph[key].sort()\n            else:\n                graph[key].sort(reverse=True)\n                \n        #print(graph)\n        \n        \n        for i in range(len(grid)):\n            for j in range(len(grid[0])):\n                grid[i][j] = graph[i-j].pop()\n        return grid",
+    "lang": "python3",
+    "question_id": 3748,
+    "contest_submission": 22423109
+  },
+  {
+    "submission_id": 1536461192,
+    "code": "class Solution:\n    def sortMatrix(self, grid: List[List[int]]) -> List[List[int]]:\n        n = len(grid)\n        c = defaultdict(list)\n        for i in range(n):\n            for j in range(n):\n                c[i - j].append(grid[i][j])\n        for k in c.keys():\n            if k >= 0:\n                c[k].sort()\n            else:\n                c[k].sort(reverse=True)\n        \n        for i in range(n):\n            for j in range(n):\n                f = i - j\n                grid[i][j] = c[f][-1]\n                c[f].pop()\n        \n        return grid",
+    "lang": "python3",
+    "question_id": 3748,
+    "contest_submission": 22464926
+  }
+]

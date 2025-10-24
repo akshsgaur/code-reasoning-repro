@@ -1,0 +1,23 @@
+[
+  {
+    "submission_id": 1582823112,
+    "code": "class Solution:\n    def hlp(self, a):\n        l, r, res = 1, 4, 0\n        f = [0]\n        while l <= a[1]:\n            f.append(max(0, min(r - 1, a[1]) - max(l, a[0]) + 1))\n            l <<= 2\n            r <<= 2\n        \n        while len(f) > 1:\n            if f[-1] >= 2:\n                res += f[-1] // 2\n                f[-2] += f[-1] // 2 * 2\n                f[-1] &= 1\n            if f[-1]:\n                res += 1\n                if len(f) >= 3:\n                    f[-3] += 1\n                else:\n                    f[-2] += 1\n            f.pop()\n        return res\n    \n    def minOperations(self, q):\n        return sum(self.hlp(x) for x in q)",
+    "lang": "python3",
+    "question_id": 3744,
+    "contest_submission": 23271392
+  },
+  {
+    "submission_id": 1582831208,
+    "code": "class Solution:\n    def minOperations(self, queries: List[List[int]]) -> int:\n        p = [1] * 16\n        for i in range(1, 16):\n            p[i] = p[i - 1] * 4\n        ans = 0\n        for l, r in queries:\n            total = 0\n            for t in range(1, 16):\n                L = p[t - 1]\n                R = p[t] - 1\n                lo = l if l > L else L\n                hi = r if r < R else R\n                if lo <= hi:\n                    total += t * (hi - lo + 1)\n            tmax = 0\n            for t in range(1, 16):\n                if r <= p[t] - 1:\n                    tmax = t\n                    break\n            ops = (total + 1) // 2\n            if tmax > ops:\n                ops = tmax\n            ans += ops\n        return ans",
+    "lang": "python3",
+    "question_id": 3744,
+    "contest_submission": 23277173
+  },
+  {
+    "submission_id": 1582837946,
+    "code": "class Solution:\n    def minOperations(self, queries: List[List[int]]) -> int:\n        result = []\n        k = 1\n        while True:\n            low = 4 ** (k - 1)\n            high = 4 ** k - 1\n            if low > 10 ** 9:\n                break\n            result.append((low, high, k))\n            k += 1\n\n        # print(result)\n        ans = 0\n        for q in queries:\n            l = q[0]\n            r = q[1]\n            _sum = 0\n            for a, b, c in result:\n                if b >= l and a <= r:\n                    x = max(l, a)\n                    y = min(r, b)\n                    _sum += c * (y - x + 1)\n                    # print(f'x: {x}, y: {y}, c: {c}, _sum: {_sum}')\n            ans += (_sum + 1) // 2\n            # print(f'ans: {ans}')\n        # print(ans)\n        return ans",
+    "lang": "python3",
+    "question_id": 3744,
+    "contest_submission": 23281853
+  }
+]

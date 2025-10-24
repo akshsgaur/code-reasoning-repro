@@ -1,0 +1,23 @@
+[
+  {
+    "submission_id": 1582817620,
+    "code": "class Solution:\n    def minTime(self, s, m):\n        n = len(s)\n        f = [0] * n\n        for x in m:\n            nw = f[0]\n            for i in range(1, n):\n                nw = max(nw + s[i - 1] * x, f[i])\n            f[n - 1] = nw + s[n - 1] * x\n            for i in range(n - 2, -1, -1):\n                f[i] = f[i + 1] - s[i + 1] * x\n        return f[n - 1]",
+    "lang": "python3",
+    "question_id": 3794,
+    "contest_submission": 23267286
+  },
+  {
+    "submission_id": 1582823640,
+    "code": "class Solution:\n    def minTime(self, skill: List[int], mana: List[int]) -> int:\n        n, m = len(skill), len(mana)\n        ss = [0] * n\n        ss[0] = skill[0]\n        for i in range(1, n):\n            ss[i] = ss[i - 1] + skill[i]\n        S = 0\n        for j in range(1, m):\n            delay = skill[0] * mana[j - 1]\n            for i in range(1, n):\n                d = ss[i] * mana[j - 1] - ss[i - 1] * mana[j]\n                if d > delay:\n                    delay = d\n            S += delay\n        return S + ss[-1] * mana[-1]",
+    "lang": "python3",
+    "question_id": 3794,
+    "contest_submission": 23271771
+  },
+  {
+    "submission_id": 1582832026,
+    "code": "class Solution:\n    def minTime(self, skill: List[int], mana: List[int]) -> int:\n        n, m = len(skill), len(mana)\n        dp = [0] * (n + 1)\n        for i in range(1, n + 1):\n            dp[i] = dp[i - 1] + skill[i - 1]\n        s = 0\n        for j in range(m - 1):\n            s += max(mana[j] * dp[i] - mana[j + 1] * dp[i - 1] for i in range(1, n + 1))\n        return mana[m - 1] * dp[n] + s",
+    "lang": "python3",
+    "question_id": 3794,
+    "contest_submission": 23277752
+  }
+]

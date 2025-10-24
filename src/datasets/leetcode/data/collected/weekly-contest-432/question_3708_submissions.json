@@ -1,0 +1,23 @@
+[
+  {
+    "submission_id": 1505653842,
+    "code": "\nclass Solution:\n    def zigzagTraversal(self, grid: List[List[int]]) -> List[int]:\n        R, C = len(grid), len(grid[0])\n        ans = []\n        i, j = 0, 0\n\n        def connected(i, j, ii, jj):\n            return (i == ii and abs(j - jj) == 1) or (j == jj and abs(i - ii) == 1)\n\n        dir = 1\n        while 0 <= i < R and 0 <= j < C:\n            ans.append(grid[i][j])\n            ii = i\n            jj = j + 2 * dir\n            if 0 <= jj < C:\n                i, j = ii, jj\n            else:\n                ii = i + 1\n                jj = 0 if jj < 0 else C - 1\n                dir = -dir\n                if 0 <= ii < R and 0 <= jj < C:\n                    if connected(i, j, ii, jj):\n                        jj += dir\n                    i, j = ii, jj\n                else:\n                    break\n\n        return ans\n\n",
+    "lang": "python3",
+    "question_id": 3708,
+    "contest_submission": 21956537
+  },
+  {
+    "submission_id": 1505650015,
+    "code": "class Solution:\n    def zigzagTraversal(self, grid: List[List[int]]) -> List[int]:\n\n        m, n = len(grid), len(grid[0])\n\n        r = 1\n        i, j = 0, 0\n        res = []\n        \n        while i < m:\n            res.append(grid[i][j])\n            if r:\n                j += 2\n                if j >= n:\n                    i += 1\n                    j = n - 1 - (j - n)\n                    r = 1 - r\n            else:\n                j -= 2\n                if j < 0:\n                    i += 1\n                    j = 0 - j - 1\n                    r = 1 - r\n\n        return res",
+    "lang": "python3",
+    "question_id": 3708,
+    "contest_submission": 21953948
+  },
+  {
+    "submission_id": 1505643478,
+    "code": "class Solution:\n    def zigzagTraversal(self, grid: List[List[int]]) -> List[int]:\n        ans = []\n        for i, row in enumerate(grid):\n            if i % 2:\n                ans += row[::-1]\n            else:\n                ans += row\n        return ans[::2]\n            \n        ",
+    "lang": "python3",
+    "question_id": 3708,
+    "contest_submission": 21949845
+  }
+]

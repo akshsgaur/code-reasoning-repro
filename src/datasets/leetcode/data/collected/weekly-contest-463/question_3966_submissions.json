@@ -1,0 +1,23 @@
+[
+  {
+    "submission_id": 1737955459,
+    "code": "class Solution:\n    def minArraySum(self, a: List[int], k: int) -> int:\n        t=0\n        for x in a: t+=x\n        b=[-inf]*k\n        b[0]=0\n        d=0\n        p=0\n        for x in a:\n            p+=x\n            r=p%k\n            v=b[r]+p\n            if d<v: d=v\n            w=d-p\n            if b[r]<w: b[r]=w\n        return t-d",
+    "lang": "python3",
+    "question_id": 3966,
+    "contest_submission": 25836970
+  },
+  {
+    "submission_id": 1737964961,
+    "code": "class Solution:\n    def minArraySum(self, a: List[int], k: int) -> int:\n        n = len(a)\n        bm = [-sys.maxsize] * k\n        bm[0] = 0\n        ps = 0\n        dp = 0\n        for x in a:\n            ps += x\n            r = ps % k\n            c = bm[r] + ps\n            dp = max(dp, c)\n            bm[r] = max(bm[r], dp - ps)\n        return ps - dp\n",
+    "lang": "python3",
+    "question_id": 3966,
+    "contest_submission": 25843109
+  },
+  {
+    "submission_id": 1737958114,
+    "code": "class Solution:\n    def minArraySum(self, nums: List[int], k: int) -> int:\n        s = 0\n        dp = 0\n        best = {0: 0}\n        total = 0\n        for x in nums:\n            total += x\n            s += x\n            r = s%k\n            dp = max(dp, best.get(r, float(\"-inf\")) + s)\n            v = dp -s\n            if best.get(r, float(\"-inf\")) < v:\n                best[r] = v\n        return total - dp\n        ",
+    "lang": "python3",
+    "question_id": 3966,
+    "contest_submission": 25838554
+  }
+]

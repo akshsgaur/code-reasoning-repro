@@ -56,7 +56,7 @@ def save_leetcode_only(dataset: DatasetDict, out_dir: Path) -> None:
 def main() -> None:
     dataset: DatasetDict = load_dataset(
         "livecodebench/code_generation_lite",
-        version_tag="release_v2",
+        version_tag="release_v5",
     )
 
     output_dir = Path(__file__).resolve().parent / "lcb_codegen_overview"

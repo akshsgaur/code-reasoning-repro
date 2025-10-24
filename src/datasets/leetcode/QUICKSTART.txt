@@ -1,0 +1,58 @@
+================================================================================
+LeetCode Weekly Contest 467 - Data Collection
+ADAPTED FROM: data_collection/live_code_bench/leetcode/
+================================================================================
+
+WHAT I DID:
+✓ Analyzed data_collection repository code
+✓ Found they use Selenium for LeetCode authentication  
+✓ Adapted their exact approach for contest 467
+✓ Created complete pipeline: scraping → dataset building
+
+RUN THIS:
+---------
+1. pip install selenium
+2. brew install chromedriver    # macOS
+3. python3 collect_467_selenium.py
+
+WHAT IT DOES:
+------------
+- Opens Chrome browser
+- Logs into LeetCode with your credentials
+- Fetches ranking data (bypasses Cloudflare)
+- Downloads Python3 submissions
+- Saves to: data/collected/weekly-contest-467/
+
+THEN RUN:
+---------
+python3 build_dataset_467.py
+
+This creates the final JSONL dataset.
+
+FILES CREATED:
+-------------
+✓ collect_467_selenium.py  ← USE THIS (main scraper with Selenium)
+✓ build_dataset_467.py     ← Dataset builder
+✓ RUN_THIS.md              ← Detailed instructions
+✓ FINAL_SOLUTION.md        ← Complete explanation
+
+WHY SELENIUM:
+------------
+LeetCode has Cloudflare bot protection that blocks curl/requests.
+The data_collection repo ALSO uses Selenium for this reason.
+See: data_collection/live_code_bench/leetcode/login.py
+
+CODE SOURCE MAPPING:
+-------------------
+collect_467_selenium.py:login_leetcode()
+  ← data_collection/live_code_bench/leetcode/login.py:login_main()
+
+collect_467_selenium.py:get_contest_ranking()
+  ← data_collection/live_code_bench/leetcode/contest_ranking.py
+
+collect_467_selenium.py:main()
+  ← data_collection/commands/leetcode_get_contest_ranking_by_lang.py
+
+EXACT SAME APPROACH AS ORIGINAL REPO!
+
+================================================================================

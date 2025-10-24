@@ -1,0 +1,23 @@
+[
+  {
+    "submission_id": 1612012857,
+    "code": "class Solution:\n    def resultArray(self, nums: List[int], k: int) -> List[int]:\n        res = [0] * k\n        prev = [0] * k\n\n        for n in nums:\n            m = n % k\n            cur = [0] * k\n            cur[m] += 1\n            for r in range(k):\n                if prev[r]:\n                    new_r = (r * m) % k\n                    cur[new_r] += prev[r]\n            for r in range(k):\n                res[r] += cur[r]\n            prev = cur\n\n        return res\n",
+    "lang": "python3",
+    "question_id": 3831,
+    "contest_submission": 23732619
+  },
+  {
+    "submission_id": 1612015311,
+    "code": "class Solution:\n    def resultArray(self, nums: List[int], k: int) -> List[int]:\n        res = [0] * k\n        dp = [0] * k\n        for a in nums:\n            ndp = [0] * k\n            am = a % k\n            ndp[am] += 1\n            for r in range(k):\n                if dp[r]:\n                    ndp[(r * am) % k] += dp[r]\n            for r in range(k):\n                res[r] += ndp[r]\n            dp = ndp\n        return res",
+    "lang": "python3",
+    "question_id": 3831,
+    "contest_submission": 23734520
+  },
+  {
+    "submission_id": 1612005272,
+    "code": "class Solution:\n    def resultArray(self, nums: List[int], k: int) -> List[int]:\n        result = [0] * k\n        curr = [0] * k\n        for num in nums:\n            m = num % k\n            newCurr = [0] * k\n            for r in range(k):\n                newCurr[(r * m) % k] += curr[r]\n            newCurr[m] += 1\n            curr = newCurr\n            for r in range(k):\n                result[r] += curr[r]\n        return result",
+    "lang": "python3",
+    "question_id": 3831,
+    "contest_submission": 23726597
+  }
+]

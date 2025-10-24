@@ -1,0 +1,23 @@
+[
+  {
+    "submission_id": 1679829840,
+    "code": "class Solution:\n    def longestCommonPrefix(self, words: List[str]) -> List[int]:\n        n = len(words)\n        if n < 2:\n            return [0]*n\n        l = [0]*(n-1)\n        for i in range(n-1):\n            a, b = words[i], words[i+1]\n            m, j = min(len(a), len(b)), 0\n            while j < m and a[j] == b[j]: j += 1\n            l[i] = j\n        pm = [0]*(n-1)\n        pm[0] = l[0]\n        for i in range(1, n-1): pm[i] = pm[i-1] if pm[i-1] > l[i] else l[i]\n        sm = [0]*(n-1)\n        sm[n-2] = l[n-2]\n        for i in range(n-3, -1, -1): sm[i] = sm[i+1] if sm[i+1] > l[i] else l[i]\n\n        res = [0]*n\n        for i in range(n):\n            left = pm[i-2] if i >= 2 else 0\n            right = sm[i+1] if i+1 <= n-2 else 0\n            mx = left if left > right else right\n            if 0 < i < n-1:\n                a, b = words[i-1], words[i+1]\n                m = min(len(a), len(b))\n                j = 0\n                while j < m and a[j] == b[j]: j += 1\n                t = j\n                mx = mx if mx > t else t\n            res[i] = mx\n        return res",
+    "lang": "python3",
+    "question_id": 3800,
+    "contest_submission": 24798178
+  },
+  {
+    "submission_id": 1679830179,
+    "code": "from typing import List\n\nclass Solution:\n  def longestCommonPrefix(self, w: List[str]) -> List[int]:\n    n = len(w)\n    if n <= 1: return [0] * n\n\n    def f(a: str, b: str) -> int:\n      c = 0\n      for x, y in zip(a, b):\n        if x == y: c += 1\n        else: break\n      return c\n\n    a = [f(w[i], w[i+1]) for i in range(n-1)]\n    p, s = [0]*(n-1), [0]*(n-1); p[0], s[-1] = a[0], a[-1]\n    for i in range(1, n-1): p[i] = max(p[i-1], a[i])\n    for i in range(n-3, -1, -1): s[i] = max(s[i+1], a[i])\n\n    r = [0]*n; r[0] = s[1] if n > 2 else 0; r[-1] = p[-2] if n > 2 else 0\n\n    for i in range(1, n-1):\n      x = f(w[i-1], w[i+1])\n      r[i] = max(x, p[i-2] if i > 1 else 0, s[i+1] if i < n-2 else 0)\n\n    return r",
+    "lang": "python3",
+    "question_id": 3800,
+    "contest_submission": 24798431
+  },
+  {
+    "submission_id": 1679850881,
+    "code": "import sys\n\nclass Solution:\n    def longestCommonPrefix(self, w):\n        n = len(w)\n        if n < 3:\n            return [0] * n\n\n        def lcp(a, b):\n            i, m = 0, min(len(a), len(b))\n            while i < m and a[i] == b[i]:\n                i += 1\n            return i\n\n        pairwise = [lcp(w[i], w[i + 1]) for i in range(n - 1)]\n        pref = [0] * (n - 1)\n        suff = [0] * (n - 1)\n\n        pref[0] = pairwise[0]\n        for i in range(1, n - 1):\n            pref[i] = max(pref[i - 1], pairwise[i])\n\n        suff[-1] = pairwise[-1]\n        for i in range(n - 3, -1, -1):\n            suff[i] = max(suff[i + 1], pairwise[i])\n\n        res = [suff[1]]\n        for i in range(1, n - 1):\n            left = pref[i - 2] if i > 1 else -sys.maxsize\n            right = suff[i + 1] if i + 1 < n - 1 else -sys.maxsize\n            mid = lcp(w[i - 1], w[i + 1])\n            res.append(max(left, right, mid))\n        res.append(pref[-2])\n        return res\n",
+    "lang": "python3",
+    "question_id": 3800,
+    "contest_submission": 24812951
+  }
+]

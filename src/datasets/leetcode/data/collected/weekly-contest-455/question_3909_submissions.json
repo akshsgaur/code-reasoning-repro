@@ -1,0 +1,23 @@
+[
+  {
+    "submission_id": 1672149562,
+    "code": "class Solution:\n    def minIncrease(self, n, e, w):\n        import sys\n        sys.setrecursionlimit(300000)\n        a = [[] for _ in range(n)]\n        for x, y in e:\n            a[x].append(y)\n            a[y].append(x)\n        q = [-1] * n\n        s = [0]\n        for i in s:\n            for j in a[i]:\n                if j != q[i]:\n                    q[j] = i\n                    s.append(j)\n        m = [0] * n\n        r = [0] * n\n        for i in reversed(s):\n            t = 0\n            for j in a[i]:\n                if j != q[i]:\n                    t = max(t, m[j])\n            for j in a[i]:\n                if j != q[i]:\n                    r[i] += r[j] + (m[j] < t)\n            m[i] = w[i] + t\n        return r[0]\n",
+    "lang": "python3",
+    "question_id": 3909,
+    "contest_submission": 24753343
+  },
+  {
+    "submission_id": 1672151557,
+    "code": "class Solution:\n    def minIncrease(self, n: int, edges: List[List[int]], cost: List[int]) -> int:\n        g = defaultdict(list)\n        for u, v in edges:\n            g[u].append(v)\n            g[v].append(u)\n        res = 0\n\n        def dfs(u, p):\n            mx = 0\n            ch = []\n            for v in g[u]:\n                if v != p:\n                    s, cnt = dfs(v, u)\n                    mx = max(mx, s)\n                    ch.append((s, cnt))\n            cnt = 0\n            for s, c in ch:\n                if s < mx:\n                    cnt += c + 1\n                else:\n                    cnt += c\n            return cost[u] + mx, cnt\n\n        return dfs(0, -1)[1]\n",
+    "lang": "python3",
+    "question_id": 3909,
+    "contest_submission": 24754638
+  },
+  {
+    "submission_id": 1672145060,
+    "code": "from typing import List\nimport sys\nsys.setrecursionlimit(300_000)\n\nclass Solution:\n    def minIncrease(self, n: int, edges: List[List[int]], cost: List[int]) -> int:\n        g = [[] for _ in range(n)]\n        for u, v in edges:\n            g[u].append(v)\n            g[v].append(u)\n\n        def dfs(u: int, parent: int) -> tuple[int, int]:\n            child_scores = []\n            ops = 0\n\n            for v in g[u]:\n                if v == parent:\n                    continue\n                score, sub_ops = dfs(v, u)\n                child_scores.append(score)\n                ops += sub_ops\n\n            # leaf node - only its own cost matters\n            if not child_scores:\n                return cost[u], ops\n\n            max_child = max(child_scores)\n\n            for score in child_scores:\n                if score < max_child:\n                    ops += 1\n            return cost[u] + max_child, ops\n\n        _, answer = dfs(0, -1)\n        return answer",
+    "lang": "python3",
+    "question_id": 3909,
+    "contest_submission": 24750422
+  }
+]

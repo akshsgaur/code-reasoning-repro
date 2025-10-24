@@ -1,0 +1,23 @@
+[
+  {
+    "submission_id": 1712779651,
+    "code": "class Solution:\n    def maximizeXorAndXor(self, nums: list[int]) -> int:\n        def best(s, m):\n            b = [0] * nbBits\n            while s:\n                t = s & -s\n                i = (t.bit_length() - 1)\n                x = nums[i] & m\n                while x:\n                    k = x.bit_length() - 1\n                    if b[k]:\n                        x ^= b[k]\n                    else:\n                        b[k] = x\n                        break\n                s ^= t\n            res = 0\n            for k in range(nbBits - 1, -1, -1):\n                if b[k] and (res ^ b[k]) > res:\n                    res ^= b[k]\n            return res \n         \n            \n        n = len(nums)\n        XORtot = 0\n        for v in nums:\n            XORtot ^= v\n        nbBits = max(XORtot, max(nums, default=0)).bit_length() or 1\n        bitmask = (1 << nbBits) - 1\n        N = 1 << n\n\n        xr, ad = [0] * N, [0] * N\n        ad[0] = bitmask\n        for m in range(1, N):\n            b = m & -m\n            i = (b.bit_length() - 1)\n            pm = m ^ b\n            xr[m] = xr[pm] ^ nums[i]\n            ad[m] = ad[pm] & nums[i]\n\n        ans = 0\n        for mB in range(N):\n            andB = 0 if mB == 0 else ad[mB]\n            XORAC = XORtot ^ xr[mB]\n            M = bitmask ^ XORAC\n            complB = (N - 1) ^ mB\n            ans = max(ans, andB + XORAC + 2 * best(complB, M)) \n        return ans",
+    "lang": "python3",
+    "question_id": 3882,
+    "contest_submission": 25356815
+  },
+  {
+    "submission_id": 1712781596,
+    "code": "class Solution:\n    def maximizeXorAndXor(self, a: List[int]) -> int:\n        from itertools import combinations as cmb\n        n = len(a)\n        full_mask = (1 << 31) - 1\n        max_res = -sys.maxsize\n        i = j = k = p = q = u = v = x = y = z = 0\n        arr = []\n        tmp = []\n        mask = []\n        comb = []\n        used = set()\n        base = []\n\n        def fx(vec):\n            base.clear()\n            z = 0\n            for val in vec:\n                for b in base:\n                    val = min(val, val ^ b)\n                if val: base.append(val)\n            base.sort(reverse=True)\n            for b in base: z = max(z, z ^ b)\n            return z\n\n        for k in range(min(4, n) + 1):\n            for comb in cmb(range(n), k):\n                q = 0 if not comb else a[comb[0]]\n                for i in comb[1:]: q &= a[i]\n                used = set(comb)\n                x = 0\n                tmp.clear()\n                for j in range(n):\n                    if j not in used:\n                        x ^= a[j]\n                        tmp.append(a[j])\n                mask = [(v & ((~x) & full_mask)) for v in tmp]\n                y = fx(mask) if mask else 0\n                max_res = max(max_res, q + x + 2 * y)\n        return max_res\n",
+    "lang": "python3",
+    "question_id": 3882,
+    "contest_submission": 25358235
+  },
+  {
+    "submission_id": 1712774072,
+    "code": "class Solution:\n    def maximizeXorAndXor(self, a: List[int]) -> int:\n        n=len(a)\n        f,sz=(1<<n)-1,1<<n\n        r,o,d,x=0,[0]*sz,[0]*sz,[0]*sz\n        for m in range(1,sz):\n            l=m&-m;i=l.bit_length()-1;p=m^l\n            o[m]=o[p]|a[i]\n            d[m]=a[i] if p==0 else d[p]&a[i]\n            x[m]=x[p]^a[i]\n        for m in range(sz):\n            rm=f^m\n            ub=d[m]+2*o[rm]-x[rm]\n            if ub<=r:continue\n            best_x=0\n            s=rm\n            while True:\n                v=x[s]+x[rm^s]\n                if v>best_x:best_x=v\n                if s==0:break\n                s=(s-1)&rm\n            v=d[m]+best_x\n            if v>r:r=v\n        return r",
+    "lang": "python3",
+    "question_id": 3882,
+    "contest_submission": 25352727
+  }
+]

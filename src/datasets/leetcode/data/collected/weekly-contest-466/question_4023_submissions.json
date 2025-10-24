@@ -1,0 +1,23 @@
+[
+  {
+    "submission_id": 1762075360,
+    "code": "class Solution:\n    def countBinaryPalindromes(self, n: int) -> int:\n        if n==0:return 1\n        s=bin(n)[2:]\n        L,r=len(s),1\n        for l in range(1,L):\n            if l==1: r+=1\n            else:    r+=1<<(((l+1)//2)-1)\n\n        h=(L+1)//2\n        p,lo=int(s[:h],2),1<<(h-1)\n        if p>lo:\n            r+=p-lo\n\n        t=s[:h]+(s[:h][:-1][::-1] if L&1 else s[:h][::-1])\n        if t<=s:\n            r+=1\n        return r",
+    "lang": "python3",
+    "question_id": 4023,
+    "contest_submission": 26214508
+  },
+  {
+    "submission_id": 1762076544,
+    "code": "class Solution:\n    def countBinaryPalindromes(self, n: int) -> int:\n        if n==0:\n            return 1\n\n        d=n\n\n        def rbits(x,k):\n            y=0\n            for _ in range(k):\n                y=(y<<1)|(x&1)\n                x>>=1\n            return y\n\n        def makepal(p,l,m):\n            if l%2==0:\n                return (p<<m) | rbits(p,m)\n            else:\n                return (p<<(m-1)) | rbits(p>>1,m-1)\n\n        l=d.bit_length()\n\n        total=1\n        for i in range(1,l):\n            m=(i+1)//2\n            total+=1<<(m-1)\n\n        m=(l+1)//2\n        p_low=1<<(m-1)\n        p0=d>>(l-m)\n        pal_p0=makepal(p0,l,m)\n        if pal_p0<=d:\n            total+=(p0-p_low+1)\n        else:\n            total+=(p0-p_low)\n\n        return total\n        ",
+    "lang": "python3",
+    "question_id": 4023,
+    "contest_submission": 26215398
+  },
+  {
+    "submission_id": 1762086648,
+    "code": "class Solution:\n    def countBinaryPalindromes(self, n: int) -> int:\n        if n == 0:\n            return 1\n\n        s = bin(n)[2:]\n        L = len(s)\n    \n        # helpers\n        def rev(x, k):\n            y = 0\n            for _ in range(k):\n                y = (y << 1) | (x & 1)\n                x >>= 1\n            return y\n\n        def make_pal(L, p):\n            k = L // 2\n            if L % 2 == 0:\n                return (p << k) | rev(p, k)\n            else:\n                return (p << k) | rev(p >> 1, k)\n        \n        # count lengths < L\n        ans = 1\n        for l in range(1, L):\n            ans += 1 << ((l - 1) // 2)\n\n        # handle length L\n        p_len = (L + 1) // 2\n        p = int(s[:p_len], 2)\n        base = 1 << (p_len - 1)\n        if p > base:\n            ans += p - base\n        if make_pal(L, p) <= n:\n            ans += 1\n\n        return ans",
+    "lang": "python3",
+    "question_id": 4023,
+    "contest_submission": 26223272
+  }
+]

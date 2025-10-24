@@ -3,3 +3,4 @@ venv/
 src/datasets/leetcode/lcb_codegen_overview/
 scripts/__pycache__/
 __pycache__/
+src/datasets/leetcode/secrets/

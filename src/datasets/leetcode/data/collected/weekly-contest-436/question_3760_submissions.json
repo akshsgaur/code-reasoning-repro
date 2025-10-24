@@ -1,0 +1,23 @@
+[
+  {
+    "submission_id": 1536410003,
+    "code": "from collections import defaultdict\n\nclass Solution:\n    def assignElements(self, groups: List[int], elements: List[int]) -> List[int]:\n        s = set()\n        dic = defaultdict(int)\n        for i, e in enumerate(elements):\n            if e in s:\n                continue\n            t = 1\n            while e * t <= 100000:\n                if e * t not in dic:\n                    dic[e * t] = i\n                t += 1\n            s.add(e)\n        res = []\n        for g in groups:\n            if g in dic:\n                res.append(dic[g])\n            else:\n                res.append(-1)\n        return res\n\n        \n        \n        ",
+    "lang": "python3",
+    "question_id": 3760,
+    "contest_submission": 22430715
+  },
+  {
+    "submission_id": 1536400600,
+    "code": "class Solution:\n    def assignElements(self, groups: List[int], elements: List[int]) -> List[int]:\n        \n        res = [-1]*len(groups)\n        \n        max_value = max(groups)\n        \n        \n        mapper = collections.defaultdict(list)\n        \n        for i,x in enumerate(groups):\n            mapper[x].append(i)\n        \n        seen = set()\n        for j in range(len(elements)):\n            if elements[j] in seen:\n                continue\n            seen.add(elements[j])\n            curr = elements[j]\n            increment = elements[j]\n            while curr <= max_value:\n                if curr in mapper:\n                    while mapper[curr]:\n                        res[mapper[curr].pop()] = j\n                curr += increment\n        return res",
+    "lang": "python3",
+    "question_id": 3760,
+    "contest_submission": 22424944
+  },
+  {
+    "submission_id": 1536457071,
+    "code": "class Solution:\n    def assignElements(self, groups: List[int], elements: List[int]) -> List[int]:\n        seen = set()\n        T = max(groups)\n        pre = [-1] * (T + 1)\n        for u, e in enumerate(elements):\n            if e in seen:\n                continue\n            seen.add(e)\n            i = e\n            while i <= T:\n                if pre[i] == -1:\n                    pre[i] = u\n                i += e\n        \n        ans = list()\n        for o in groups:\n            ans.append(pre[o])\n        return ans",
+    "lang": "python3",
+    "question_id": 3760,
+    "contest_submission": 22462122
+  }
+]

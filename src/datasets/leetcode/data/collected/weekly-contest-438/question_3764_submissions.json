@@ -1,0 +1,23 @@
+[
+  {
+    "submission_id": 1552280360,
+    "code": "class Solution:\n    def maxSum(self, grid: List[List[int]], limits: List[int], k: int) -> int:\n        n, m = len(grid), len(grid[0])\n        \n        \n        sorted_rows = []\n        for i in range(n):\n            \n            row = [(val, j) for j, val in enumerate(grid[i])]\n            row.sort(reverse=True)\n            sorted_rows.append(row)\n        \n        \n        heap = []  \n        \n        for i in range(n):\n            if limits[i] > 0 and sorted_rows[i]:  \n                val, col = sorted_rows[i][0]\n                \n                heapq.heappush(heap, (-val, i, 0))  \n        \n        result = 0\n        count = 0\n        \n        \n        while heap and count < k:\n            val, row, idx = heapq.heappop(heap)\n            result += -val  \n            count += 1\n            \n            \n            if idx + 1 < len(sorted_rows[row]) and idx + 1 < limits[row]:\n                next_val, next_col = sorted_rows[row][idx + 1]\n                heapq.heappush(heap, (-next_val, row, idx + 1))\n        \n        return result",
+    "lang": "python3",
+    "question_id": 3764,
+    "contest_submission": 22718976
+  },
+  {
+    "submission_id": 1552272249,
+    "code": "class Solution:\n    def maxSum(self, grid: List[List[int]], limits: List[int], k: int) -> int:\n        a = [(sorted(x,reverse=True)[:limits[i]]) for i,x in enumerate(grid)]\n        b=[]\n        for x in a:b.extend(x)\n        a=b.copy()\n        # print(a)\n        return sum(sorted(a,reverse=True)[:k])",
+    "lang": "python3",
+    "question_id": 3764,
+    "contest_submission": 22712912
+  },
+  {
+    "submission_id": 1552278791,
+    "code": "class Solution:\n    def maxSum(self, grid: List[List[int]], limits: List[int], k: int) -> int:\n        arr = []\n\n        for i, r in enumerate(grid):\n            t = sorted(r, reverse=True)[:limits[i]]\n            arr += t\n\n        arr.sort(reverse=True)\n\n        ans = sum(arr[:k])\n\n        # print(arr)\n\n        return ans",
+    "lang": "python3",
+    "question_id": 3764,
+    "contest_submission": 22717813
+  }
+]

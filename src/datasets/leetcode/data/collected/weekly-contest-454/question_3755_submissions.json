@@ -1,0 +1,23 @@
+[
+  {
+    "submission_id": 1664372751,
+    "code": "import math\nfrom typing import List\n\nclass Solution:\n    def maximumProduct(self, a: List[int], m: int) -> int:\n        n = len(a)\n        if m == 1: return max(x*x for x in a)\n        x, y = [a[0]]*n, [a[0]]*n\n        for i in range(1, n):\n            x[i] = max(x[i-1], a[i])\n            y[i] = min(y[i-1], a[i])\n        r = -math.inf\n        for j in range(m-1, n):\n            t = a[j]; i = j-m+1\n            r = max(r, t*x[i], t*y[i])\n        return int(r)\n",
+    "lang": "python3",
+    "question_id": 3755,
+    "contest_submission": 24544696
+  },
+  {
+    "submission_id": 1664384582,
+    "code": "class Solution:\n    def maximumProduct(self, a: List[int], m: int) -> int:\n        n = len(a)\n        if m == 1:\n            return max(x*x for x in a)\n        curr_max = a[0]\n        curr_min = a[0]\n        res = -inf\n        for j in range(m-1,n):\n            if j > m-1:\n                x = a[j-m+1]\n                if x > curr_max: curr_max = x\n                if x < curr_min: curr_min = x\n            xj = a[j]\n            p1 = curr_max * xj\n            p2 = curr_min * xj\n            if p1 > res: res = p1\n            if p2 > res: res = p2\n        return res",
+    "lang": "python3",
+    "question_id": 3755,
+    "contest_submission": 24554667
+  },
+  {
+    "submission_id": 1664376454,
+    "code": "class Solution:\n    def maximumProduct(self, nums: List[int], m: int) -> int:\n        bigLeft = {}\n        smallLeft = {}\n        big = -inf\n        small = inf\n        for i in range(len(nums)):\n            big = max(big, nums[i])\n            small = min(small, nums[i])\n            bigLeft[i] = big\n            smallLeft[i] = small\n\n        bigRight = {}\n        smallRight = {}\n        big = -inf\n        small = inf\n        for i in range(len(nums) - 1, -1, -1):\n            big = max(big, nums[i])\n            small = min(small, nums[i])\n            bigRight[i] = big\n            smallRight[i] = small\n\n        res = -inf\n\n        for i in range(len(nums)):\n            right = i + m - 1\n            if right >= len(nums):\n                break\n            curr = nums[i]\n            opt1 = curr * bigRight[right]\n            opt2 = curr * smallRight[right]\n            res = max(res, opt1, opt2)\n        return res\n            ",
+    "lang": "python3",
+    "question_id": 3755,
+    "contest_submission": 24547806
+  }
+]

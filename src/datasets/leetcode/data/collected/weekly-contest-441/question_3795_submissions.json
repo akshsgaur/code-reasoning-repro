@@ -1,0 +1,23 @@
+[
+  {
+    "submission_id": 1575088928,
+    "code": "class Solution:\n    def minZeroArray(self, nums: List[int], queries: List[List[int]]) -> int:\n        a = nums\n        n = len(a)\n        if all(x==0 for x in a):\n            return 0\n        d = [1]*n\n        for i, q in enumerate(queries):\n            x, y, z = q\n            for j in range(x, y+1):\n                d[j] |= d[j] << z\n            if all(d[j] & (1 << a[j]) for j in range(n)):\n                return i+1\n        return -1\n",
+    "lang": "python3",
+    "question_id": 3795,
+    "contest_submission": 23145751
+  },
+  {
+    "submission_id": 1575088850,
+    "code": "class Solution:\n    def minZeroArray(self, nums: List[int], queries: List[List[int]]) -> int:\n        n = len(nums)\n        total_queries = len(queries)\n        \n        def can_sum_to(vals: List[int], target: int) -> bool:\n            dp = [False] * (target + 1)\n            dp[0] = True\n            for v in vals:\n                for t in range(target, v - 1, -1):\n                    if dp[t - v]:\n                        dp[t] = True\n                if dp[target]:\n                    return True\n            return dp[target]\n        \n        for k in range(total_queries + 1):\n            possible_for_all = True\n            for i in range(n):\n                if nums[i] == 0:\n                    continue\n                available_vals = []\n                for j in range(k):\n                    l, r, val = queries[j]\n                    if l <= i <= r:\n                        available_vals.append(val)\n                if not can_sum_to(available_vals, nums[i]):\n                    possible_for_all = False\n                    break\n            \n            if possible_for_all:\n                return k\n        \n        return -1",
+    "lang": "python3",
+    "question_id": 3795,
+    "contest_submission": 23145690
+  },
+  {
+    "submission_id": 1575094269,
+    "code": "class Solution:\n    def minZeroArray(self, nums: List[int], queries: List[List[int]]) -> int:\n        n = len(nums)\n        if all(num == 0 for num in nums):\n            return 0\n        def is_feasible(num_queries):\n            for index in range(n):\n                required = nums[index]\n                dp = 1\n                mask = (1 << (required + 1)) - 1\n                for i in range(num_queries):\n                    left_bound, right_bound, query_value = queries[i]\n                    if left_bound <= index <= right_bound:\n                        dp = dp | (dp << query_value)\n                        dp &= mask\n                if (dp >> required) & 1 == 0:\n                    return False\n            return True\n        low = 0\n        high = len(queries)\n        answer = -1\n        while low <= high:\n            mid = (low + high) // 2\n            if is_feasible(mid):\n                answer = mid\n                high = mid - 1\n            else:\n                low = mid + 1\n        return answer\n                        \n",
+    "lang": "python3",
+    "question_id": 3795,
+    "contest_submission": 23150031
+  }
+]

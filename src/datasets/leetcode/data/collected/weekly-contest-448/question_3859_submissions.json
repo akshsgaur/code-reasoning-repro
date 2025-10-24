@@ -1,0 +1,23 @@
+[
+  {
+    "submission_id": 1624858658,
+    "code": "class Solution:\n    def maxProduct(self, n: int) -> int:\n        l = []\n        while n:\n            l.append(n % 10)\n            n = n//10\n        l.sort()\n        return l[-1] * l[-2]",
+    "lang": "python3",
+    "question_id": 3859,
+    "contest_submission": 23918348
+  },
+  {
+    "submission_id": 1624852966,
+    "code": "class Solution:\n    def maxProduct(self, n: int) -> int:\n        s = str(n)\n        arr = sorted(int(_) for _ in s)\n        return arr[-1] * arr[-2]\n",
+    "lang": "python3",
+    "question_id": 3859,
+    "contest_submission": 23914013
+  },
+  {
+    "submission_id": 1624854518,
+    "code": "class Solution:\n    def maxProduct(self, n: int) -> int:\n        d = sorted([int(x) for x in str(n)], reverse=True)\n        return d[0] * d[1]",
+    "lang": "python3",
+    "question_id": 3859,
+    "contest_submission": 23915246
+  }
+]

@@ -1,0 +1,23 @@
+[
+  {
+    "submission_id": 1536475077,
+    "code": "class Solution:\n    def maxScore(self, points: List[int], m: int) -> int:\n        n = len(points)\n\n        def check(threshold):\n            needs = [0] * n\n            for i in range(n):\n                if threshold == 0:\n                    needs[i] = 0\n                else:\n                    needs[i] = (threshold - 1) // points[i] + 1\n            # print(threshold)\n            # print(needs)\n\n            count = 0\n            for i in range(n):\n                if needs[i] <= 0:\n                    if i != n - 1:\n                        count += 1\n                else:\n                    count += 2 * needs[i] - 1\n                    if i != n - 1:\n                        needs[i + 1] -= (needs[i] - 1)\n            \n            return count <= m\n    \n        left = 0\n        right = m * min(points)\n        while left < right:\n            mid = right - (right - left) // 2\n            if check(mid):\n                left = mid\n            else:\n                right = mid - 1\n        return left\n\n    ",
+    "lang": "python3",
+    "question_id": 3762,
+    "contest_submission": 22473926
+  },
+  {
+    "submission_id": 1536483553,
+    "code": "class Solution:\n    def maxScore(self, points: List[int], m: int) -> int:\n        \n        l = 1\n        r = 10**15\n        \n        \n        def check(target):\n            used = 0\n            \n            forward_count = 0\n            for i in range(len(points)):\n                needed = target-forward_count #-points[i]\n                if needed > 0 or i+1 < len(points):\n                    used += 1\n                    needed = target-forward_count -points[i]\n                \n                if needed > 0:\n                    G = (needed + points[i] - 1)//points[i]\n                    if i+1 < len(points):\n                        forward_count = G*points[i+1]\n                    else:\n                        forward_count = 0\n                    used += (G*2)\n                else:\n                    forward_count = 0\n                if used > m:\n                    return False\n               \n            return used <= m\n                \n            \n            \n        \n        best_ans = 0\n        while l <= r:\n            mid = l + (r-l)//2\n            #print(mid,check(mid))\n            if check(mid):\n                best_ans = mid\n                l = mid+1\n            else:\n                r = mid-1\n        return best_ans",
+    "lang": "python3",
+    "question_id": 3762,
+    "contest_submission": 22479363
+  },
+  {
+    "submission_id": 1536485434,
+    "code": "class Solution:\n    def maxScore(self, points: List[int], m: int) -> int:\n        ans = 0\n        n = len(points)\n        left, right = 1, min(points) * (m // 2 + 1)\n\n        def ok(num):\n            index = 0\n            count = 1\n            needs = [ (num - 1) // points[i] + 1 for i in range(n)]\n            needs.append(0)\n            needs[0] -= 1\n            fake = 0\n            while index < n:\n                if needs[index] >= 0:\n                    count += fake\n                    fake = 0\n                # print(num, needs, count, index)\n                if needs[index] <= 0:\n                    index += 1\n                    if index < n:\n                        fake += 1\n                        needs[index] -= 1\n                else:\n                    count += needs[index] * 2\n                    needs[index + 1] -= needs[index]\n                    index += 1\n                    if index < n:\n                        fake += 1\n                        needs[index] -= 1\n            #print(num, needs, count, index)\n            return count <= m\n        \n        while left <= right:\n            mid = (left + right) // 2\n            if ok(mid):\n                ans = mid\n                left = mid + 1\n            else:\n                right = mid - 1\n        return ans",
+    "lang": "python3",
+    "question_id": 3762,
+    "contest_submission": 22480577
+  }
+]

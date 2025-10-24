@@ -1,0 +1,23 @@
+[
+  {
+    "submission_id": 1552283804,
+    "code": "class Solution:\n    def hasSameDigits(self, s: str) -> bool:\n        n = len(s)\n        if n == 2:\n            return (s[0] == s[1])\n        \n        digits = list(map(int, s))\n        N = n - 2\n    \n        binom_mod5 = [[0]*5 for _ in range(5)]\n        for i in range(5):\n            binom_mod5[i][0] = 1\n            for j in range(1, i+1):\n                from math import comb\n                binom_mod5[i][j] = comb(i, j) % 5\n        \n        combine_map = {}\n        for x in range(10):\n            pair = (x % 2, x % 5)\n            combine_map[pair] = x\n        \n        def binom_mod2(n, k):\n            return 1 if (k & ~n) == 0 else 0\n        \n        def binom_mod5_func(n, k):\n            res = 1\n            while n > 0 or k > 0:\n                n5 = n % 5\n                k5 = k % 5\n                if k5 > n5:\n                    return 0\n                res = (res * binom_mod5[n5][k5]) % 5\n                n //= 5\n                k //= 5\n            return res\n        \n        def binom_mod10(n, k):\n            b2 = binom_mod2(n, k)\n            b5 = binom_mod5_func(n, k)\n            return combine_map[(b2, b5)]\n        \n        binom_table = [0]*(N+1)\n        for k in range(N+1):\n            binom_table[k] = binom_mod10(N, k)\n        d0 = 0\n        d1 = 0\n        for m in range(N+1):\n            c = binom_table[m]\n            d0 = (d0 + digits[m]*c) % 10\n            d1 = (d1 + digits[m+1]*c) % 10    \n        return (d0 == d1)\n",
+    "lang": "python3",
+    "question_id": 3774,
+    "contest_submission": 22721595
+  },
+  {
+    "submission_id": 1552283656,
+    "code": "def c2(n, k):\n    while k > 0:\n        if (n & 1) < (k & 1):return 0\n        n >>= 1\n        k >>= 1\n    return 1\n\ndef c5(n, k):\n    t = [[1, 0, 0, 0, 0],[1, 1, 0, 0, 0],[1, 2, 1, 0, 0],[1, 3, 3, 1, 0],[1, 4, 1, 4, 1]]\n    r = 1\n    while n > 0 or k > 0:\n        ni, ki = n % 5, k % 5\n        if ki > ni: return 0\n        r = (r * t[ni][ki]) % 5\n        n //= 5\n        k //= 5\n    return r\n\nclass Solution:\n    def hasSameDigits(self, s: str) -> bool:\n        l, k = len(s), len(s) - 2\n        if k < 0:return True\n        c = [(5 * c2(k, j) + 6 * c5(k, j)) % 10 for j in range(k + 1)]\n        a, b = 0, 0\n        for j in range(l):\n            d = int(s[j])\n            if j <= k: a=(a + d * c[j])%10\n            if j >= 1 and (j - 1) <= k:b=(b + d * c[j - 1])%10\n        return a==b",
+    "lang": "python3",
+    "question_id": 3774,
+    "contest_submission": 22721482
+  },
+  {
+    "submission_id": 1552295122,
+    "code": "class Solution:\n    def hasSameDigits(self, s: str) -> bool:\n        arr = [[1], [1, 1], [1, 2, 1], [1, 3, 3, 1], [1, 4, 1, 4, 1]]\n\n        def c2(n, k):\n            return 1 if (n & k) == k else 0\n\n        def c5(n, k):\n            if k > n:\n                return 0\n\n            if n < 5:\n                return arr[n][k]\n\n            if k % 5 > n % 5:\n                return 0\n\n            return (arr[n % 5][k % 5] * c5(n // 5, k // 5)) % 5\n\n        def check(c2, c5):\n            return c5 if (c5 % 2) == c2 else c5 + 5\n\n        size = len(s)\n        m = size - 2\n        digits = list(map(int, s))\n\n        x = 0\n        y = 0\n\n        for j in range(m + 1):\n            r2 = c2(m, j)\n            r5 = c5(m, j)\n            f = check(r2, r5)\n            x = (x + f * digits[j]) % 10\n            y = (y + f * digits[j + 1]) % 10\n\n        return x == y",
+    "lang": "python3",
+    "question_id": 3774,
+    "contest_submission": 22730051
+  }
+]

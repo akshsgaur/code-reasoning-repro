@@ -1,0 +1,23 @@
+[
+  {
+    "submission_id": 1605113299,
+    "code": "class Solution:\n    def smallestPalindrome(self, s: str) -> str:\n        freq = [0] * 26\n        for ch in s:\n            freq[ord(ch) - ord('a')] += 1\n    \n        center = \"\"\n        for i in range(26):\n            if freq[i] % 2 == 1:\n                center = chr(i + ord('a'))\n                freq[i] -= 1\n                break\n        \n        first_half = []\n        for i in range(26):\n            first_half.append(chr(i + ord('a')) * (freq[i] // 2))\n        \n        first_half_str = \"\".join(first_half)\n        result = first_half_str + center + first_half_str[::-1]\n        return result\n",
+    "lang": "python3",
+    "question_id": 3812,
+    "contest_submission": 23645461
+  },
+  {
+    "submission_id": 1605120842,
+    "code": "class Solution:\n    def smallestPalindrome(self, s: str) -> str:\n        charCount = {}\n        for char in s:\n            charCount[char] = charCount.get(char, 0) + 1\n        \n        oddChar = None\n        for char, count in charCount.items():\n            if count % 2 == 1:\n                if oddChar is None or char < oddChar:\n                    oddChar = char\n        \n        leftHalf = []\n        for char in sorted(charCount.keys()):\n            if char == oddChar:\n                leftHalf.extend([char] * ((charCount[char] - 1) // 2))\n            else:\n                leftHalf.extend([char] * (charCount[char] // 2))\n        \n        middle = [oddChar] if oddChar is not None else []\n        \n        rightHalf = leftHalf.copy()\n        rightHalf.reverse()\n        \n        return ''.join(leftHalf + middle + rightHalf)",
+    "lang": "python3",
+    "question_id": 3812,
+    "contest_submission": 23651903
+  },
+  {
+    "submission_id": 1605125714,
+    "code": "class Solution:\n    def smallestPalindrome(self, s: str) -> str:\n        c = Counter(s)\n        arr = []\n        mid = \"\"\n        for x in sorted(c):\n            n = c[x] // 2\n            arr.append(x * n)\n            if c[x] % 2:\n                mid = x\n        left = \"\".join(arr)\n        return left + mid + left[::-1]\n",
+    "lang": "python3",
+    "question_id": 3812,
+    "contest_submission": 23655678
+  }
+]

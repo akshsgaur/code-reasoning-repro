@@ -1,0 +1,23 @@
+[
+  {
+    "submission_id": 1664365781,
+    "code": "class Solution:\n    def generateTag(self, s: str) -> str:\n        w = s.split()\n        if not w: return \"#\"\n        t = w[0].lower() + ''.join(x.capitalize() for x in w[1:])\n        t = ''.join(c for c in t if c.isalpha())\n        return '#' + t[:99]",
+    "lang": "python3",
+    "question_id": 3893,
+    "contest_submission": 24539100
+  },
+  {
+    "submission_id": 1664363072,
+    "code": "class Solution:\n    def generateTag(self, c: str) -> str:\n        w,s=c.split(),'#'\n        if w:\n            s+=w[0].lower()\n            for x in w[1:]:\n                s+=x.lower().capitalize()\n        s2=s[0]+''.join(ch for ch in s[1:] if ch.isalpha())\n        return s2[:100]",
+    "lang": "python3",
+    "question_id": 3893,
+    "contest_submission": 24537216
+  },
+  {
+    "submission_id": 1664371377,
+    "code": "class Solution:\n    def generateTag(self, caption: str) -> str:\n        # caption = \"   \"\n        \n        arr = []\n        word = []\n        for c in caption:\n            if c == ' ':\n                if word:\n                    arr.append(''.join(word))\n                    word = []\n            else:\n                word.append(c)\n        if word:\n            arr.append(''.join(word))\n        # print(arr)\n\n        if not arr:\n            return '#'\n\n        for i in range(len(arr)):\n            w = arr[i]\n            w = w.lower()\n            if i != 0:\n                w = w[:1].upper() + w[1:]\n            else:\n                w = w\n            arr[i] = w\n\n        final = '#' + ''.join(arr)\n        final = final[:100]\n        return final\n            \n        ",
+    "lang": "python3",
+    "question_id": 3893,
+    "contest_submission": 24543590
+  }
+]
