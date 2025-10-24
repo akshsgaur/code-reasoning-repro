@@ -1,0 +1,402 @@
+[
+  [
+    "def length(lst):",
+    "Return the number of elements in lst."
+  ],
+  [
+    "def is_empty(lst):",
+    "Return True if lst has no elements, else False."
+  ],
+  [
+    "def head(lst):",
+    "Return the first element of lst, or raise if empty."
+  ],
+  [
+    "def tail(lst):",
+    "Return a new list of all elements except the first."
+  ],
+  [
+    "def last(lst):",
+    "Return the last element of lst, or raise if empty."
+  ],
+  [
+    "def init(lst):",
+    "Return a new list of all elements except the last."
+  ],
+  [
+    "def reverse(lst):",
+    "Return a new list with elements of lst in reverse order."
+  ],
+  [
+    "def copy(lst):",
+    "Return a shallow copy of lst."
+  ],
+  [
+    "def append_item(lst, value):",
+    "Return a new list with value appended to the end."
+  ],
+  [
+    "def prepend_item(lst, value):",
+    "Return a new list with value inserted at the beginning."
+  ],
+  [
+    "def insert_at(lst, index, value):",
+    "Return a new list with value inserted at position index."
+  ],
+  [
+    "def remove_at(lst, index):",
+    "Return a new list with the element at index removed."
+  ],
+  [
+    "def replace_at(lst, index, value):",
+    "Return a new list with the element at index replaced by value."
+  ],
+  [
+    "def slice_range(lst, start, end):",
+    "Return a sublist from start (inclusive) to end (exclusive)."
+  ],
+  [
+    "def concat(lst, other):",
+    "Return a new list that is lst followed by other."
+  ],
+  [
+    "def index_of(lst, value):",
+    "Return the first index of value in lst, or -1 if not found."
+  ],
+  [
+    "def last_index_of(lst, value):",
+    "Return the last index of value in lst, or -1 if not found."
+  ],
+  [
+    "def contains(lst, value):",
+    "Return True if value appears in lst, else False."
+  ],
+  [
+    "def count_value(lst, value):",
+    "Return how many times value appears in lst."
+  ],
+  [
+    "def all_equal(lst):",
+    "Return True if all elements in lst are equal or lst is empty."
+  ],
+  [
+    "def equals(lst, other):",
+    "Return True if lst and other have the same elements in the same order."
+  ],
+  [
+    "def unique(lst):",
+    "Return a new list with first occurrences of each value, preserving order."
+  ],
+  [
+    "def dedupe_consecutive(lst):",
+    "Return a new list with consecutive duplicates removed."
+  ],
+  [
+    "def filter_less_than(lst, threshold):",
+    "Return a new list of elements < threshold."
+  ],
+  [
+    "def filter_greater_than(lst, threshold):",
+    "Return a new list of elements > threshold."
+  ],
+  [
+    "def filter_equal(lst, value):",
+    "Return a new list of elements equal to value."
+  ],
+  [
+    "def remove_value(lst, value):",
+    "Return a new list with all occurrences of value removed."
+  ],
+  [
+    "def map_add(lst, k):",
+    "Return a new list where k is added to each element."
+  ],
+  [
+    "def map_subtract(lst, k):",
+    "Return a new list where k is subtracted from each element."
+  ],
+  [
+    "def map_multiply(lst, k):",
+    "Return a new list where each element is multiplied by k."
+  ],
+  [
+    "def map_abs(lst):",
+    "Return a new list of absolute values of elements."
+  ],
+  [
+    "def map_negate(lst):",
+    "Return a new list where each element is negated."
+  ],
+  [
+    "def clamp(lst, low, high):",
+    "Return a new list where each element is clamped to [low, high]."
+  ],
+  [
+    "def pow_int(lst, exp):",
+    "Return a new list where each element is raised to integer power exp."
+  ],
+  [
+    "def sum_list(lst):",
+    "Return the sum of the elements in lst."
+  ],
+  [
+    "def product_list(lst):",
+    "Return the product of the elements in lst (1 for empty)."
+  ],
+  [
+    "def min_value(lst):",
+    "Return the smallest element in lst."
+  ],
+  [
+    "def max_value(lst):",
+    "Return the largest element in lst."
+  ],
+  [
+    "def argmin_index(lst):",
+    "Return the index of the first occurrence of the minimum value."
+  ],
+  [
+    "def argmax_index(lst):",
+    "Return the index of the first occurrence of the maximum value."
+  ],
+  [
+    "def is_sorted_ascending(lst):",
+    "Return True if lst is nondecreasing."
+  ],
+  [
+    "def is_sorted_strict_ascending(lst):",
+    "Return True if lst is strictly increasing."
+  ],
+  [
+    "def sort_ascending(lst):",
+    "Return a new list with elements sorted in nondecreasing order."
+  ],
+  [
+    "def sort_descending(lst):",
+    "Return a new list with elements sorted in nonincreasing order."
+  ],
+  [
+    "def stable_partition_even_odd(lst):",
+    "Return a new list with all even numbers first, preserving order."
+  ],
+  [
+    "def partition_by_value(lst, pivot):",
+    "Return a new list with elements < pivot, then == pivot, then > pivot."
+  ],
+  [
+    "def binary_search(lst, value):",
+    "Return index of value in a sorted lst, or -1 if not found."
+  ],
+  [
+    "def lower_bound(lst, value):",
+    "Return first index i where lst[i] >= value in sorted lst."
+  ],
+  [
+    "def upper_bound(lst, value):",
+    "Return first index i where lst[i] > value in sorted lst."
+  ],
+  [
+    "def rotate_left(lst, k):",
+    "Return a new list rotated left by k positions."
+  ],
+  [
+    "def rotate_right(lst, k):",
+    "Return a new list rotated right by k positions."
+  ],
+  [
+    "def shift_left_fill(lst, k, fill):",
+    "Return a new list shifted left by k, filling vacated spots with fill."
+  ],
+  [
+    "def shift_right_fill(lst, k, fill):",
+    "Return a new list shifted right by k, filling vacated spots with fill."
+  ],
+  [
+    "def take(lst, n):",
+    "Return the first n elements (or all if n exceeds length)."
+  ],
+  [
+    "def drop(lst, n):",
+    "Return lst without the first n elements (or empty if n exceeds length)."
+  ],
+  [
+    "def take_while_positive(lst):",
+    "Return the longest prefix of lst with positive numbers."
+  ],
+  [
+    "def drop_while_positive(lst):",
+    "Return lst with the longest positive-number prefix removed."
+  ],
+  [
+    "def prefix_sums(lst):",
+    "Return a new list of running sums."
+  ],
+  [
+    "def prefix_max(lst):",
+    "Return a new list where each element is the max up to that index."
+  ],
+  [
+    "def prefix_min(lst):",
+    "Return a new list where each element is the min up to that index."
+  ],
+  [
+    "def diff_adjacent(lst):",
+    "Return a new list of differences lst[i+1] - lst[i]."
+  ],
+  [
+    "def pair_sums(lst):",
+    "Return a new list of sums of adjacent pairs."
+  ],
+  [
+    "def window_sums(lst, w):",
+    "Return a new list of sums over each window of size w."
+  ],
+  [
+    "def window_max(lst, w):",
+    "Return a new list of maximums over each window of size w."
+  ],
+  [
+    "def interleave(lst, other):",
+    "Return a new list by alternating elements from lst and other."
+  ],
+  [
+    "def zip_sum(lst, other):",
+    "Return a new list where each element is lst[i] + other[i] up to min length."
+  ],
+  [
+    "def zip_diff(lst, other):",
+    "Return a new list where each element is lst[i] - other[i] up to min length."
+  ],
+  [
+    "def union_ordered(lst, other):",
+    "Return unique elements from lst then other, preserving first appearance."
+  ],
+  [
+    "def intersection_ordered(lst, other):",
+    "Return unique elements appearing in both, in order of first appearance in lst."
+  ],
+  [
+    "def difference_ordered(lst, other):",
+    "Return elements of lst not in other, preserving order."
+  ],
+  [
+    "def symmetric_difference_ordered(lst, other):",
+    "Return elements appearing in exactly one of lst or other, in order encountered."
+  ],
+  [
+    "def repeat_each(lst, times):",
+    "Return a new list with each element repeated 'times' times."
+  ],
+  [
+    "def expand_by_counts(values, counts):",
+    "Return a new list by repeating values[i] counts[i] times."
+  ],
+  [
+    "def compress_by_mask(lst, mask):",
+    "Return a new list keeping lst[i] where mask[i] is truthy (nonzero)."
+  ],
+  [
+    "def indices_where_equal(lst, value):",
+    "Return a list of indices where lst[i] == value."
+  ],
+  [
+    "def indices_where_even(lst):",
+    "Return a list of indices where elements are even."
+  ],
+  [
+    "def move_element(lst, from_index, to_index):",
+    "Return a new list with the element moved to a new position."
+  ],
+  [
+    "def swap_indices(lst, i, j):",
+    "Return a new list with elements at i and j swapped."
+  ],
+  [
+    "def distinct_count(lst):",
+    "Return the number of distinct values in lst."
+  ],
+  [
+    "def mode_value(lst):",
+    "Return the value with the highest frequency; first such in case of tie."
+  ],
+  [
+    "def mean_floor(lst):",
+    "Return the floor of the average of elements (0 if empty)."
+  ],
+  [
+    "def median_for_sorted(lst):",
+    "Return the middle element for odd-length sorted lst, or lower middle for even."
+  ],
+  [
+    "def range_span(lst):",
+    "Return max(lst) - min(lst) or 0 if empty."
+  ],
+  [
+    "def normalize_min_zero(lst):",
+    "Return a new list with min value subtracted from each element."
+  ],
+  [
+    "def remove_negatives(lst):",
+    "Return a new list with negative numbers removed."
+  ],
+  [
+    "def keep_negatives(lst):",
+    "Return a new list with only negative numbers."
+  ],
+  [
+    "def signs(lst):",
+    "Return a new list mapping negatives to -1, zeros to 0, positives to 1."
+  ],
+  [
+    "def bounded_increase(lst, step):",
+    "Return a new list where each element increases by at most 'step' from previous."
+  ],
+  [
+    "def group_consecutive_equals(lst):",
+    "Return a list of group sizes of consecutive equal runs."
+  ],
+  [
+    "def expand_run_length(values, lengths):",
+    "Return a new list expanding each value by its run length."
+  ],
+  [
+    "def strip_leading_value(lst, value):",
+    "Return lst with leading value occurrences removed."
+  ],
+  [
+    "def strip_trailing_value(lst, value):",
+    "Return lst with trailing value occurrences removed."
+  ],
+  [
+    "def pad_left(lst, total_length, fill):",
+    "Return a new list padded on the left to total_length with fill."
+  ],
+  [
+    "def pad_right(lst, total_length, fill):",
+    "Return a new list padded on the right to total_length with fill."
+  ],
+  [
+    "def bounded_clip_changes(lst, limit):",
+    "Return a new list where difference between consecutive elements is limited to +/-limit."
+  ],
+  [
+    "def next_permutation(lst):",
+    "Return the next lexicographic permutation of lst or the same list if none."
+  ],
+  [
+    "def previous_permutation(lst):",
+    "Return the previous lexicographic permutation of lst or the same list if none."
+  ],
+  [
+    "def kth_smallest(lst, k):",
+    "Return the kth smallest element (0-based) assuming 0 <= k < len(lst)."
+  ],
+  [
+    "def remove_outside_range(lst, low, high):",
+    "Return a new list keeping only elements in [low, high]."
+  ],
+  [
+    "def stable_unique_by_first_occurrence(lst):",
+    "Return a new list removing later duplicates, keeping first occurrences only."
+  ]
+]
