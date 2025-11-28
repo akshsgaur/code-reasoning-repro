@@ -2937,28 +2937,6 @@
 }
 
 {
-  "id": "contest443_q3832_s2",
-  "question_id": 3832,
-  "function_name": "minCosts",
-  "code": "def minCosts(cost: List[int]) -> List[int]:\n        prev = float(\"inf\")\n        ans = []\n        for i, c in enumerate(cost):\n            prev = min(prev, c)\n            ans.append(prev)\n        return ans",
-  "input": "minCosts(cost=[5,3,4,1,3,2])",
-  "output": "[5, 3, 3, 1, 1, 1]",
-  "correct_condition": "minCosts(cost=[5,3,4,1,3,2]) == [5, 3, 3, 1, 1, 1]",
-  "contest_id": "weekly-contest-443",
-  "contest_date": "2025-03-30T00:00:00.000",
-  "difficulty": "easy",
-  "metrics": {
-    "loc": 7,
-    "coverage": null
-  },
-  "submission_id": 1590605154,
-  "mutated_code": null,
-  "mutated_output": null,
-  "has_mutation": false,
-  "mutation_info": null
-}
-
-{
   "id": "contest443_q3793_s0",
   "question_id": 3793,
   "function_name": "longestPalindrome",
@@ -5923,28 +5901,6 @@
 }
 
 {
-  "id": "contest456_q3905_s2",
-  "question_id": 3905,
-  "function_name": "partitionString",
-  "code": "def partitionString(txt):\n        op, mem, tmp = [], set(), \"\"\n        for z in txt:\n            k = tmp + z\n            if k not in mem:\n                op.append(k)\n                mem.add(k)\n                tmp = \"\"\n            else:\n                tmp = k\n        return op\n",
-  "input": "partitionString(txt=\"abbccccd\")",
-  "output": "['a', 'b', 'bc', 'c', 'cc', 'd']",
-  "correct_condition": "partitionString(txt=\"abbccccd\") == ['a', 'b', 'bc', 'c', 'cc', 'd']",
-  "contest_id": "weekly-contest-456",
-  "contest_date": "2025-06-29T00:00:00.000",
-  "difficulty": "medium",
-  "metrics": {
-    "loc": 11,
-    "coverage": null
-  },
-  "submission_id": 1679848786,
-  "mutated_code": null,
-  "mutated_output": null,
-  "has_mutation": false,
-  "mutation_info": null
-}
-
-{
   "id": "contest456_q3800_s0",
   "question_id": 3800,
   "function_name": "longestCommonPrefix",
@@ -7895,50 +7851,6 @@
 }
 
 {
-  "id": "contest464_q3995_s0",
-  "question_id": 3995,
-  "function_name": "gcdOfOddEvenSums",
-  "code": "def gcdOfOddEvenSums(n: int) -> int:\n        return n",
-  "input": "gcdOfOddEvenSums(n=4)",
-  "output": "4",
-  "correct_condition": "gcdOfOddEvenSums(n=4) == 4",
-  "contest_id": "weekly-contest-464",
-  "contest_date": "2025-08-24T00:00:00.000",
-  "difficulty": "easy",
-  "metrics": {
-    "loc": 2,
-    "coverage": null
-  },
-  "submission_id": 1745988923,
-  "mutated_code": null,
-  "mutated_output": null,
-  "has_mutation": false,
-  "mutation_info": null
-}
-
-{
-  "id": "contest464_q3995_s1",
-  "question_id": 3995,
-  "function_name": "gcdOfOddEvenSums",
-  "code": "def gcdOfOddEvenSums(n: int) -> int:\n        return n",
-  "input": "gcdOfOddEvenSums(n=4)",
-  "output": "4",
-  "correct_condition": "gcdOfOddEvenSums(n=4) == 4",
-  "contest_id": "weekly-contest-464",
-  "contest_date": "2025-08-24T00:00:00.000",
-  "difficulty": "easy",
-  "metrics": {
-    "loc": 2,
-    "coverage": null
-  },
-  "submission_id": 1745987230,
-  "mutated_code": null,
-  "mutated_output": null,
-  "has_mutation": false,
-  "mutation_info": null
-}
-
-{
   "id": "contest464_q3995_s2",
   "question_id": 3995,
   "function_name": "gcdOfOddEvenSums",
@@ -8170,72 +8082,6 @@
     "mutation_id": 0,
     "coverage_similarity": 0.0
   }
-}
-
-{
-  "id": "contest465_q4008_s0",
-  "question_id": 4008,
-  "function_name": "recoverOrder",
-  "code": "def recoverOrder(order: List[int], friends: List[int]) -> List[int]:\n        p = {v:i for i,v in enumerate(order)}\n        return sorted(friends, key=lambda x: p[x])",
-  "input": "recoverOrder(order=[3,1,2,5,4], friends=[1,3,4])",
-  "output": "[3, 1, 4]",
-  "correct_condition": "recoverOrder(order=[3,1,2,5,4], friends=[1,3,4]) == [3, 1, 4]",
-  "contest_id": "weekly-contest-465",
-  "contest_date": "2025-08-31T00:00:00.000",
-  "difficulty": "easy",
-  "metrics": {
-    "loc": 3,
-    "coverage": null
-  },
-  "submission_id": 1754171804,
-  "mutated_code": null,
-  "mutated_output": null,
-  "has_mutation": false,
-  "mutation_info": null
-}
-
-{
-  "id": "contest465_q4008_s1",
-  "question_id": 4008,
-  "function_name": "recoverOrder",
-  "code": "def recoverOrder(order: List[int], friends: List[int]) -> List[int]:\n        f = set(friends)\n        ans = []\n        for o in order:\n            if o in f:\n               ans.append(o) \n        return ans",
-  "input": "recoverOrder(order=[3,1,2,5,4], friends=[1,3,4])",
-  "output": "[3, 1, 4]",
-  "correct_condition": "recoverOrder(order=[3,1,2,5,4], friends=[1,3,4]) == [3, 1, 4]",
-  "contest_id": "weekly-contest-465",
-  "contest_date": "2025-08-31T00:00:00.000",
-  "difficulty": "easy",
-  "metrics": {
-    "loc": 7,
-    "coverage": null
-  },
-  "submission_id": 1754170161,
-  "mutated_code": null,
-  "mutated_output": null,
-  "has_mutation": false,
-  "mutation_info": null
-}
-
-{
-  "id": "contest465_q4008_s2",
-  "question_id": 4008,
-  "function_name": "recoverOrder",
-  "code": "def recoverOrder(a: List[int], b: List[int]) -> List[int]:\n        s = set(b)\n        r = []\n        for x in a:\n            if x in s:\n                r.append(x)\n        return r\n",
-  "input": "recoverOrder(a=[3,1,2,5,4], b=[1,3,4])",
-  "output": "[3, 1, 4]",
-  "correct_condition": "recoverOrder(a=[3,1,2,5,4], b=[1,3,4]) == [3, 1, 4]",
-  "contest_id": "weekly-contest-465",
-  "contest_date": "2025-08-31T00:00:00.000",
-  "difficulty": "easy",
-  "metrics": {
-    "loc": 7,
-    "coverage": null
-  },
-  "submission_id": 1754196326,
-  "mutated_code": null,
-  "mutated_output": null,
-  "has_mutation": false,
-  "mutation_info": null
 }
 
 {

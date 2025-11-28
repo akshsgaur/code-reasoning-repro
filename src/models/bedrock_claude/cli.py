@@ -8,9 +8,9 @@ import os
 from dataclasses import asdict
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict, List, Tuple
 
-from datasets import load_dataset
+from datasets import Dataset, load_dataset
 from dotenv import load_dotenv
 
 from .aws_client import (
@@ -97,6 +97,24 @@ def _compare_reasoning_levels(
     return summary
 
 
+def _filter_missing_mutations(dataset_split: Dataset) -> Tuple[Dataset, int, List[str]]:
+    dropped_preview: List[str] = []
+    dropped_count = 0
+
+    def _has_mutation(example, idx):  # type: ignore[override]
+        nonlocal dropped_count
+        mutated_code = example.get("mutated_code")
+        if mutated_code is None or (isinstance(mutated_code, str) and not mutated_code.strip()):
+            dropped_count += 1
+            if len(dropped_preview) < 5:
+                dropped_preview.append(str(example.get("id", idx)))
+            return False
+        return True
+
+    filtered = dataset_split.filter(_has_mutation, with_indices=True)
+    return filtered, dropped_count, dropped_preview
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run Claude Sonnet 4.5 evaluations via AWS Bedrock")
     parser.add_argument("--dataset", required=True, help="HuggingFace dataset repo id (e.g., user/leetcode-contests-431-467)")
@@ -135,6 +153,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--comparison-samples", type=int, default=5)
 
     parser.add_argument(
+        "--include-missing-mutations",
+        action="store_true",
+        help="Keep problems without mutated_code entries (default skips them)",
+    )
+
+    parser.add_argument(
         "--enable-galileo",
         action="store_true",
         help="Log Bedrock traces to Galileo (requires GALILEO_API_KEY)",
@@ -153,6 +177,15 @@ def main() -> None:
     if args.split not in dataset_dict:
         raise ValueError(f"Split '{args.split}' not found in dataset {args.dataset}")
     dataset_split = dataset_dict[args.split]
+    if not args.include_missing_mutations:
+        dataset_split, dropped_count, dropped_preview = _filter_missing_mutations(dataset_split)
+        if dropped_count:
+            preview_msg = ", ".join(dropped_preview)
+            if dropped_count > len(dropped_preview):
+                preview_msg += ", ..."
+            print(
+                f"⚠️  Skipped {dropped_count} problems missing mutated_code: {preview_msg}"
+            )
 
     region = args.region or DEFAULT_REGION
     client_config = BedrockClientConfig(

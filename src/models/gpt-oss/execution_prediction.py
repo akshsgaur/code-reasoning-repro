@@ -1,4 +1,4 @@
-"""Execution Prediction benchmark using Claude Sonnet via AWS Bedrock."""
+"""Execution Prediction benchmark using GPT-OSS on GPU."""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from typing import Dict, List, Optional
 
 from tqdm.auto import tqdm
 
-from .aws_client import BedrockClaudeClient, BedrockInvocationParams
+from .gpu_client import GPTOSSClient, GPTOSSInvocationParams
 from .prompts import (
     build_execution_prediction_prompt,
     check_predicted_output,
@@ -22,15 +22,11 @@ class ExecutionPredictionConfig:
     num_problems: Optional[int] = 20
     start_index: int = 0
     num_generations: int = 5
-    reasoning_effort: str = "medium"
-    max_new_tokens: int = 1000
+    max_new_tokens: int = 512
     temperature: float = 0.6
     top_p: float = 0.95
     skip_boolean_for_reversion: bool = True
     seed: int = 42
-    enable_thinking: bool = False
-    thinking_budget_tokens: Optional[int] = None
-    latency: Optional[str] = None
 
 
 @dataclass
@@ -50,7 +46,7 @@ def _compute_pass(counts: Dict[str, int]) -> Optional[float]:
 
 def run_execution_prediction(
     dataset_split,
-    client: BedrockClaudeClient,
+    client: GPTOSSClient,
     config: ExecutionPredictionConfig,
 ) -> ExecutionPredictionResult:
     random.seed(config.seed)
@@ -74,26 +70,14 @@ def run_execution_prediction(
     all_latencies: List[float] = []
     results: List[Dict] = []
 
-    for idx in tqdm(indices, desc="Execution Prediction"):
+    for idx in tqdm(indices, desc="Execution Prediction (GPT-OSS)"):
         sample = dataset_split[idx]
         original_output = sample["output"]
         mutated_output = sample.get("mutated_output") or original_output
         has_mutation = sample.get("has_mutation", mutated_output != original_output)
 
         original_prompt = build_execution_prediction_prompt(sample, use_mutated=False)
-        try:
-            mutated_prompt = build_execution_prediction_prompt(sample, use_mutated=True)
-        except (KeyError, ValueError) as exc:
-            results.append(
-                {
-                    "problem_index": int(idx),
-                    "problem_id": sample["id"],
-                    "function_name": sample["function_name"],
-                    "skipped": True,
-                    "skip_reason": f"Missing mutated_code: {exc}",
-                }
-            )
-            continue
+        mutated_prompt = build_execution_prediction_prompt(sample, use_mutated=True)
 
         include_reversion = True
         if config.skip_boolean_for_reversion and (
@@ -108,15 +92,11 @@ def run_execution_prediction(
         seed_base = config.seed + idx * 1000
 
         for gen_idx in range(config.num_generations):
-            params = BedrockInvocationParams(
-                reasoning_effort=config.reasoning_effort,
+            params = GPTOSSInvocationParams(
                 max_tokens=config.max_new_tokens,
                 temperature=config.temperature,
                 top_p=config.top_p,
                 seed=seed_base + gen_idx,
-                enable_thinking=config.enable_thinking,
-                thinking_budget_tokens=config.thinking_budget_tokens,
-                latency=config.latency,
             )
             response = client.invoke(original_prompt, params)
             prediction = extract_answer_from_response(response.text)
@@ -137,15 +117,11 @@ def run_execution_prediction(
                 if is_reversion:
                     or_successes += 1
 
-            params_mut = BedrockInvocationParams(
-                reasoning_effort=config.reasoning_effort,
+            params_mut = GPTOSSInvocationParams(
                 max_tokens=config.max_new_tokens,
                 temperature=config.temperature,
                 top_p=config.top_p,
                 seed=seed_base + 500 + gen_idx,
-                enable_thinking=config.enable_thinking,
-                thinking_budget_tokens=config.thinking_budget_tokens,
-                latency=config.latency,
             )
             response_mut = client.invoke(mutated_prompt, params_mut)
             prediction_mut = extract_answer_from_response(response_mut.text)

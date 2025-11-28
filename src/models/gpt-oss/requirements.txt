@@ -1,0 +1,17 @@
+# Core dependencies
+torch>=2.0.0
+transformers>=4.44.0
+datasets>=2.19.0
+accelerate>=0.33.0
+
+# AWS
+boto3>=1.34.0
+
+# Utilities
+tqdm>=4.65.0
+pandas>=2.0.0
+python-dotenv>=1.0.0
+
+# Optional
+sentencepiece>=0.1.99
+protobuf>=3.20.0
