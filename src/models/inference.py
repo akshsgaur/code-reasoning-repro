@@ -27,7 +27,7 @@ except ImportError:
     HAS_GOOGLE = False
     print("Warning: google-generativeai package not installed. Run: pip install google-generativeai")
 
-from models_config import get_model_config, list_available_models
+from .models_config import get_model_config, list_available_models
 
 
 @dataclass
