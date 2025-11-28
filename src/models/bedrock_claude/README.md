@@ -27,6 +27,7 @@ Flags mirror the notebook workflow:
 - `--pred-*` / `--choice-*` – knobs for reasoning effort, temperature, number of problems, etc.
 - `--compare-reasoning` – optional low/medium/high ablation on a small subset.
 - `--model-id`, `--latency-profile`, `--enable-thinking`, `--thinking-budget-tokens` – Bedrock-specific tuning (inference profile ARN, performance config, and Claude extended thinking options).
+- Entries without a corresponding `mutated_code` are skipped automatically to avoid crashes; pass `--include-missing-mutations` if you need to keep them.
 
 Outputs are written as timestamped JSON blobs containing the config, counts, summaries, and per-problem traces.
 
@@ -58,6 +59,7 @@ This mirrors what the Python CLI does under the hood (via the Bedrock `converse`
 - The CLI relies on HuggingFace datasets. Set `HF_HOME` or log in if the dataset is private.
 - Increase `--pred-num-problems` / `--choice-num-problems` gradually; a full sweep over ~350 DSL/LeetCode tasks can take hours and incur meaningful API spend.
 - The `BedrockInvocationParams` object supports seeding through `metadata.user_id`, which provides light stochastic control when temperature sampling is enabled.
+- Problems missing mutated variants are filtered out by default (they often have `mutated_code=null` in the dataset). This prevents mid-run failures when building prompts.
 
 ## Galileo tracing (optional)
 
