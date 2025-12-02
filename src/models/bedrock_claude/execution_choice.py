@@ -32,6 +32,7 @@ class ExecutionChoiceConfig:
     enable_thinking: bool = False
     thinking_budget_tokens: Optional[int] = None
     latency: Optional[str] = None
+    log_galileo_metrics: bool = False
 
 
 @dataclass
@@ -87,6 +88,16 @@ def run_execution_choice(
 
         base_seed = config.seed + idx * 1000
 
+        def _trace_metadata(run_index: int, original_first_flag: bool) -> Dict[str, str]:
+            return {
+                "benchmark": "execution_choice",
+                "problem_id": str(sample["id"]),
+                "problem_index": str(int(idx)),
+                "run_index": str(run_index),
+                "original_first": str(original_first_flag),
+                "include_reversion": str(include_reversion),
+            }
+
         for run_offset, original_first in enumerate(selected_orderings):
             prompt, mapping = build_execution_choice_prompt(sample, original_first=original_first)
             params = BedrockInvocationParams(
@@ -99,7 +110,69 @@ def run_execution_choice(
                 thinking_budget_tokens=config.thinking_budget_tokens,
                 latency=config.latency,
             )
-            generation = client.invoke(prompt, params)
+            choice_meta_cache: Dict[str, object] = {}
+
+            def _choice_metadata_builder(response_text: str) -> Dict[str, object]:
+                metadata: Dict[str, object] = {}
+                try:
+                    parsed = parse_execution_choice_response(response_text)
+                except Exception as exc:
+                    choice_meta_cache["error"] = f"Failed to parse response: {exc}"
+                    metadata["choice_parse_error"] = str(exc)
+                    return metadata
+                assertion_text = parsed.get("assertion", "") or ""
+                chosen_letter = parsed.get("chosen_program")
+                choice_meta_cache.update(
+                    {
+                        "parsed": parsed,
+                        "assertion": assertion_text,
+                        "chosen_letter": chosen_letter,
+                    }
+                )
+                if not chosen_letter or chosen_letter not in mapping:
+                    error_msg = "Missing/invalid chosen_program in response."
+                    choice_meta_cache["error"] = error_msg
+                    metadata["choice_parse_error"] = error_msg
+                    return metadata
+
+                chosen_type = mapping[chosen_letter]
+                predicted_output = extract_output_from_assertion(assertion_text)
+                chosen_output = original_output if chosen_type == "original" else mutated_output
+                other_output = mutated_output if chosen_type == "original" else original_output
+                is_correct, _ = check_predicted_output(predicted_output, chosen_output)
+                metadata_key = "metric_oc" if chosen_type == "original" else "metric_mc"
+                metadata[metadata_key] = bool(is_correct)
+
+                if include_reversion:
+                    is_reversion, _ = check_predicted_output(predicted_output, other_output)
+                    metadata_key_rev = "metric_or" if chosen_type == "original" else "metric_mr"
+                    metadata[metadata_key_rev] = is_reversion
+                else:
+                    metadata_key_rev = "metric_or" if chosen_type == "original" else "metric_mr"
+                    metadata[metadata_key_rev] = "skipped"
+
+                choice_meta_cache.update(
+                    {
+                        "chosen_type": chosen_type,
+                        "prediction": predicted_output,
+                        "is_correct": bool(is_correct),
+                        "is_reversion": metadata[metadata_key_rev]
+                        if include_reversion
+                        else None,
+                    }
+                )
+                metadata["choice_variant"] = chosen_type
+                metadata["chosen_letter"] = chosen_letter
+                return metadata
+
+            generation = client.invoke(
+                prompt,
+                params,
+                trace_metadata=_trace_metadata(run_offset, original_first)
+                if config.log_galileo_metrics
+                else None,
+                metadata_postprocessor=_choice_metadata_builder if config.log_galileo_metrics else None,
+            )
             execution_choice_latencies.append(generation.latency_s)
 
             run_record = {
@@ -121,28 +194,55 @@ def run_execution_choice(
                 "reversion_error": None,
             }
 
-            try:
-                parsed = parse_execution_choice_response(generation.text)
-                chosen_letter = parsed.get("chosen_program")
-                assertion_text = parsed.get("assertion", "")
-                if not chosen_letter or chosen_letter not in mapping:
-                    raise ValueError("Missing/invalid chosen_program in response.")
-                chosen_type = mapping[chosen_letter]
-            except Exception as exc:
-                run_record["correctness_error"] = f"Failed to parse response: {exc}"
+            cache_error = choice_meta_cache.get("error")
+            if cache_error:
+                run_record["correctness_error"] = str(cache_error)
                 execution_choice_counts["invalid_runs"] += 1
                 execution_choice_results.append(run_record)
                 continue
 
-            predicted_output = extract_output_from_assertion(assertion_text)
-            chosen_output = original_output if chosen_type == "original" else mutated_output
-            other_output = mutated_output if chosen_type == "original" else original_output
-
-            is_correct, correctness_error = check_predicted_output(predicted_output, chosen_output)
-            if include_reversion:
-                is_reversion, reversion_error = check_predicted_output(predicted_output, other_output)
+            correctness_error = None
+            reversion_error = None
+            if choice_meta_cache:
+                chosen_letter = choice_meta_cache.get("chosen_letter")
+                chosen_type = choice_meta_cache.get("chosen_type")
+                assertion_text = str(choice_meta_cache.get("assertion", ""))
+                predicted_output = str(choice_meta_cache.get("prediction", ""))
+                if not chosen_letter or not isinstance(chosen_type, str):
+                    run_record["correctness_error"] = "Missing/invalid chosen_program in response."
+                    execution_choice_counts["invalid_runs"] += 1
+                    execution_choice_results.append(run_record)
+                    continue
+                is_correct = bool(choice_meta_cache.get("is_correct"))
+                reversion_cache = choice_meta_cache.get("is_reversion")
+                is_reversion = bool(reversion_cache) if isinstance(reversion_cache, bool) else None
             else:
-                is_reversion, reversion_error = None, None
+                try:
+                    parsed = parse_execution_choice_response(generation.text)
+                    chosen_letter = parsed.get("chosen_program")
+                    assertion_text = parsed.get("assertion", "")
+                    if not chosen_letter or chosen_letter not in mapping:
+                        raise ValueError("Missing/invalid chosen_program in response.")
+                    chosen_type = mapping[chosen_letter]
+                except Exception as exc:
+                    run_record["correctness_error"] = f"Failed to parse response: {exc}"
+                    execution_choice_counts["invalid_runs"] += 1
+                    execution_choice_results.append(run_record)
+                    continue
+
+                predicted_output = extract_output_from_assertion(assertion_text)
+                is_correct, correctness_error = check_predicted_output(
+                    predicted_output, original_output if chosen_type == "original" else mutated_output
+                )
+                if include_reversion:
+                    is_reversion, reversion_error = check_predicted_output(
+                        predicted_output, mutated_output if chosen_type == "original" else original_output
+                    )
+                else:
+                    is_reversion, reversion_error = None, None
+
+                is_correct = bool(is_correct)
+                is_reversion = bool(is_reversion) if isinstance(is_reversion, bool) else None
 
             execution_choice_counts["preference"]["total"] += 1
             if chosen_type == "original":

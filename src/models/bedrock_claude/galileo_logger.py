@@ -82,6 +82,7 @@ class GalileoTracer:
         model_id: str,
         response_text: str,
         usage: Optional[Dict[str, Any]] = None,
+        metadata: Optional[Dict[str, Any]] = None,
     ) -> None:
         if not self._logger:
             return
@@ -96,10 +97,17 @@ class GalileoTracer:
             num_output_tokens=output_tokens,
             total_tokens=total_tokens,
             duration_ns=duration_ns,
+            metadata=self._stringify_metadata(metadata),
         )
         self._logger.conclude(output=response_text)
 
-    def log_failure(self, state: _TraceState, error: Exception) -> None:
+    def log_failure(
+        self,
+        state: _TraceState,
+        error: Exception,
+        *,
+        metadata: Optional[Dict[str, Any]] = None,
+    ) -> None:
         if not self._logger:
             return
 
@@ -112,6 +120,7 @@ class GalileoTracer:
             num_output_tokens=None,
             total_tokens=None,
             duration_ns=duration_ns,
+            metadata=self._stringify_metadata(metadata),
         )
         self._logger.conclude(output=str(error))
 
@@ -138,6 +147,17 @@ class GalileoTracer:
         if total_tokens is None and input_tokens is not None and output_tokens is not None:
             total_tokens = input_tokens + output_tokens
         return input_tokens, output_tokens, total_tokens
+
+    @staticmethod
+    def _stringify_metadata(metadata: Optional[Dict[str, Any]]) -> Optional[Dict[str, str]]:
+        if not metadata:
+            return None
+        normalized: Dict[str, str] = {}
+        for key, value in metadata.items():
+            if key is None or value is None:
+                continue
+            normalized[str(key)] = (str(value).lower() if isinstance(value, bool) else str(value))
+        return normalized or None
 
 
 __all__ = ["GalileoTracer", "GalileoTraceConfig"]

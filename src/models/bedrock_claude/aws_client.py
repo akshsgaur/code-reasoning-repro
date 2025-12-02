@@ -5,7 +5,7 @@ from __future__ import annotations
 import os
 import time
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional
+from typing import Any, Callable, Dict, List, Optional
 
 import boto3
 from botocore.exceptions import BotoCoreError, ClientError, NoCredentialsError
@@ -70,7 +70,14 @@ class BedrockClaudeClient:
                 "region are configured via environment variables or ~/.aws config."
             ) from exc
 
-    def invoke(self, prompt: str, params: BedrockInvocationParams | None = None) -> BedrockResponse:
+    def invoke(
+        self,
+        prompt: str,
+        params: BedrockInvocationParams | None = None,
+        *,
+        trace_metadata: Optional[Dict[str, Any]] = None,
+        metadata_postprocessor: Optional[Callable[[str], Optional[Dict[str, Any]]]] = None,
+    ) -> BedrockResponse:
         params = params or BedrockInvocationParams()
 
         system_prompt = params.system_prompt or self.config.system_prompt
@@ -132,7 +139,7 @@ class BedrockClaudeClient:
             latency = time.time() - start
         except (BotoCoreError, ClientError) as exc:  # pragma: no cover - network call
             if trace_state:
-                self._galileo.log_failure(trace_state, exc)
+                self._galileo.log_failure(trace_state, exc, metadata=trace_metadata)
             raise RuntimeError(f"Bedrock invocation failed: {exc}") from exc
 
         output = response.get("output", {})
@@ -145,12 +152,24 @@ class BedrockClaudeClient:
         ]
         text = "".join(fragments).strip()
 
+        combined_metadata: Dict[str, Any] = {}
+        if trace_metadata:
+            combined_metadata.update(trace_metadata)
+        if metadata_postprocessor:
+            try:
+                extra_metadata = metadata_postprocessor(text)
+            except Exception as exc:  # pragma: no cover - telemetry quality
+                extra_metadata = {"metadata_postprocess_error": str(exc)}
+            if extra_metadata:
+                combined_metadata.update(extra_metadata)
+
         if trace_state:
             self._galileo.log_success(
                 trace_state,
                 model_id=self.config.model_id,
                 response_text=text,
                 usage=response.get("usage"),
+                metadata=combined_metadata or None,
             )
 
         return BedrockResponse(text=text, latency_s=latency, raw_response=response)
