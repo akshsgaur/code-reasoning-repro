@@ -10,7 +10,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Tuple
 
-from datasets import Dataset, load_dataset
+from datasets import Dataset, DatasetDict, load_dataset
 from dotenv import load_dotenv
 
 from .aws_client import (
@@ -97,6 +97,17 @@ def _compare_reasoning_levels(
     return summary
 
 
+def _load_dataset_source(source: str) -> DatasetDict:
+    """Load a dataset either from the HuggingFace Hub or a local JSON/JSONL file."""
+
+    path = Path(source)
+    if path.exists():
+        # Support pretty-printed JSON, JSONL, or NDJSON files.
+        return load_dataset("json", data_files=str(path))
+
+    return load_dataset(source)
+
+
 def _filter_missing_mutations(dataset_split: Dataset) -> Tuple[Dataset, int, List[str]]:
     dropped_preview: List[str] = []
     dropped_count = 0
@@ -165,6 +176,11 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--galileo-project", default=None, help="Override Galileo project name")
     parser.add_argument("--galileo-log-stream", default=None, help="Override Galileo log stream name")
+    parser.add_argument(
+        "--galileo-track-metrics",
+        action="store_true",
+        help="Attach OC/OR/MC/MR correctness metadata to Galileo traces",
+    )
 
     return parser.parse_args()
 
@@ -173,10 +189,21 @@ def main() -> None:
     load_dotenv()
     args = parse_args()
 
-    dataset_dict = load_dataset(args.dataset)
+    dataset_dict = _load_dataset_source(args.dataset)
     if args.split not in dataset_dict:
         raise ValueError(f"Split '{args.split}' not found in dataset {args.dataset}")
     dataset_split = dataset_dict[args.split]
+    if "mutated_code" not in dataset_split.column_names:
+        owner, _, dataset_name = args.dataset.partition("/")
+        mutated_candidate = (
+            f"{owner}/{dataset_name}-mutated" if dataset_name else f"{args.dataset}-mutated"
+        )
+        suggestion = f" Try '{mutated_candidate}' (if available) which contains mutation metadata."
+        raise ValueError(
+            f"Dataset '{args.dataset}' split '{args.split}' lacks the required 'mutated_code' column. "
+            "Please provide a dataset that includes generated mutations."
+            + suggestion
+        )
     if not args.include_missing_mutations:
         dataset_split, dropped_count, dropped_preview = _filter_missing_mutations(dataset_split)
         if dropped_count:
@@ -186,6 +213,11 @@ def main() -> None:
             print(
                 f"⚠️  Skipped {dropped_count} problems missing mutated_code: {preview_msg}"
             )
+        if len(dataset_split) == 0:
+            raise ValueError(
+                "No problems with mutated_code remain after filtering. Provide a dataset "
+                "split that includes mutation metadata (e.g., the '-mutated' variant)."
+            )
 
     region = args.region or DEFAULT_REGION
     client_config = BedrockClientConfig(
@@ -193,6 +225,9 @@ def main() -> None:
         region=region,
     )
     galileo_tracer = None
+    if args.galileo_track_metrics and not args.enable_galileo:
+        raise ValueError("--galileo-track-metrics requires --enable-galileo")
+
     if args.enable_galileo:
         dataset_slug = args.dataset.replace("/", "-")
         project = (
@@ -217,6 +252,8 @@ def main() -> None:
 
     outputs: Dict[str, Dict] = {}
 
+    log_metrics = args.enable_galileo and args.galileo_track_metrics
+
     if args.task in {"prediction", "both"}:
         pred_config = ExecutionPredictionConfig(
             num_problems=None if args.pred_num_problems <= 0 else args.pred_num_problems,
@@ -231,6 +268,7 @@ def main() -> None:
             enable_thinking=args.enable_thinking,
             thinking_budget_tokens=args.thinking_budget_tokens,
             latency=args.latency_profile,
+            log_galileo_metrics=log_metrics,
         )
         if (
             pred_config.enable_thinking
@@ -256,6 +294,7 @@ def main() -> None:
             enable_thinking=args.enable_thinking,
             thinking_budget_tokens=args.thinking_budget_tokens,
             latency=args.latency_profile,
+            log_galileo_metrics=log_metrics,
         )
         choice_result = run_execution_choice(dataset_split, client, choice_config)
         outputs["choice"] = _serialize_choice_payload(choice_result, choice_config)

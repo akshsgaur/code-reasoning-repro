@@ -28,6 +28,7 @@ Flags mirror the notebook workflow:
 - `--compare-reasoning` – optional low/medium/high ablation on a small subset.
 - `--model-id`, `--latency-profile`, `--enable-thinking`, `--thinking-budget-tokens` – Bedrock-specific tuning (inference profile ARN, performance config, and Claude extended thinking options).
 - Entries without a corresponding `mutated_code` are skipped automatically to avoid crashes; pass `--include-missing-mutations` if you need to keep them.
+- `--enable-galileo` toggles trace logging, and `--galileo-track-metrics` additionally annotates each trace with OC/OR/MC/MR correctness so you can filter runs directly inside Galileo.
 
 Outputs are written as timestamped JSON blobs containing the config, counts, summaries, and per-problem traces.
 
@@ -63,7 +64,7 @@ This mirrors what the Python CLI does under the hood (via the Bedrock `converse`
 
 ## Galileo tracing (optional)
 
-Enable the `--enable-galileo` flag to mirror the Galileo sample workflow and capture every Bedrock invocation as a trace:
+Enable the `--enable-galileo` flag to mirror the Galileo sample workflow and capture every Bedrock invocation as a trace. Pair it with `--galileo-track-metrics` if you also want OC/OR/MC/MR correctness indicators on each span:
 
 1. Install the extra dependencies (already listed in `requirements.txt`): `pip install galileo python-dotenv`.
 2. Create a `.env` file with your `GALILEO_API_KEY` (and optionally `GALILEO_CONSOLE_URL`, `GALILEO_PROJECT`, `GALILEO_LOG_STREAM`).
@@ -74,6 +75,7 @@ python -m src.models.bedrock_claude.cli \
   --dataset YOUR_USERNAME/leetcode-contests-431-467 \
   --task prediction \
   --enable-galileo \
+  --galileo-track-metrics \
   --galileo-project MyFirstEvaluation \
   --galileo-log-stream aws-bedrock-sonnet
 ```

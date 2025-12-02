@@ -31,6 +31,7 @@ class ExecutionPredictionConfig:
     enable_thinking: bool = False
     thinking_budget_tokens: Optional[int] = None
     latency: Optional[str] = None
+    log_galileo_metrics: bool = False
 
 
 @dataclass
@@ -74,6 +75,19 @@ def run_execution_prediction(
     all_latencies: List[float] = []
     results: List[Dict] = []
 
+    def _evaluate_response(
+        response_text: str,
+        expected_output: str,
+        reversion_output: Optional[str],
+        include_reversion_flag: bool,
+    ) -> tuple[str, bool, Optional[bool]]:
+        prediction = extract_answer_from_response(response_text)
+        is_correct, _ = check_predicted_output(prediction, expected_output)
+        reversion_result: Optional[bool] = None
+        if include_reversion_flag and reversion_output is not None:
+            reversion_result, _ = check_predicted_output(prediction, reversion_output)
+        return prediction, bool(is_correct), reversion_result
+
     for idx in tqdm(indices, desc="Execution Prediction"):
         sample = dataset_split[idx]
         original_output = sample["output"]
@@ -107,6 +121,18 @@ def run_execution_prediction(
         mutated_predictions: List[Dict] = []
         seed_base = config.seed + idx * 1000
 
+        def _trace_metadata(variant: str, gen_idx: int) -> Dict[str, str]:
+            return {
+                "benchmark": "execution_prediction",
+                "variant": variant,
+                "problem_id": str(sample["id"]),
+                "problem_index": str(int(idx)),
+                "function_name": sample["function_name"],
+                "generation": str(gen_idx),
+                "reasoning_effort": config.reasoning_effort,
+                "include_reversion": str(include_reversion),
+            }
+
         for gen_idx in range(config.num_generations):
             params = BedrockInvocationParams(
                 reasoning_effort=config.reasoning_effort,
@@ -118,8 +144,44 @@ def run_execution_prediction(
                 thinking_budget_tokens=config.thinking_budget_tokens,
                 latency=config.latency,
             )
-            response = client.invoke(original_prompt, params)
-            prediction = extract_answer_from_response(response.text)
+            original_meta_cache: Dict[str, object] = {}
+
+            def _original_metadata_builder(response_text: str) -> Dict[str, object]:
+                prediction, oc_correct, or_correct = _evaluate_response(
+                    response_text,
+                    original_output,
+                    mutated_output,
+                    include_reversion,
+                )
+                original_meta_cache.update(
+                    {
+                        "prediction": prediction,
+                        "oc_correct": oc_correct,
+                        "or_correct": or_correct,
+                    }
+                )
+                metadata: Dict[str, object] = {"metric_oc": oc_correct}
+                metadata["metric_or"] = or_correct if include_reversion else "skipped"
+                return metadata
+
+            response = client.invoke(
+                original_prompt,
+                params,
+                trace_metadata=_trace_metadata("original", gen_idx)
+                if config.log_galileo_metrics
+                else None,
+                metadata_postprocessor=_original_metadata_builder if config.log_galileo_metrics else None,
+            )
+
+            if original_meta_cache:
+                prediction = str(original_meta_cache["prediction"])
+                oc_flag = bool(original_meta_cache["oc_correct"])
+                or_flag_val = original_meta_cache.get("or_correct")
+                or_flag = bool(or_flag_val) if isinstance(or_flag_val, bool) else None
+            else:
+                prediction, oc_flag, or_flag = _evaluate_response(
+                    response.text, original_output, mutated_output, include_reversion
+                )
             original_pred = {
                 "prediction": prediction,
                 "response": response.text,
@@ -128,13 +190,11 @@ def run_execution_prediction(
             original_predictions.append(original_pred)
             all_latencies.append(response.latency_s)
 
-            is_correct, _ = check_predicted_output(prediction, original_output)
-            if is_correct:
+            if oc_flag:
                 oc_successes += 1
 
             if include_reversion:
-                is_reversion, _ = check_predicted_output(prediction, mutated_output)
-                if is_reversion:
+                if or_flag:
                     or_successes += 1
 
             params_mut = BedrockInvocationParams(
@@ -147,8 +207,44 @@ def run_execution_prediction(
                 thinking_budget_tokens=config.thinking_budget_tokens,
                 latency=config.latency,
             )
-            response_mut = client.invoke(mutated_prompt, params_mut)
-            prediction_mut = extract_answer_from_response(response_mut.text)
+            mutated_meta_cache: Dict[str, object] = {}
+
+            def _mutated_metadata_builder(response_text: str) -> Dict[str, object]:
+                prediction, mc_correct, mr_correct = _evaluate_response(
+                    response_text,
+                    mutated_output,
+                    original_output,
+                    include_reversion,
+                )
+                mutated_meta_cache.update(
+                    {
+                        "prediction": prediction,
+                        "mc_correct": mc_correct,
+                        "mr_correct": mr_correct,
+                    }
+                )
+                metadata: Dict[str, object] = {"metric_mc": mc_correct}
+                metadata["metric_mr"] = mr_correct if include_reversion else "skipped"
+                return metadata
+
+            response_mut = client.invoke(
+                mutated_prompt,
+                params_mut,
+                trace_metadata=_trace_metadata("mutated", gen_idx)
+                if config.log_galileo_metrics
+                else None,
+                metadata_postprocessor=_mutated_metadata_builder if config.log_galileo_metrics else None,
+            )
+
+            if mutated_meta_cache:
+                prediction_mut = str(mutated_meta_cache["prediction"])
+                mc_flag = bool(mutated_meta_cache["mc_correct"])
+                mr_flag_val = mutated_meta_cache.get("mr_correct")
+                mr_flag = bool(mr_flag_val) if isinstance(mr_flag_val, bool) else None
+            else:
+                prediction_mut, mc_flag, mr_flag = _evaluate_response(
+                    response_mut.text, mutated_output, original_output, include_reversion
+                )
             mutated_pred = {
                 "prediction": prediction_mut,
                 "response": response_mut.text,
@@ -157,13 +253,11 @@ def run_execution_prediction(
             mutated_predictions.append(mutated_pred)
             all_latencies.append(response_mut.latency_s)
 
-            is_mut_correct, _ = check_predicted_output(prediction_mut, mutated_output)
-            if is_mut_correct:
+            if mc_flag:
                 mc_successes += 1
 
             if include_reversion:
-                is_mut_reversion, _ = check_predicted_output(prediction_mut, original_output)
-                if is_mut_reversion:
+                if mr_flag:
                     mr_successes += 1
 
         metrics_counts["OC"]["success"] += oc_successes
