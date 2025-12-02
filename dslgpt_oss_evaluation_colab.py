@@ -155,12 +155,12 @@ assert {function_name}({input_args}) == ??
     return prompt
 
 
-def build_execution_choice_prompt(sample: Dict, original_first: bool = True) -> Tuple[str, Dict[str, str]]:
+def build_execution_choice_prompt(sample: Dict, original_first: bool = True, case_index: int = 0) -> Tuple[str, Dict[str, str]]:
       """Build the execution-choice prompt and map A/B to original/mutated."""
       function_name = sample['function_name']
       original_code = sample['code']
       mutated_code = sample.get('mutated_code') or original_code
-      test_input = sample['input']
+      test_input = sample['input'][case_index]
 
       if test_input and test_input.startswith(f"{function_name}(") and test_input.endswith(")"):
           input_args = test_input[len(function_name) + 1:-1]
@@ -821,17 +821,17 @@ for idx in tqdm(choice_problem_indices, desc="Execution choice problems"):
                     if is_correct:
                         execution_choice_counts['OC']['correct'] += 1
                     if include_reversion:
-                        execution_choice_counts['MR']['reversion_total'] += 1
+                        execution_choice_counts['OR']['total'] += 1
                         if is_reversion:
-                            execution_choice_counts['MR']['reversion_correct'] += 1
+                            execution_choice_counts['OR']['correct'] += 1
                 else:
                     execution_choice_counts['MC']['total'] += 1
                     if is_correct:
                         execution_choice_counts['MC']['correct'] += 1
                     if include_reversion:
-                        execution_choice_counts['OR']['total'] += 1
+                        execution_choice_counts['MR']['reversion_total'] += 1
                         if is_reversion:
-                            execution_choice_counts['OR']['correct'] += 1
+                            execution_choice_counts['MR']['reversion_correct'] += 1
 
 
 preference_total = execution_choice_counts['preference']['original'] + execution_choice_counts['preference']['mutated']
