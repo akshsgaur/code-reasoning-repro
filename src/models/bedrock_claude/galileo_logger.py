@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import os
 import time
+from pathlib import Path
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
 
@@ -52,6 +53,10 @@ class GalileoTracer:
         if self.config.auto_load_dotenv:
             # Allow credentials + console overrides to be sourced from .env
             load_dotenv()
+            module_env = Path(__file__).resolve().parent / ".env"
+            if module_env.exists():
+                # Load repo-local env if the user keeps secrets alongside this module
+                load_dotenv(dotenv_path=module_env, override=False)
 
         project = self.config.project or os.environ.get("GALILEO_PROJECT") or "BedrockClaude"
         log_stream = self.config.log_stream or os.environ.get("GALILEO_LOG_STREAM") or "bedrock-runs"

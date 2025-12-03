@@ -6,3 +6,5 @@ scripts/__pycache__/
 __pycache__/
 src/datasets/leetcode/secrets/
 
+__pycache__/
+src/models/bedrock_claude/__pycache__/

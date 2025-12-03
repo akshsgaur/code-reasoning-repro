@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import ast
 import random
 from dataclasses import dataclass
 from typing import Dict, List, Optional
@@ -10,10 +11,13 @@ from tqdm.auto import tqdm
 
 from .aws_client import BedrockClaudeClient, BedrockInvocationParams
 from .prompts import (
+    NormalizedSample,
     build_execution_choice_prompt,
     check_predicted_output,
     extract_output_from_assertion,
+    format_output_value,
     is_boolean_output,
+    normalize_sample,
     parse_execution_choice_response,
 )
 
@@ -76,22 +80,25 @@ def run_execution_choice(
 
     for idx in tqdm(indices, desc="Execution Choice"):
         sample = dataset_split[idx]
-        original_output = sample["output"]
-        mutated_output = sample.get("mutated_output") or original_output
+        normalized: NormalizedSample = normalize_sample(sample)
+        original_outputs = normalized.original_outputs
+        mutated_outputs = normalized.mutated_outputs
 
         include_reversion = True
-        if config.skip_boolean_for_reversion and (
-            is_boolean_output(original_output) or is_boolean_output(mutated_output)
-        ):
-            include_reversion = False
-            reversion_skip_count += 1
+        if config.skip_boolean_for_reversion:
+            def _has_boolean(values):
+                return any(is_boolean_output(format_output_value(v)) for v in values)
+
+            if _has_boolean(original_outputs) or _has_boolean(mutated_outputs):
+                include_reversion = False
+                reversion_skip_count += 1
 
         base_seed = config.seed + idx * 1000
 
         def _trace_metadata(run_index: int, original_first_flag: bool) -> Dict[str, str]:
             return {
                 "benchmark": "execution_choice",
-                "problem_id": str(sample["id"]),
+                "problem_id": str(sample.get("id", idx)),
                 "problem_index": str(int(idx)),
                 "run_index": str(run_index),
                 "original_first": str(original_first_flag),
@@ -99,7 +106,6 @@ def run_execution_choice(
             }
 
         for run_offset, original_first in enumerate(selected_orderings):
-            prompt, mapping = build_execution_choice_prompt(sample, original_first=original_first)
             params = BedrockInvocationParams(
                 reasoning_effort=config.reasoning_effort,
                 max_tokens=config.max_new_tokens,
@@ -110,172 +116,134 @@ def run_execution_choice(
                 thinking_budget_tokens=config.thinking_budget_tokens,
                 latency=config.latency,
             )
-            choice_meta_cache: Dict[str, object] = {}
 
-            def _choice_metadata_builder(response_text: str) -> Dict[str, object]:
-                metadata: Dict[str, object] = {}
-                try:
-                    parsed = parse_execution_choice_response(response_text)
-                except Exception as exc:
-                    choice_meta_cache["error"] = f"Failed to parse response: {exc}"
-                    metadata["choice_parse_error"] = str(exc)
-                    return metadata
-                assertion_text = parsed.get("assertion", "") or ""
-                chosen_letter = parsed.get("chosen_program")
-                choice_meta_cache.update(
-                    {
-                        "parsed": parsed,
-                        "assertion": assertion_text,
-                        "chosen_letter": chosen_letter,
-                    }
+            oc_all_correct = True
+            or_all_reversion = True
+            mc_all_correct = True
+            mr_all_reversion = True
+
+            run_testcases: List[Dict] = []
+
+            for case_idx, test_input in enumerate(normalized.test_inputs):
+                prompt, mapping = build_execution_choice_prompt(
+                    normalized, original_first=original_first, test_input=test_input
                 )
-                if not chosen_letter or chosen_letter not in mapping:
-                    error_msg = "Missing/invalid chosen_program in response."
-                    choice_meta_cache["error"] = error_msg
-                    metadata["choice_parse_error"] = error_msg
-                    return metadata
+                generation = client.invoke(prompt, params)
+                execution_choice_latencies.append(generation.latency_s)
 
-                chosen_type = mapping[chosen_letter]
-                predicted_output = extract_output_from_assertion(assertion_text)
-                chosen_output = original_output if chosen_type == "original" else mutated_output
-                other_output = mutated_output if chosen_type == "original" else original_output
-                is_correct, _ = check_predicted_output(predicted_output, chosen_output)
-                metadata_key = "metric_oc" if chosen_type == "original" else "metric_mc"
-                metadata[metadata_key] = bool(is_correct)
+                run_record = {
+                    "problem_index": int(idx),
+                    "problem_id": sample.get("id", idx),
+                    "function_name": normalized.function_name,
+                    "run_index": run_offset,
+                    "original_first": original_first,
+                    "test_input": str(test_input),
+                    "response": generation.text,
+                    "latency_s": generation.latency_s,
+                    "include_reversion": include_reversion,
+                    "chosen_program_letter": None,
+                    "chosen_program_type": None,
+                    "assertion": None,
+                    "prediction": None,
+                    "correct_for_chosen_program": None,
+                    "reversion_for_other_program": None,
+                    "correctness_error": None,
+                    "reversion_error": None,
+                }
 
-                if include_reversion:
-                    is_reversion, _ = check_predicted_output(predicted_output, other_output)
-                    metadata_key_rev = "metric_or" if chosen_type == "original" else "metric_mr"
-                    metadata[metadata_key_rev] = is_reversion
-                else:
-                    metadata_key_rev = "metric_or" if chosen_type == "original" else "metric_mr"
-                    metadata[metadata_key_rev] = "skipped"
-
-                choice_meta_cache.update(
-                    {
-                        "chosen_type": chosen_type,
-                        "prediction": predicted_output,
-                        "is_correct": bool(is_correct),
-                        "is_reversion": metadata[metadata_key_rev]
-                        if include_reversion
-                        else None,
-                    }
-                )
-                metadata["choice_variant"] = chosen_type
-                metadata["chosen_letter"] = chosen_letter
-                return metadata
-
-            generation = client.invoke(
-                prompt,
-                params,
-                trace_metadata=_trace_metadata(run_offset, original_first)
-                if config.log_galileo_metrics
-                else None,
-                metadata_postprocessor=_choice_metadata_builder if config.log_galileo_metrics else None,
-            )
-            execution_choice_latencies.append(generation.latency_s)
-
-            run_record = {
-                "problem_index": int(idx),
-                "problem_id": sample["id"],
-                "function_name": sample["function_name"],
-                "run_index": run_offset,
-                "original_first": original_first,
-                "response": generation.text,
-                "latency_s": generation.latency_s,
-                "include_reversion": include_reversion,
-                "chosen_program_letter": None,
-                "chosen_program_type": None,
-                "assertion": None,
-                "prediction": None,
-                "correct_for_chosen_program": None,
-                "reversion_for_other_program": None,
-                "correctness_error": None,
-                "reversion_error": None,
-            }
-
-            cache_error = choice_meta_cache.get("error")
-            if cache_error:
-                run_record["correctness_error"] = str(cache_error)
-                execution_choice_counts["invalid_runs"] += 1
-                execution_choice_results.append(run_record)
-                continue
-
-            correctness_error = None
-            reversion_error = None
-            if choice_meta_cache:
-                chosen_letter = choice_meta_cache.get("chosen_letter")
-                chosen_type = choice_meta_cache.get("chosen_type")
-                assertion_text = str(choice_meta_cache.get("assertion", ""))
-                predicted_output = str(choice_meta_cache.get("prediction", ""))
-                if not chosen_letter or not isinstance(chosen_type, str):
-                    run_record["correctness_error"] = "Missing/invalid chosen_program in response."
-                    execution_choice_counts["invalid_runs"] += 1
-                    execution_choice_results.append(run_record)
-                    continue
-                is_correct = bool(choice_meta_cache.get("is_correct"))
-                reversion_cache = choice_meta_cache.get("is_reversion")
-                is_reversion = bool(reversion_cache) if isinstance(reversion_cache, bool) else None
-            else:
                 try:
                     parsed = parse_execution_choice_response(generation.text)
                     chosen_letter = parsed.get("chosen_program")
                     assertion_text = parsed.get("assertion", "")
+                    outputs_text = parsed.get("outputs")
                     if not chosen_letter or chosen_letter not in mapping:
                         raise ValueError("Missing/invalid chosen_program in response.")
                     chosen_type = mapping[chosen_letter]
                 except Exception as exc:
                     run_record["correctness_error"] = f"Failed to parse response: {exc}"
                     execution_choice_counts["invalid_runs"] += 1
-                    execution_choice_results.append(run_record)
+                    run_testcases.append(run_record)
                     continue
 
-                predicted_output = extract_output_from_assertion(assertion_text)
-                is_correct, correctness_error = check_predicted_output(
-                    predicted_output, original_output if chosen_type == "original" else mutated_output
-                )
+                if outputs_text is not None:
+                    outputs_value = outputs_text
+                    if isinstance(outputs_text, str):
+                        try:
+                            outputs_value = ast.literal_eval(outputs_text)
+                        except Exception:
+                            outputs_value = [outputs_text]
+                    if isinstance(outputs_value, list) and len(outputs_value) == 1:
+                        predicted_output = format_output_value(outputs_value[0])
+                    elif isinstance(outputs_value, list):
+                        predicted_output = format_output_value(outputs_value)
+                    else:
+                        predicted_output = format_output_value(outputs_value)
+                else:
+                    predicted_output = extract_output_from_assertion(assertion_text)
+
+                expected_original = format_output_value(original_outputs[case_idx])
+                expected_mutated = format_output_value(mutated_outputs[case_idx])
+
+                chosen_output = expected_original if chosen_type == "original" else expected_mutated
+                other_output = expected_mutated if chosen_type == "original" else expected_original
+
+                is_correct, correctness_error = check_predicted_output(predicted_output, chosen_output)
                 if include_reversion:
-                    is_reversion, reversion_error = check_predicted_output(
-                        predicted_output, mutated_output if chosen_type == "original" else original_output
-                    )
+                    is_reversion, reversion_error = check_predicted_output(predicted_output, other_output)
                 else:
                     is_reversion, reversion_error = None, None
 
-                is_correct = bool(is_correct)
-                is_reversion = bool(is_reversion) if isinstance(is_reversion, bool) else None
+                is_correct_flag = bool(is_correct)
+                is_reversion_flag = bool(is_reversion) if isinstance(is_reversion, bool) else None
 
-            execution_choice_counts["preference"]["total"] += 1
-            if chosen_type == "original":
-                execution_choice_counts["preference"]["original"] += 1
-                bucket = execution_choice_counts["OC"]
-            else:
-                execution_choice_counts["preference"]["mutated"] += 1
-                bucket = execution_choice_counts["MC"]
+                if chosen_type == "original":
+                    if not is_correct_flag:
+                        oc_all_correct = False
+                    if include_reversion and not is_reversion_flag:
+                        or_all_reversion = False
+                else:
+                    if not is_correct_flag:
+                        mc_all_correct = False
+                    if include_reversion and not is_reversion_flag:
+                        mr_all_reversion = False
 
-            bucket["total"] += 1
-            if is_correct:
-                bucket["correct"] += 1
-            if include_reversion:
-                bucket["reversion_total"] += 1
-                if is_reversion:
-                    bucket["reversion_correct"] += 1
+                execution_choice_counts["preference"]["total"] += 1
+                if chosen_type == "original":
+                    execution_choice_counts["preference"]["original"] += 1
+                    bucket = execution_choice_counts["OC"]
+                else:
+                    execution_choice_counts["preference"]["mutated"] += 1
+                    bucket = execution_choice_counts["MC"]
 
-            run_record.update(
-                {
-                    "chosen_program_letter": chosen_letter,
-                    "chosen_program_type": chosen_type,
-                    "assertion": assertion_text,
-                    "prediction": predicted_output,
-                    "correct_for_chosen_program": bool(is_correct),
-                    "reversion_for_other_program": bool(is_reversion)
-                    if include_reversion
-                    else None,
-                    "correctness_error": correctness_error,
-                    "reversion_error": reversion_error,
-                }
-            )
+                bucket["total"] += 1
+                if is_correct_flag:
+                    bucket["correct"] += 1
+                if include_reversion:
+                    bucket["reversion_total"] += 1
+                    if is_reversion_flag:
+                        bucket["reversion_correct"] += 1
 
-            execution_choice_results.append(run_record)
+                run_record.update(
+                    {
+                        "chosen_program_letter": chosen_letter,
+                        "chosen_program_type": chosen_type,
+                        "assertion": assertion_text,
+                        "prediction": predicted_output,
+                        "expected_output": chosen_output,
+                        "other_output": other_output,
+                        "correct_for_chosen_program": is_correct_flag,
+                        "reversion_for_other_program": is_reversion_flag if include_reversion else None,
+                        "correctness_error": correctness_error,
+                        "reversion_error": reversion_error,
+                    }
+                )
+
+                run_testcases.append(run_record)
+
+            if oc_all_correct and mc_all_correct:
+                pass  # both paths correct across inputs
+            # Aggregated generation-level correctness for reporting (not used in counts directly)
+            execution_choice_results.extend(run_testcases)
 
     def _safe_ratio(num: int, denom: int) -> Optional[float]:
         return None if denom == 0 else num / denom
