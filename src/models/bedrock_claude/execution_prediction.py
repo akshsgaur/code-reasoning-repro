@@ -10,10 +10,13 @@ from tqdm.auto import tqdm
 
 from .aws_client import BedrockClaudeClient, BedrockInvocationParams
 from .prompts import (
+    NormalizedSample,
     build_execution_prediction_prompt,
     check_predicted_output,
     extract_answer_from_response,
+    format_output_value,
     is_boolean_output,
+    normalize_sample,
 )
 
 
@@ -75,63 +78,38 @@ def run_execution_prediction(
     all_latencies: List[float] = []
     results: List[Dict] = []
 
-    def _evaluate_response(
-        response_text: str,
-        expected_output: str,
-        reversion_output: Optional[str],
-        include_reversion_flag: bool,
-    ) -> tuple[str, bool, Optional[bool]]:
-        prediction = extract_answer_from_response(response_text)
-        is_correct, _ = check_predicted_output(prediction, expected_output)
-        reversion_result: Optional[bool] = None
-        if include_reversion_flag and reversion_output is not None:
-            reversion_result, _ = check_predicted_output(prediction, reversion_output)
-        return prediction, bool(is_correct), reversion_result
-
     for idx in tqdm(indices, desc="Execution Prediction"):
         sample = dataset_split[idx]
-        original_output = sample["output"]
-        mutated_output = sample.get("mutated_output") or original_output
-        has_mutation = sample.get("has_mutation", mutated_output != original_output)
+        normalized: NormalizedSample = normalize_sample(sample)
+        original_outputs = normalized.original_outputs
+        mutated_outputs = normalized.mutated_outputs
+        has_mutation = sample.get("has_mutation", normalized.mutated_code != normalized.original_code)
 
-        original_prompt = build_execution_prediction_prompt(sample, use_mutated=False)
-        try:
-            mutated_prompt = build_execution_prediction_prompt(sample, use_mutated=True)
-        except (KeyError, ValueError) as exc:
+        if normalized.mutated_code is None or not str(normalized.mutated_code).strip():
             results.append(
                 {
                     "problem_index": int(idx),
-                    "problem_id": sample["id"],
-                    "function_name": sample["function_name"],
+                    "problem_id": sample.get("id", idx),
+                    "function_name": normalized.function_name,
                     "skipped": True,
-                    "skip_reason": f"Missing mutated_code: {exc}",
+                    "skip_reason": "Missing mutated_code.",
                 }
             )
             continue
 
         include_reversion = True
-        if config.skip_boolean_for_reversion and (
-            is_boolean_output(original_output) or is_boolean_output(mutated_output)
-        ):
-            include_reversion = False
-            reversion_skip_count += 1
+        if config.skip_boolean_for_reversion:
+            def _has_boolean(values):
+                return any(is_boolean_output(format_output_value(v)) for v in values)
+
+            if _has_boolean(original_outputs) or _has_boolean(mutated_outputs):
+                include_reversion = False
+                reversion_skip_count += 1
 
         oc_successes = or_successes = mc_successes = mr_successes = 0
         original_predictions: List[Dict] = []
         mutated_predictions: List[Dict] = []
         seed_base = config.seed + idx * 1000
-
-        def _trace_metadata(variant: str, gen_idx: int) -> Dict[str, str]:
-            return {
-                "benchmark": "execution_prediction",
-                "variant": variant,
-                "problem_id": str(sample["id"]),
-                "problem_index": str(int(idx)),
-                "function_name": sample["function_name"],
-                "generation": str(gen_idx),
-                "reasoning_effort": config.reasoning_effort,
-                "include_reversion": str(include_reversion),
-            }
 
         for gen_idx in range(config.num_generations):
             params = BedrockInvocationParams(
@@ -144,59 +122,6 @@ def run_execution_prediction(
                 thinking_budget_tokens=config.thinking_budget_tokens,
                 latency=config.latency,
             )
-            original_meta_cache: Dict[str, object] = {}
-
-            def _original_metadata_builder(response_text: str) -> Dict[str, object]:
-                prediction, oc_correct, or_correct = _evaluate_response(
-                    response_text,
-                    original_output,
-                    mutated_output,
-                    include_reversion,
-                )
-                original_meta_cache.update(
-                    {
-                        "prediction": prediction,
-                        "oc_correct": oc_correct,
-                        "or_correct": or_correct,
-                    }
-                )
-                metadata: Dict[str, object] = {"metric_oc": oc_correct}
-                metadata["metric_or"] = or_correct if include_reversion else "skipped"
-                return metadata
-
-            response = client.invoke(
-                original_prompt,
-                params,
-                trace_metadata=_trace_metadata("original", gen_idx)
-                if config.log_galileo_metrics
-                else None,
-                metadata_postprocessor=_original_metadata_builder if config.log_galileo_metrics else None,
-            )
-
-            if original_meta_cache:
-                prediction = str(original_meta_cache["prediction"])
-                oc_flag = bool(original_meta_cache["oc_correct"])
-                or_flag_val = original_meta_cache.get("or_correct")
-                or_flag = bool(or_flag_val) if isinstance(or_flag_val, bool) else None
-            else:
-                prediction, oc_flag, or_flag = _evaluate_response(
-                    response.text, original_output, mutated_output, include_reversion
-                )
-            original_pred = {
-                "prediction": prediction,
-                "response": response.text,
-                "latency_s": response.latency_s,
-            }
-            original_predictions.append(original_pred)
-            all_latencies.append(response.latency_s)
-
-            if oc_flag:
-                oc_successes += 1
-
-            if include_reversion:
-                if or_flag:
-                    or_successes += 1
-
             params_mut = BedrockInvocationParams(
                 reasoning_effort=config.reasoning_effort,
                 max_tokens=config.max_new_tokens,
@@ -207,58 +132,94 @@ def run_execution_prediction(
                 thinking_budget_tokens=config.thinking_budget_tokens,
                 latency=config.latency,
             )
-            mutated_meta_cache: Dict[str, object] = {}
 
-            def _mutated_metadata_builder(response_text: str) -> Dict[str, object]:
-                prediction, mc_correct, mr_correct = _evaluate_response(
-                    response_text,
-                    mutated_output,
-                    original_output,
-                    include_reversion,
+            oc_all_correct = True
+            or_all_reversion = True
+            mc_all_correct = True
+            mr_all_reversion = True
+
+            gen_original_records: List[Dict] = []
+            gen_mutated_records: List[Dict] = []
+
+            for case_idx, test_input in enumerate(normalized.test_inputs):
+                expected_orig = format_output_value(original_outputs[case_idx])
+                expected_mut = format_output_value(mutated_outputs[case_idx])
+
+                original_prompt = build_execution_prediction_prompt(
+                    normalized, use_mutated=False, test_input=test_input
                 )
-                mutated_meta_cache.update(
+                response = client.invoke(original_prompt, params)
+                prediction = extract_answer_from_response(response.text)
+                gen_original_records.append(
                     {
+                        "test_input": str(test_input),
+                        "expected_output": expected_orig,
+                        "mutated_expected_output": expected_mut,
                         "prediction": prediction,
-                        "mc_correct": mc_correct,
-                        "mr_correct": mr_correct,
+                        "response": response.text,
+                        "latency_s": response.latency_s,
                     }
                 )
-                metadata: Dict[str, object] = {"metric_mc": mc_correct}
-                metadata["metric_mr"] = mr_correct if include_reversion else "skipped"
-                return metadata
+                all_latencies.append(response.latency_s)
 
-            response_mut = client.invoke(
-                mutated_prompt,
-                params_mut,
-                trace_metadata=_trace_metadata("mutated", gen_idx)
-                if config.log_galileo_metrics
-                else None,
-                metadata_postprocessor=_mutated_metadata_builder if config.log_galileo_metrics else None,
-            )
+                is_correct, _ = check_predicted_output(prediction, expected_orig)
+                if not is_correct:
+                    oc_all_correct = False
+                if include_reversion:
+                    is_reversion, _ = check_predicted_output(prediction, expected_mut)
+                    if not is_reversion:
+                        or_all_reversion = False
 
-            if mutated_meta_cache:
-                prediction_mut = str(mutated_meta_cache["prediction"])
-                mc_flag = bool(mutated_meta_cache["mc_correct"])
-                mr_flag_val = mutated_meta_cache.get("mr_correct")
-                mr_flag = bool(mr_flag_val) if isinstance(mr_flag_val, bool) else None
-            else:
-                prediction_mut, mc_flag, mr_flag = _evaluate_response(
-                    response_mut.text, mutated_output, original_output, include_reversion
+                mutated_prompt = build_execution_prediction_prompt(
+                    normalized, use_mutated=True, test_input=test_input
                 )
-            mutated_pred = {
-                "prediction": prediction_mut,
-                "response": response_mut.text,
-                "latency_s": response_mut.latency_s,
-            }
-            mutated_predictions.append(mutated_pred)
-            all_latencies.append(response_mut.latency_s)
+                response_mut = client.invoke(mutated_prompt, params_mut)
+                prediction_mut = extract_answer_from_response(response_mut.text)
+                gen_mutated_records.append(
+                    {
+                        "test_input": str(test_input),
+                        "expected_output": expected_mut,
+                        "original_expected_output": expected_orig,
+                        "prediction": prediction_mut,
+                        "response": response_mut.text,
+                        "latency_s": response_mut.latency_s,
+                    }
+                )
+                all_latencies.append(response_mut.latency_s)
 
-            if mc_flag:
+                is_mut_correct, _ = check_predicted_output(prediction_mut, expected_mut)
+                if not is_mut_correct:
+                    mc_all_correct = False
+                if include_reversion:
+                    is_mut_reversion, _ = check_predicted_output(prediction_mut, expected_orig)
+                    if not is_mut_reversion:
+                        mr_all_reversion = False
+
+            if oc_all_correct:
+                oc_successes += 1
+            if include_reversion and or_all_reversion:
+                or_successes += 1
+            if mc_all_correct:
                 mc_successes += 1
+            if include_reversion and mr_all_reversion:
+                mr_successes += 1
 
-            if include_reversion:
-                if mr_flag:
-                    mr_successes += 1
+            original_predictions.append(
+                {
+                    "generation_index": gen_idx,
+                    "testcases": gen_original_records,
+                    "all_correct": oc_all_correct,
+                    "all_reversion": or_all_reversion if include_reversion else None,
+                }
+            )
+            mutated_predictions.append(
+                {
+                    "generation_index": gen_idx,
+                    "testcases": gen_mutated_records,
+                    "all_correct": mc_all_correct,
+                    "all_reversion": mr_all_reversion if include_reversion else None,
+                }
+            )
 
         metrics_counts["OC"]["success"] += oc_successes
         metrics_counts["OC"]["total"] += config.num_generations
@@ -274,13 +235,14 @@ def run_execution_prediction(
         results.append(
             {
                 "problem_index": int(idx),
-                "problem_id": sample["id"],
-                "function_name": sample["function_name"],
+                "problem_id": sample.get("id", idx),
+                "function_name": normalized.function_name,
                 "difficulty": sample.get("difficulty"),
                 "has_mutation": has_mutation,
                 "include_reversion": include_reversion,
-                "original_output": original_output,
-                "mutated_output": mutated_output,
+                "original_output": [format_output_value(v) for v in original_outputs],
+                "mutated_output": [format_output_value(v) for v in mutated_outputs],
+                "test_inputs": normalized.test_inputs,
                 "oc_successes": oc_successes,
                 "or_successes": or_successes if include_reversion else None,
                 "mc_successes": mc_successes,

@@ -58,6 +58,7 @@ This mirrors what the Python CLI does under the hood (via the Bedrock `converse`
 ## Notes
 
 - The CLI relies on HuggingFace datasets. Set `HF_HOME` or log in if the dataset is private.
+- Multi-testcase datasets are supported. If a record provides arrays of `input` / `output` (or `correct_condition`), each test case is prompted separately (one assertion per input); a generation counts as correct only if all test cases for that problem are answered correctly.
 - Increase `--pred-num-problems` / `--choice-num-problems` gradually; a full sweep over ~350 DSL/LeetCode tasks can take hours and incur meaningful API spend.
 - The `BedrockInvocationParams` object supports seeding through `metadata.user_id`, which provides light stochastic control when temperature sampling is enabled.
 - Problems missing mutated variants are filtered out by default (they often have `mutated_code=null` in the dataset). This prevents mid-run failures when building prompts.
