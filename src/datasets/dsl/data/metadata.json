@@ -1,0 +1,14 @@
+{
+  "num_programs": 500,
+  "config": {
+    "num_programs": 500,
+    "max_depth": 4,
+    "arity": 1,
+    "input_trials": 3,
+    "max_attempts": 50000,
+    "seed": 123,
+    "use_neural_pcfg": true,
+    "deepsynth_root": "./-IDL-DeepSynth",
+    "neural_max_attempts": 20000
+  }
+}
