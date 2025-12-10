@@ -1,0 +1,46 @@
+{
+  "model": "gpt-oss-20b",
+  "dataset": "DSL-List",
+  "reasoning_effort": "low",
+  "num_problems": 100,
+  "runs_per_case": 1,
+  "temperature": 0.6,
+  "top_p": 0.95,
+  "seed": 123,
+  "skip_boolean_for_reversion": true,
+  "reversion_skipped_cases": 0,
+  "metrics": {
+    "preference_original": 0.5216666666666666,
+    "preference_mutated": 0.47833333333333333,
+    "oc_correct": 0.9584664536741214,
+    "or_reversion": 0.020905923344947737,
+    "mc_correct": 0.9477351916376306,
+    "mr_reversion": 0.0,
+    "avg_latency_s": 24.175232906738916
+  },
+  "execution_choice_counts": {
+    "preference": {
+      "original": 313,
+      "mutated": 287
+    },
+    "OC": {
+      "correct": 300,
+      "total": 313
+    },
+    "OR": {
+      "correct": 6,
+      "total": 287
+    },
+    "MC": {
+      "correct": 272,
+      "total": 287
+    },
+    "MR": {
+      "correct": 0,
+      "total": 0,
+      "reversion_correct": 0,
+      "reversion_total": 313
+    },
+    "invalid_runs": 0
+  }
+}
