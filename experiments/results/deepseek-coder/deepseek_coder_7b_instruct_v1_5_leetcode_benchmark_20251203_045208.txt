@@ -1,0 +1,13 @@
+Evaluating execution choice on 110 problems with 2 run(s) each.
+Reasoning effort: low, temperature: 0.6, top_p: 0.95
+Execution choice: 100%
+
+ 110/110 [1:03:25<00:00, 28.86s/it]
+	Dataset	Problems Evaluated	Runs per Problem	Preference (Original)	OC Correct	OR Reversion	MC Correct	MR Reversion
+0	LeetCode	110	2	62.05%	26.21%	11.36%	11.11%	12.73%
+Preference counts:
+  Original: 103 / 166
+  Mutated: 63 / 166
+Invalid runs (no usable JSON response): 54
+Average latency per run: 17.29s
+Problems skipped for reversion metrics (boolean outputs): 14
