@@ -128,7 +128,33 @@ def run_execution_choice(
                 prompt, mapping = build_execution_choice_prompt(
                     normalized, original_first=original_first, test_input=test_input
                 )
-                generation = client.invoke(prompt, params)
+                try:
+                    generation = client.invoke(prompt, params)
+                except RuntimeError as exc:
+                    # Bedrock content filter / invocation failure – treat as invalid run
+                    run_record = {
+                        "problem_index": int(idx),
+                        "problem_id": sample.get("id", idx),
+                        "function_name": normalized.function_name,
+                        "run_index": run_offset,
+                        "original_first": original_first,
+                        "test_input": str(test_input),
+                        "response": "",  # No model text
+                        "latency_s": 0.0,
+                        "include_reversion": None,
+                        "chosen_program_letter": None,
+                        "chosen_program_type": None,
+                        "assertion": None,
+                        "prediction": None,
+                        "correct_for_chosen_program": None,
+                        "reversion_for_other_program": None,
+                        "correctness_error": f"Invocation failed: {exc}",
+                        "reversion_error": None,
+                    }
+                    execution_choice_counts["invalid_runs"] += 1
+                    run_testcases.append(run_record)
+                    continue
+                
                 execution_choice_latencies.append(generation.latency_s)
 
                 run_record = {
@@ -140,7 +166,7 @@ def run_execution_choice(
                     "test_input": str(test_input),
                     "response": generation.text,
                     "latency_s": generation.latency_s,
-                    "include_reversion": include_reversion,
+                    "include_reversion": None,
                     "chosen_program_letter": None,
                     "chosen_program_type": None,
                     "assertion": None,
@@ -187,24 +213,35 @@ def run_execution_choice(
                 chosen_output = expected_original if chosen_type == "original" else expected_mutated
                 other_output = expected_mutated if chosen_type == "original" else expected_original
 
-                is_correct, correctness_error = check_predicted_output(predicted_output, chosen_output)
-                if include_reversion:
-                    is_reversion, reversion_error = check_predicted_output(predicted_output, other_output)
-                else:
-                    is_reversion, reversion_error = None, None
+                case_include_reversion = True
+                if expected_original == expected_mutated:
+                    case_include_reversion = False
+                if config.skip_boolean_for_reversion and (
+                    is_boolean_output(expected_original) or is_boolean_output(expected_mutated)
+                ):
+                    case_include_reversion = False
+                    reversion_skip_count += 1
 
+                run_record["include_reversion"] = case_include_reversion
+
+                is_correct, correctness_error = check_predicted_output(predicted_output, chosen_output)
                 is_correct_flag = bool(is_correct)
-                is_reversion_flag = bool(is_reversion) if isinstance(is_reversion, bool) else None
+
+                if case_include_reversion:
+                    is_reversion_raw, reversion_error = check_predicted_output(predicted_output, other_output)
+                    is_reversion_flag = (not is_correct_flag) and bool(is_reversion_raw)
+                else:
+                    is_reversion_flag, reversion_error = None, None
 
                 if chosen_type == "original":
                     if not is_correct_flag:
                         oc_all_correct = False
-                    if include_reversion and not is_reversion_flag:
+                    if case_include_reversion and not is_reversion_flag:
                         or_all_reversion = False
                 else:
                     if not is_correct_flag:
                         mc_all_correct = False
-                    if include_reversion and not is_reversion_flag:
+                    if case_include_reversion and not is_reversion_flag:
                         mr_all_reversion = False
 
                 execution_choice_counts["preference"]["total"] += 1
@@ -218,7 +255,7 @@ def run_execution_choice(
                 bucket["total"] += 1
                 if is_correct_flag:
                     bucket["correct"] += 1
-                if include_reversion:
+                if case_include_reversion:
                     bucket["reversion_total"] += 1
                     if is_reversion_flag:
                         bucket["reversion_correct"] += 1
@@ -232,7 +269,7 @@ def run_execution_choice(
                         "expected_output": chosen_output,
                         "other_output": other_output,
                         "correct_for_chosen_program": is_correct_flag,
-                        "reversion_for_other_program": is_reversion_flag if include_reversion else None,
+                        "reversion_for_other_program": is_reversion_flag if case_include_reversion else None,
                         "correctness_error": correctness_error,
                         "reversion_error": reversion_error,
                     }
@@ -241,8 +278,7 @@ def run_execution_choice(
                 run_testcases.append(run_record)
 
             if oc_all_correct and mc_all_correct:
-                pass  # both paths correct across inputs
-            # Aggregated generation-level correctness for reporting (not used in counts directly)
+                pass
             execution_choice_results.extend(run_testcases)
 
     def _safe_ratio(num: int, denom: int) -> Optional[float]:

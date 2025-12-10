@@ -89,18 +89,25 @@ def _extract_test_inputs(sample: Dict, function_name: str) -> List[str]:
     if not inputs:
         raise ValueError("Sample missing input test cases.")
 
-    # Normalize function calls without the enclosing 'assert' wrapper.
     normalized: List[str] = []
     for call in inputs:
         if call is None:
             continue
-        text = str(call).strip()
-        text = re.sub(r"^assert\\s+", "", text)
-        text = re.sub(r"\\s*==\\s*\?\?$", "", text)
-        # If the call is missing parentheses, try to add them when the input
-        # looked like an argument list.
+
+        if isinstance(call, list):
+            # Join arg strings into "arg1, arg2, arg3"
+            text = ", ".join(str(a) for a in call).strip()
+        else:
+            text = str(call).strip()
+
+        # Strip any 'assert ... == ??' wrapper if present
+        text = re.sub(r"^assert\s+", "", text)
+        text = re.sub(r"\s*==\s*\?\?$", "", text)
+
+        # If we only see arguments (no function call), wrap with function_name(...)
         if "(" not in text and ")" not in text:
             text = f"{function_name}({text})"
+
         normalized.append(text)
 
     return normalized
@@ -233,25 +240,22 @@ def build_execution_choice_prompt(
     else:
         input_args = call_str
 
-    prompt_template = (
+    json_schema = (
+        '{\n'
+        '  "chosen_program": "A or B",\n'
+        '  "assertion": "full_assertion"\n'
+        '}'
+    )
+
+    prompt = (
         "You are given two Python programs and an assertion containing an input to a function."
         " First, choose the program (A or B) you are more confident in. Then replace the ?? with the literal"
         " return value of your chosen program for this input. Execute the chosen program exactly as written, even"
         " if it is incorrect or incomplete. Respond strictly in this JSON format:\n\n"
-        "{\n"
-        '  "chosen_program": "A or B",\n'
-        '  "assertion": "full_assertion"\n'
-        "}\n\n"
-        "[PROGRAM_A]\n{program_a}\n[/PROGRAM_A]\n"
-        "[PROGRAM_B]\n{program_b}\n[/PROGRAM_B]\n"
-        "[ASSERTION]\nassert {function_name}({input_args}) == ??\n[/ASSERTION]"
-    )
-
-    prompt = prompt_template.format(
-        program_a=program_a,
-        program_b=program_b,
-        function_name=normalized.function_name,
-        input_args=input_args,
+        f"{json_schema}\n\n"
+        f"[PROGRAM_A]\n{program_a}\n[/PROGRAM_A]\n"
+        f"[PROGRAM_B]\n{program_b}\n[/PROGRAM_B]\n"
+        f"[ASSERTION]\nassert {normalized.function_name}({input_args}) == ??\n[/ASSERTION]"
     )
 
     return prompt, mapping
