@@ -1,0 +1,53 @@
+{
+  "prediction_chunks": [
+    {
+      "start_index": 0,
+      "num_problems": 100,
+      "output_path": "chunk_plans/claude_bedrock_prediction_20251127_113610_chunk_0000.json"
+    },
+    {
+      "start_index": 100,
+      "num_problems": 100,
+      "output_path": "chunk_plans/claude_bedrock_prediction_20251127_113610_chunk_0100.json"
+    },
+    {
+      "start_index": 200,
+      "num_problems": 100,
+      "output_path": "chunk_plans/claude_bedrock_prediction_20251127_113610_chunk_0200.json"
+    },
+    {
+      "start_index": 300,
+      "num_problems": 40,
+      "output_path": "chunk_plans/claude_bedrock_prediction_20251127_113610_chunk_0300.json"
+    }
+  ],
+  "choice_chunks": [
+    {
+      "start_index": 0,
+      "num_problems": 100,
+      "output_path": "chunk_plans/claude_bedrock_choice_20251127_113610_chunk_0000.json"
+    },
+    {
+      "start_index": 100,
+      "num_problems": 100,
+      "output_path": "chunk_plans/claude_bedrock_choice_20251127_113610_chunk_0100.json"
+    },
+    {
+      "start_index": 200,
+      "num_problems": 100,
+      "output_path": "chunk_plans/claude_bedrock_choice_20251127_113610_chunk_0200.json"
+    },
+    {
+      "start_index": 300,
+      "num_problems": 40,
+      "output_path": "chunk_plans/claude_bedrock_choice_20251127_113610_chunk_0300.json"
+    }
+  ],
+  "metadata": {
+    "total_prediction_problems": 340,
+    "total_choice_problems": 340,
+    "chunk_size": 100,
+    "output_dir": "chunk_plans"
+  },
+  "created_at": "2025-11-27T11:36:10"
+}
