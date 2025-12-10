@@ -2,6 +2,9 @@ venv/
 .env
 /env
 src/datasets/leetcode/lcb_codegen_overview/
+scripts/__pycache__/
+__pycache__/
 src/datasets/leetcode/secrets/
+
 __pycache__/
 src/models/bedrock_claude/__pycache__/
