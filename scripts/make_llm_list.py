@@ -1,3 +1,5 @@
+# Copied from a colab notebook
+
 # Pipeline:
 #   1) Brainstorm 100 function headers + descriptions
 #   2) Add manually specified headers and descriptions for ten sorting algorithms and two search algorithms (112 progs total)
@@ -11,13 +13,22 @@ import json
 from pathlib import Path
 import ast
 import re
+from openai import OpenAI
 
-DATA_DIR = Path("code-reasoning-repro/src/datasets/llm-list")
-PROMPTS_DIR = Path("code-reasoning-repro/src/datasets/llm-list/prompts")
+from google.colab import userdata
+key = userdata.get('OPENAI_API_KEY')
+
+DATA_DIR = Path("/content")
+BRAINSTORM_PROMPT = Path("/content/brainstorm.txt")
+CODEGEN_PROMPT = Path("/content/codegen.txt")
+INPUTGEN_PROMPT = Path("/content/inputgen.txt")
 
 BRAINSTORM_JSON = DATA_DIR / "brainstorm" / "brainstorm.json"
 FUNCTIONS_JSON   = DATA_DIR / "generated_code" / "functions.json"
 FINAL_JSONL   = DATA_DIR / "final" / "final_results.jsonl"
+BRAINSTORM_JSON.parent.mkdir(parents=True, exist_ok=True)
+FUNCTIONS_JSON.parent.mkdir(parents=True, exist_ok=True)
+FINAL_JSONL.parent.mkdir(parents=True, exist_ok=True)
 
 # Parsing functions
 def parse_brainstorm_response(results):
@@ -46,26 +57,31 @@ def parse_code_response(results):
         code = "\n".join(lines).strip()
     if "def " not in code:
         raise ValueError("No function definition found in code response.")
-    # sanity check valid python
+    # Sanity check valid python
     ast.parse(code)
     return code
 
 def parse_input_response(results):
-    res = []
     lines = [ln.strip() for ln in results.splitlines() if ln.strip()]
     if len(lines) < 3:
         raise ValueError("Expected 3 input lines.")
+    
+    parsed_inputs = []
     for ln in lines[:3]:
-        parts = [p.strip() for p in ln.split(",")]
-        if not parts:
-            raise ValueError("Empty input line.")
-        res.append(parts)
-    return res
+        try:
+            val = ast.literal_eval(ln) 
+            if isinstance(val, tuple):
+                parts = [repr(x) for x in val]
+            else:
+                parts = [ln]
+        except Exception:
+            parts = [ln]
+        parsed_inputs.append(parts)
+    return parsed_inputs
 
 # Function to call LLM
 def call_llm(prompt):
-    from openai import OpenAI
-    client = OpenAI()
+    client = OpenAI(api_key=key)
 
     result = client.responses.create(
         model="gpt-5",
@@ -89,12 +105,16 @@ def call_llm(prompt):
 
 # Call LLM with brainstorm prompt to get function headers and descriptions 
 def brainstorm():
-    prompt = (PROMPTS_DIR / "brainstorm.txt").read_text()
+    if BRAINSTORM_JSON.exists():
+        print(f"Loading existing brainstorm from {BRAINSTORM_JSON}")
+        data = json.loads(BRAINSTORM_JSON.read_text())
+        headers_descriptions = [(h, d) for h, d in data]
+        return headers_descriptions
+    prompt = (BRAINSTORM_PROMPT).read_text()
     results = call_llm(prompt)
     headers_descriptions = parse_brainstorm_response(results)
     if len(headers_descriptions) < 100:
         raise RuntimeError(f"Brainstorm returned only {len(headers_descriptions)} items instead of 100.")
-    # take the first 100 if > 100
     headers_descriptions = headers_descriptions[:100]
     BRAINSTORM_JSON.write_text(json.dumps(headers_descriptions, indent = 2))
     return headers_descriptions
@@ -117,12 +137,24 @@ MANUAL_12 = [
 
 # Call LLM with code gen prompt to get programs
 def code_generation(headers_descriptions):
+    if FUNCTIONS_JSON.exists():
+        print(f"Loading existing functions from {FUNCTIONS_JSON}")
+        functions = json.loads(FUNCTIONS_JSON.read_text())
+        for f in functions:
+            for k in ("id", "header", "description", "code"):
+                if k not in f:
+                    raise RuntimeError(f"missing '{k}'")
+        return functions
+    print("Generating code...")
     functions = []
     # hd should contain header, desc
     for i, hd in enumerate(headers_descriptions):
+        print(f"Generating code for function {i}: ")
         header, desc = (hd[0], hd[1]) if not isinstance(hd, dict) else (hd["header"], hd["desc"])
-        prompt_tmpl = (PROMPTS_DIR / "codegen.txt").read_text()
-        prompt = prompt_tmpl.format(HEADER=header, DESC=desc)
+        prompt_tmpl = (CODEGEN_PROMPT).read_text()
+        prompt = (prompt_tmpl
+          .replace("{function_header}", header)
+          .replace("{function_description}", desc))
         results = call_llm(prompt)
         code = parse_code_response(results)
         functions.append({
@@ -144,7 +176,11 @@ def execute_function(code, header, inputs):
 
     outputs = []
     for arglist in inputs:
-        parsed = [ast.literal_eval(a) for a in arglist]
+        # Evaluate each arg string into an object (literal, iterator, generator)
+        parsed = []
+        for a in arglist:
+            obj = ast.literal_eval(a)
+            parsed.append(obj)
         result = fn(*parsed)
         outputs.append(repr(result))
     return outputs
@@ -156,13 +192,28 @@ def validate_inputs(inputs, function):
             try:
                 val = ast.literal_eval(arg)
             except Exception:
-                return False, None
+                return False, None 
+            # No floats
             if isinstance(val, float):
                 return False, None
+            # List should not be empty or too long
             if isinstance(val, list):
                 if len(val) == 0 or len(val) >= 1000:
                     return False, None
-    # Execute function
+
+            # Tuples
+            elif isinstance(val, tuple):
+                for elem in val:
+                    if isinstance(elem, float):
+                        return False, None
+                    if isinstance(elem, list):
+                        if len(elem) == 0 or len(elem) >= 1000:
+                            return False, None
+                        if not all(isinstance(x, int) for x in elem):
+                            return False, None
+                    elif not isinstance(elem, (int, bool, list, tuple)):
+                        return False, None
+    # Execute code with inputs
     try:
         outs = execute_function(function["code"], function["header"], inputs)
         return True, outs
@@ -177,7 +228,7 @@ def input_generation(functions, max_retries):
         inputs = []
         outputs = []
         for i in range(max_retries):
-            prompt_tmpl = (PROMPTS_DIR / "inputgen.txt").read_text()
+            prompt_tmpl = (INPUTGEN_PROMPT).read_text()
             prompt = prompt_tmpl.format(
                 function_name=f["header"].split("def ",1)[1].split("(",1)[0].strip(),
                 function_description=f["description"],
